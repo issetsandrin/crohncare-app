@@ -11,12 +11,21 @@ const firebaseConfig = {
   measurementId: 'G-CJ9PRQPV75'
 }
 
-const app = initializeApp(firebaseConfig)
-const messaging = getMessaging(app)
-
 const VAPID_KEY = 'BNA2LDTCzUiE9q-n0ObvpCy8_UoprgqVkCGaeQrOGhYNTXQOmg4uW9HwGE_XAq-Jnk_wRLbi6hNCvyEv8IUELXI'
 
+const app = initializeApp(firebaseConfig)
+
+const isSecureContext = typeof window !== 'undefined' &&
+  ('serviceWorker' in navigator) &&
+  (window.location.protocol === 'https:' || window.location.hostname === 'localhost')
+
+let messaging = null
+if (isSecureContext) {
+  messaging = getMessaging(app)
+}
+
 export async function getFcmToken() {
+  if (!messaging) return null
   try {
     const token = await getToken(messaging, { vapidKey: VAPID_KEY })
     return token
@@ -27,6 +36,7 @@ export async function getFcmToken() {
 }
 
 export function onForegroundMessage(callback) {
+  if (!messaging) return () => {}
   return onMessage(messaging, (payload) => {
     callback(payload)
   })
