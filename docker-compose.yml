@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: ./docker/php
+    volumes:
+      - ./backend:/var/www/backend
+    depends_on:
+      - postgres
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=chroncare
+      - DB_USERNAME=chroncare
+      - DB_PASSWORD=chroncare
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    ports:
+      - "8090:80"
+    volumes:
+      - ./backend:/var/www/backend
+    depends_on:
+      - app
+      - node
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: chroncare
+      POSTGRES_USER: chroncare
+      POSTGRES_PASSWORD: chroncare
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  node:
+    build:
+      context: ./docker/node
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/var/www/frontend
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+volumes:
+  pgdata:

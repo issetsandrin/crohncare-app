@@ -1,0 +1,11 @@
+.env
+node_modules/
+vendor/
+.idea/
+.vscode/
+*.log
+pgdata/
+backend/.env
+backend/storage/app/firebase-credentials.json
+frontend/node_modules/
+frontend/dist/

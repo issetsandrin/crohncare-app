@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: ./docker/php
+    volumes:
+      - ./backend:/var/www/backend
+    depends_on:
+      - postgres
+    environment:
+      - APP_NAME=CrohnCare
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL:-http://localhost}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-chroncare}
+      - DB_USERNAME=${DB_USERNAME:-chroncare}
+      - DB_PASSWORD=${DB_PASSWORD:-chroncare}
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    volumes:
+      - ./backend:/var/www/backend
+      - ./frontend/dist:/var/www/frontend/dist
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-chroncare}
+      POSTGRES_USER: ${DB_USERNAME:-chroncare}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-chroncare}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
