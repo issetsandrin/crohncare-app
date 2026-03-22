@@ -27,7 +27,7 @@ if (isSecureContext) {
 export async function getFcmToken() {
   if (!messaging) return null
   try {
-    const swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    const swRegistration = await navigator.serviceWorker.ready
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swRegistration
