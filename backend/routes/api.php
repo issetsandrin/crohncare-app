@@ -9,6 +9,7 @@ use App\Http\Controllers\ResumoController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\AvisoController;
+use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\PerfilCrohnController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('perfil-crohn', [PerfilCrohnController::class, 'store']);
     Route::get('perfil-crohn', [PerfilCrohnController::class, 'show']);
+
+    Route::apiResource('consultas', ConsultaController::class)->except(['show']);
 });

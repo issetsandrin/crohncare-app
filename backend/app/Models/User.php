@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(PerfilCrohn::class);
     }
+
+    public function consultas()
+    {
+        return $this->hasMany(Consulta::class);
+    }
 }

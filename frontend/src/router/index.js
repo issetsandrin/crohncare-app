@@ -32,6 +32,12 @@ const routes = [
     meta: { auth: true }
   },
   {
+    path: '/consultas',
+    name: 'consultas',
+    component: () => import('../pages/ConsultasPage.vue'),
+    meta: { auth: true }
+  },
+  {
     path: '/configuracoes',
     name: 'configuracoes',
     component: () => import('../pages/ConfiguracoesPage.vue'),
