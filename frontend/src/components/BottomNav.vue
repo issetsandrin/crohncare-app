@@ -60,8 +60,8 @@ const activeIndex = computed(() => {
   align-items: center;
   background: #fff;
   border-top: 1px solid #e8e8e8;
-  padding: 6px 0 0;
-  padding-bottom: env(safe-area-inset-bottom, 6px);
+  padding: 10px 0 0;
+  padding-bottom: calc(env(safe-area-inset-bottom, 8px) + 8px);
   z-index: 100;
 }
 
@@ -80,7 +80,7 @@ const activeIndex = computed(() => {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   border-radius: 8px;
   transition: color 0.2s;
   color: var(--texto-light);
