@@ -25,9 +25,11 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./backend:/var/www/backend
       - ./frontend/dist:/var/www/frontend/dist
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - app
     restart: unless-stopped
