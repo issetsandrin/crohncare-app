@@ -185,13 +185,17 @@ const especialidades = [
           :style="{ animationDelay: i * 0.04 + 's' }"
           @click="abrirDetalhes(consulta)"
         >
-          <div class="consulta-data-box" :class="consulta.status">
-            <span class="consulta-dia">{{ formatarData(consulta.data_hora) }}</span>
-            <span class="consulta-hora">{{ formatarHora(consulta.data_hora) }}</span>
+          <div class="consulta-icon-box" :class="consulta.status">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
           </div>
           <div class="consulta-info">
             <span class="consulta-medico">{{ consulta.medico }}</span>
             <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+            <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
             <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
           </div>
           <div class="consulta-badge-area">
@@ -486,39 +490,33 @@ const especialidades = [
   opacity: 0.65;
 }
 
-.consulta-data-box {
-  width: 52px;
-  min-width: 52px;
-  height: 52px;
-  border-radius: 14px;
+.consulta-icon-box {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: rgba(127, 168, 50, 0.1);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  color: var(--verde-salvia);
 }
 
-.consulta-data-box.realizada {
+.consulta-icon-box.realizada {
   background: rgba(127, 168, 50, 0.06);
+  color: var(--texto-light);
 }
 
-.consulta-data-box.cancelada {
+.consulta-icon-box.cancelada {
   background: rgba(0, 0, 0, 0.04);
+  color: var(--texto-light);
 }
 
-.consulta-dia {
+.consulta-data-text {
   font-family: var(--font-corpo);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--verde-salvia);
-  text-transform: capitalize;
-}
-
-.consulta-hora {
-  font-family: var(--font-corpo);
-  font-size: 11px;
-  color: var(--texto-light);
 }
 
 .consulta-info {
