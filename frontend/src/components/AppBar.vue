@@ -23,7 +23,7 @@ defineProps({
   align-items: center;
   justify-content: space-between;
   padding: 24px 20px 16px;
-  background: linear-gradient(145deg, var(--verde-salvia) 0%, #688A28 100%);
+  background: var(--verde-salvia);
   margin-bottom: 16px;
 }
 

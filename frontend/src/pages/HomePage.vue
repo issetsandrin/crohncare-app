@@ -215,7 +215,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(145deg, var(--verde-salvia) 0%, #688A28 100%);
+  background: var(--verde-salvia);
   border-radius: 0 0 28px 28px;
 }
 
