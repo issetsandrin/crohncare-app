@@ -38,9 +38,9 @@ const routes = [
     meta: { auth: true }
   },
   {
-    path: '/configuracoes',
-    name: 'configuracoes',
-    component: () => import('../pages/ConfiguracoesPage.vue'),
+    path: '/perfil',
+    name: 'perfil',
+    component: () => import('../pages/PerfilPage.vue'),
     meta: { auth: true }
   },
   {

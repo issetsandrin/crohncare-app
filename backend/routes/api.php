@@ -21,6 +21,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::put('me', [AuthController::class, 'updateProfile']);
 
     Route::apiResource('medicamentos', MedicamentoController::class);
     Route::put('medicamentos/{medicamento}/estoque', [EstoqueController::class, 'update']);

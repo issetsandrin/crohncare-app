@@ -76,6 +76,20 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async updateProfile(data) {
+      try {
+        const res = await api.put('/me', data)
+        this.user = res.data
+        localStorage.setItem('user', JSON.stringify(res.data))
+        return true
+      } catch (err) {
+        if (err.response?.status === 422) {
+          this.errors = err.response.data.errors || {}
+        }
+        return false
+      }
+    },
+
     marcarOnboardingCompleto() {
       if (this.user) {
         this.user.onboarding_completo = true

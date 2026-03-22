@@ -78,4 +78,21 @@ class AuthController extends Controller
             'onboarding_completo' => $user->onboarding_completo,
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+        ]);
+
+        $user = $request->user();
+        $user->update($validated);
+
+        return response()->json([
+            'id' => $user->id,
+            'nome' => $user->nome,
+            'email' => $user->email,
+            'onboarding_completo' => $user->onboarding_completo,
+        ]);
+    }
 }
