@@ -6,6 +6,7 @@ export const useAvisosStore = defineStore('avisos', () => {
   const api = useApi()
   const avisos = ref([])
   const loading = ref(false)
+  const naoLidosCount = ref(0)
 
   const naoLidos = computed(() => avisos.value.filter(a => !a.lido).length)
 
@@ -24,6 +25,7 @@ export const useAvisosStore = defineStore('avisos', () => {
   async function fetchNaoLidos() {
     try {
       const { data } = await api.get('/avisos/nao-lidos')
+      naoLidosCount.value = data.count
       return data.count
     } catch (e) {
       return 0
@@ -49,5 +51,5 @@ export const useAvisosStore = defineStore('avisos', () => {
     }
   }
 
-  return { avisos, loading, naoLidos, fetchAll, fetchNaoLidos, marcarLido, marcarTodosLidos }
+  return { avisos, loading, naoLidos, naoLidosCount, fetchAll, fetchNaoLidos, marcarLido, marcarTodosLidos }
 })
