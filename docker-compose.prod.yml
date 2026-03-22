@@ -29,7 +29,7 @@ services:
     volumes:
       - ./backend:/var/www/backend
       - ./frontend/dist:/var/www/frontend/dist
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ssl-certs:/etc/nginx/ssl:ro
     depends_on:
       - app
     restart: unless-stopped
@@ -46,3 +46,4 @@ services:
 
 volumes:
   pgdata:
+  ssl-certs:
