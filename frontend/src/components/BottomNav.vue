@@ -8,7 +8,7 @@ const items = [
   { path: '/', label: 'Início' },
   { path: '/medicamentos', label: 'Remédios' },
   { path: '/diario', label: 'Diário' },
-  { path: '/configuracoes', label: 'Configuração' }
+  { path: '/configuracoes', label: 'Configurações' }
 ]
 
 const activeIndex = computed(() => {
