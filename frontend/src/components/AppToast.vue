@@ -42,7 +42,7 @@ defineExpose({ show })
   font-weight: 500;
   text-align: center;
   z-index: 1000;
-  animation: fadeInUp 0.3s ease;
+  animation: fadeInUp 0.4s var(--ease-out-smooth);
 }
 
 .app-toast.info {
@@ -61,11 +61,11 @@ defineExpose({ show })
 }
 
 .toast-enter-active {
-  animation: fadeInUp 0.3s ease;
+  animation: fadeInUp 0.4s var(--ease-out-smooth);
 }
 
 .toast-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
 }
 
 .toast-leave-to {

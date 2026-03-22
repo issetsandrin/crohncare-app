@@ -305,7 +305,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   color: rgba(255, 255, 255, 0.85);
   flex-shrink: 0;
   margin-left: auto;
-  transition: background 0.2s;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .hero-alerts-btn:active {
@@ -401,7 +401,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   display: flex;
   flex-direction: column;
   gap: 4px;
-  animation: fadeInUp 0.4s ease both;
+  animation: fadeInUp 0.5s var(--ease-out-smooth) both;
 }
 
 .stat-card:nth-child(2) { animation-delay: 0.05s; }
@@ -434,7 +434,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
 .dica-enter-active,
 .dica-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.4s var(--ease-smooth);
 }
 
 .dica-enter-from {
@@ -541,8 +541,8 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   border-radius: 14px;
   padding: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  animation: fadeInUp 0.3s ease both;
-  transition: opacity 0.3s, transform 0.15s;
+  animation: fadeInUp 0.4s var(--ease-out-smooth) both;
+  transition: opacity 0.4s var(--ease-smooth), transform 0.3s var(--ease-smooth);
 }
 
 .remedio-card.passado {

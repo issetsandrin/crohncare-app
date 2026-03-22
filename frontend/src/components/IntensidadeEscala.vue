@@ -43,7 +43,7 @@ function select(n) {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s var(--ease-smooth);
   background: transparent;
 }
 

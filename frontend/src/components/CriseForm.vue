@@ -220,7 +220,7 @@ function onSubmit() {
   font-size: 14px;
   color: var(--texto);
   background: #fff;
-  transition: border-color 0.2s;
+  transition: border-color 0.3s var(--ease-smooth);
   width: 100%;
   box-sizing: border-box;
 }
@@ -245,7 +245,7 @@ function onSubmit() {
   border-radius: 8px;
   background: #fff;
   cursor: text;
-  transition: border-color 0.2s;
+  transition: border-color 0.3s var(--ease-smooth);
   min-height: 42px;
   align-items: center;
 }
@@ -266,7 +266,7 @@ function onSubmit() {
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
-  animation: chipIn 0.15s ease;
+  animation: chipIn 0.25s var(--ease-out-smooth);
 }
 
 @keyframes chipIn {
@@ -284,7 +284,7 @@ function onSubmit() {
   color: var(--terracota);
   padding: 0;
   opacity: 0.6;
-  transition: opacity 0.15s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .tag-remove:hover {
@@ -333,7 +333,7 @@ function onSubmit() {
   font-size: 14px;
   color: var(--texto);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .autocomplete-item:hover {
@@ -362,7 +362,7 @@ function onSubmit() {
   font-family: var(--font-corpo);
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.3s var(--ease-smooth);
   white-space: nowrap;
 }
 
@@ -388,7 +388,7 @@ function onSubmit() {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .btn:active {

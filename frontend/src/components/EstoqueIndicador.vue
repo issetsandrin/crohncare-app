@@ -58,11 +58,11 @@ const corBarra = computed(() => {
 .estoque-bar-fill {
   height: 100%;
   border-radius: 3px;
-  transition: width 0.4s ease, background 0.3s ease;
+  transition: width 0.6s var(--ease-out-smooth), background 0.4s var(--ease-smooth);
 }
 
 .estoque-bar-fill.pulse {
-  animation: pulse 1.5s ease infinite;
+  animation: pulse 2s var(--ease-smooth) infinite;
 }
 
 .estoque-text {

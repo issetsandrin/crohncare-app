@@ -356,7 +356,7 @@ function formatarDataHora(dataHora) {
   font-weight: 600;
   color: var(--texto-light);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.35s var(--ease-smooth);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -389,7 +389,7 @@ function formatarDataHora(dataHora) {
 
 /* Content */
 .tab-content {
-  animation: fadeInUp 0.2s ease;
+  animation: fadeInUp 0.35s var(--ease-out-smooth);
 }
 
 .loading-state,
@@ -430,7 +430,7 @@ function formatarDataHora(dataHora) {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 16px rgba(76, 175, 80, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
   z-index: 50;
 }
 
@@ -456,7 +456,7 @@ function formatarDataHora(dataHora) {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  animation: fadeInUp 0.3s ease both;
+  animation: fadeInUp 0.4s var(--ease-out-smooth) both;
 }
 
 .crise-card {
@@ -483,7 +483,7 @@ function formatarDataHora(dataHora) {
 
 .entry-card.clickable {
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
 }
 
 .entry-card.clickable:active {
@@ -624,7 +624,7 @@ function formatarDataHora(dataHora) {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .btn:disabled {

@@ -72,7 +72,7 @@ const activeIndex = computed(() => {
   width: 25%;
   height: 2px;
   background: var(--verde-salvia);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s var(--ease-out-smooth);
 }
 
 .nav-item {
@@ -82,7 +82,7 @@ const activeIndex = computed(() => {
   gap: 2px;
   padding: 8px 12px;
   border-radius: 8px;
-  transition: color 0.2s;
+  transition: color 0.3s var(--ease-smooth);
   color: var(--texto-light);
   text-decoration: none;
   flex: 1;

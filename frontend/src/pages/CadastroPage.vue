@@ -177,7 +177,7 @@ function getError(field) {
   font-size: 14px;
   color: var(--texto);
   background: #fff;
-  transition: border-color 0.2s;
+  transition: border-color 0.3s var(--ease-smooth);
   width: 100%;
   box-sizing: border-box;
 }
@@ -208,7 +208,7 @@ function getError(field) {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: opacity 0.3s var(--ease-smooth), transform 0.2s var(--ease-smooth);
   margin-top: 8px;
 }
 

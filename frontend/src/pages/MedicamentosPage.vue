@@ -474,7 +474,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 16px rgba(76, 175, 80, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
   z-index: 50;
 }
 
@@ -632,7 +632,7 @@ onMounted(() => {
   font-weight: 500;
   color: var(--texto-light);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s var(--ease-smooth);
 }
 
 .periodicidade-chip.active {
@@ -668,7 +668,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.3s var(--ease-smooth);
 }
 
 .dia-btn.active {
@@ -732,7 +732,7 @@ onMounted(() => {
   font-size: 14px;
   color: var(--texto);
   background: #fff;
-  transition: border-color 0.2s;
+  transition: border-color 0.3s var(--ease-smooth);
   width: 100%;
   box-sizing: border-box;
 }
@@ -777,7 +777,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .btn-remove-horario:hover {
@@ -811,7 +811,7 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .btn:disabled {

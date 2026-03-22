@@ -62,12 +62,12 @@ const periodicidadeTexto = computed(() => {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: fadeInUp 0.4s ease both;
+  animation: fadeInUp 0.5s var(--ease-out-smooth) both;
 }
 
 .medicamento-card.clickable {
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
 }
 
 .medicamento-card.clickable:active {

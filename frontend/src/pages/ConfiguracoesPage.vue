@@ -178,7 +178,7 @@ const statusLabel = {
   background: #ddd;
   border: none;
   cursor: pointer;
-  transition: background 0.25s ease;
+  transition: background 0.35s var(--ease-smooth);
   padding: 0;
   flex-shrink: 0;
 }
@@ -195,7 +195,7 @@ const statusLabel = {
   height: 22px;
   border-radius: 50%;
   background: #fff;
-  transition: transform 0.25s ease;
+  transition: transform 0.35s var(--ease-smooth);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
@@ -213,7 +213,7 @@ const statusLabel = {
   border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .btn-logout:active {

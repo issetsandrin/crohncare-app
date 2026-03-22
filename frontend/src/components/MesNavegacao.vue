@@ -60,7 +60,7 @@ function mudarMes(delta) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .nav-arrow:hover {

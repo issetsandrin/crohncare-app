@@ -29,7 +29,7 @@ const labels = ['Leve', 'Baixa', 'Moderada', 'Alta', 'Severa']
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.3s var(--ease-smooth);
 }
 
 .dot.inativo {

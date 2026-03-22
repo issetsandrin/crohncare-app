@@ -82,7 +82,7 @@ function onBackdropClick(e) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .modal-close:hover {
@@ -97,13 +97,13 @@ function onBackdropClick(e) {
 
 /* Transitions */
 .modal-enter-active {
-  transition: opacity 0.25s ease;
+  transition: opacity 0.35s var(--ease-smooth);
 }
 .modal-enter-active .modal-card {
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.4s var(--ease-out-smooth);
 }
 .modal-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s var(--ease-smooth);
 }
 .modal-leave-to {
   opacity: 0;

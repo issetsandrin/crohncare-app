@@ -221,8 +221,8 @@ async function handleTap(aviso) {
   padding: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   position: relative;
-  transition: opacity 0.2s;
-  animation: fadeInUp 0.3s ease both;
+  transition: opacity 0.3s var(--ease-smooth);
+  animation: fadeInUp 0.4s var(--ease-out-smooth) both;
 }
 
 .aviso-card.nao-lido {
