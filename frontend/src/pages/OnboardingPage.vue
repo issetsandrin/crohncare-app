@@ -197,18 +197,46 @@ async function finalizar() {
           <div class="situacao-options">
             <button
               v-for="opt in [
-                { value: 'remissao', label: 'Em remissão', desc: 'Que ótimo! A doença está controlada no momento', icon: '🟢' },
-                { value: 'crise_leve', label: 'Crise leve', desc: 'Alguns sintomas, mas consigo lidar no dia a dia', icon: '🟡' },
-                { value: 'crise_moderada', label: 'Crise moderada', desc: 'Os sintomas estão atrapalhando minha rotina', icon: '🟠' },
-                { value: 'crise_grave', label: 'Crise intensa', desc: 'Estou passando por um momento difícil e preciso de apoio', icon: '🔴' },
-                { value: 'recente', label: 'Descobri há pouco', desc: 'Ainda estou entendendo tudo isso — e está tudo bem', icon: '🔵' }
+                { value: 'remissao', label: 'Em remissão', desc: 'Que ótimo! A doença está controlada no momento', cor: '#4CAF50', level: 1 },
+                { value: 'crise_leve', label: 'Crise leve', desc: 'Alguns sintomas, mas consigo lidar no dia a dia', cor: '#D4A03C', level: 2 },
+                { value: 'crise_moderada', label: 'Crise moderada', desc: 'Os sintomas estão atrapalhando minha rotina', cor: '#E88A3A', level: 3 },
+                { value: 'crise_grave', label: 'Crise intensa', desc: 'Estou passando por um momento difícil e preciso de apoio', cor: '#E05555', level: 4 },
+                { value: 'recente', label: 'Descobri há pouco', desc: 'Ainda estou entendendo tudo isso — e está tudo bem', cor: '#5B93C7', level: 0 }
               ]"
               :key="opt.value"
               class="situacao-btn"
               :class="{ selected: form.situacao_atual === opt.value }"
               @click="form.situacao_atual = opt.value"
             >
-              <span class="situacao-icon">{{ opt.icon }}</span>
+              <div class="gravidade-icon" :style="{ '--cor': opt.cor }">
+                <!-- Remissão: check -->
+                <svg v-if="opt.level === 1" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <!-- Leve: 1 barra -->
+                <svg v-else-if="opt.level === 2" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect x="10" y="14" width="4" height="6" rx="1" fill="currentColor"/>
+                  <rect x="10" y="8" width="4" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                  <rect x="10" y="2" width="4" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                </svg>
+                <!-- Moderada: 2 barras -->
+                <svg v-else-if="opt.level === 3" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect x="10" y="14" width="4" height="6" rx="1" fill="currentColor"/>
+                  <rect x="10" y="8" width="4" height="4" rx="1" fill="currentColor"/>
+                  <rect x="10" y="2" width="4" height="4" rx="1" fill="currentColor" opacity="0.2"/>
+                </svg>
+                <!-- Intensa: 3 barras -->
+                <svg v-else-if="opt.level === 4" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect x="10" y="14" width="4" height="6" rx="1" fill="currentColor"/>
+                  <rect x="10" y="8" width="4" height="4" rx="1" fill="currentColor"/>
+                  <rect x="10" y="2" width="4" height="4" rx="1" fill="currentColor"/>
+                </svg>
+                <!-- Recente: interrogação -->
+                <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                </svg>
+              </div>
               <div class="situacao-text">
                 <span class="situacao-label">{{ opt.label }}</span>
                 <span class="situacao-desc">{{ opt.desc }}</span>
@@ -521,11 +549,17 @@ async function finalizar() {
   background: rgba(127, 168, 50, 0.06);
 }
 
-.situacao-icon {
-  font-size: 20px;
+.gravidade-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--cor) 12%, transparent);
+  color: var(--cor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  width: 28px;
-  text-align: center;
 }
 
 .situacao-text {
