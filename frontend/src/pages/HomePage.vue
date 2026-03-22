@@ -211,7 +211,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
 <style scoped>
 .home-page {
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   height: 100dvh;
   overflow: hidden;
 }

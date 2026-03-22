@@ -9,6 +9,7 @@ use App\Http\Controllers\ResumoController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\AvisoController;
+use App\Http\Controllers\PerfilCrohnController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (public)
@@ -40,4 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('avisos/nao-lidos', [AvisoController::class, 'naoLidos']);
     Route::put('avisos/{id}/lido', [AvisoController::class, 'marcarLido']);
     Route::put('avisos/marcar-todos', [AvisoController::class, 'marcarTodosLidos']);
+
+    Route::post('perfil-crohn', [PerfilCrohnController::class, 'store']);
+    Route::get('perfil-crohn', [PerfilCrohnController::class, 'show']);
 });

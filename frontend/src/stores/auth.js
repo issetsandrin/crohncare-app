@@ -76,6 +76,13 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    marcarOnboardingCompleto() {
+      if (this.user) {
+        this.user.onboarding_completo = true
+        localStorage.setItem('user', JSON.stringify(this.user))
+      }
+    },
+
     async logout() {
       try {
         await api.post('/logout')

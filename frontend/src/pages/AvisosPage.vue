@@ -1,11 +1,14 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAvisosStore } from '../stores/avisos'
 import AppBar from '../components/AppBar.vue'
+import ModalBase from '../components/ModalBase.vue'
 
 const router = useRouter()
 const store = useAvisosStore()
+const selectedAviso = ref(null)
+const showDetail = ref(false)
 
 onMounted(() => {
   store.fetchAll()
@@ -30,10 +33,18 @@ function formatarData(dateStr) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 }
 
-async function handleTap(aviso) {
+function formatarDataCompleta(dateStr) {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) +
+    ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+}
+
+async function abrirAviso(aviso) {
   if (!aviso.lido) {
     await store.marcarLido(aviso.id)
   }
+  selectedAviso.value = aviso
+  showDetail.value = true
 }
 </script>
 
@@ -45,11 +56,6 @@ async function handleTap(aviso) {
           <path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <template v-if="store.naoLidos > 0">
-        <button class="mark-all-btn" @click="store.marcarTodosLidos">
-          Marcar tudo como lido
-        </button>
-      </template>
     </AppBar>
 
     <div class="page-content">
@@ -74,12 +80,15 @@ async function handleTap(aviso) {
 
       <!-- List -->
       <div v-else class="avisos-list">
+        <button v-if="store.naoLidos > 0" class="mark-all-btn" @click="store.marcarTodosLidos">
+          Marcar tudo como lido
+        </button>
         <div
           v-for="aviso in store.avisos"
           :key="aviso.id"
           class="aviso-card"
-          :class="{ 'nao-lido': !aviso.lido }"
-          @click="handleTap(aviso)"
+          :class="{ 'nao-lido': !aviso.lido, 'lido': aviso.lido }"
+          @click="abrirAviso(aviso)"
         >
           <div class="aviso-indicator" v-if="!aviso.lido"></div>
           <div class="aviso-icon">
@@ -96,6 +105,34 @@ async function handleTap(aviso) {
         </div>
       </div>
     </div>
+
+    <!-- Modal Detalhe -->
+    <ModalBase v-model="showDetail" title="">
+      <div v-if="selectedAviso" class="detail-content">
+        <div class="detail-header">
+          <div class="detail-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="detail-tempo">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
+        </div>
+
+        <h3 class="detail-titulo">{{ selectedAviso.titulo }}</h3>
+
+        <div class="detail-mensagem-card">
+          <p class="detail-mensagem">{{ selectedAviso.mensagem }}</p>
+        </div>
+
+        <div class="detail-status">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Lido</span>
+        </div>
+      </div>
+    </ModalBase>
   </div>
 </template>
 
@@ -121,17 +158,20 @@ async function handleTap(aviso) {
 
 .mark-all-btn {
   font-family: var(--font-corpo);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.15);
-  padding: 6px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
+  color: var(--verde-salvia);
+  background: rgba(127, 168, 50, 0.1);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s var(--ease-smooth);
 }
 
 .mark-all-btn:active {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(127, 168, 50, 0.2);
 }
 
 .page-content {
@@ -219,10 +259,16 @@ async function handleTap(aviso) {
   background: #fff;
   border-radius: 14px;
   padding: 14px;
+  padding-left: 18px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   position: relative;
-  transition: opacity 0.3s var(--ease-smooth);
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
   animation: fadeInUp 0.4s var(--ease-out-smooth) both;
+}
+
+.aviso-card:active {
+  transform: scale(0.98);
 }
 
 .aviso-card.nao-lido {
@@ -230,13 +276,35 @@ async function handleTap(aviso) {
   border: 1px solid rgba(127, 168, 50, 0.15);
 }
 
+.aviso-card.lido {
+  opacity: 0.55;
+}
+
+.aviso-card.lido .aviso-icon {
+  background: #f0f0f0;
+  color: #bbb;
+}
+
+.aviso-card.lido .aviso-titulo {
+  color: #999;
+  font-weight: 500;
+}
+
+.aviso-card.lido .aviso-mensagem {
+  color: #bbb;
+}
+
+.aviso-card.lido .aviso-tempo {
+  color: #ccc;
+}
+
 .aviso-indicator {
   position: absolute;
   top: 50%;
-  left: 6px;
+  left: 7px;
   transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--verde-salvia);
 }
@@ -290,5 +358,71 @@ async function handleTap(aviso) {
   color: var(--texto-light);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* Detail modal */
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde-salvia);
+  flex-shrink: 0;
+}
+
+.detail-tempo {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto-light);
+  line-height: 1.4;
+}
+
+.detail-titulo {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.detail-mensagem-card {
+  background: var(--fundo, #FAF8F5);
+  border-radius: 14px;
+  padding: 16px;
+  border-left: 3px solid var(--verde-salvia);
+}
+
+.detail-mensagem {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.detail-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--verde-salvia);
+  opacity: 0.7;
 }
 </style>

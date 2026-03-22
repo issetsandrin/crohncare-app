@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $fillable = ['nome', 'email', 'password'];
+    protected $fillable = ['nome', 'email', 'password', 'onboarding_completo'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -39,5 +39,10 @@ class User extends Authenticatable
     public function avisos()
     {
         return $this->hasMany(Aviso::class);
+    }
+
+    public function perfilCrohn()
+    {
+        return $this->hasOne(PerfilCrohn::class);
     }
 }

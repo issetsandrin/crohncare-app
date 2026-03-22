@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('lembretes:enviar')->everyMinute();
+Schedule::command('estoque:verificar')->dailyAt('08:00');

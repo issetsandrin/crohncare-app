@@ -326,7 +326,7 @@ function formatarDataHora(dataHora) {
 
 <style scoped>
 .diario-page {
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   height: 100dvh;
   overflow: hidden;
 }
@@ -417,7 +417,7 @@ function formatarDataHora(dataHora) {
 /* FAB */
 .fab {
   position: fixed;
-  bottom: 80px;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   right: calc(50% - 195px);
   width: 52px;
   height: 52px;

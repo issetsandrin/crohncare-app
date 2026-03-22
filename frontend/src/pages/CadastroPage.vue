@@ -19,7 +19,7 @@ async function handleRegister() {
     password_confirmation.value
   )
   if (success) {
-    router.push('/')
+    router.push('/onboarding')
   }
 }
 

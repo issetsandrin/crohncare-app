@@ -61,7 +61,7 @@ const activeIndex = computed(() => {
   background: #fff;
   border-top: 1px solid #e8e8e8;
   padding: 10px 0 0;
-  padding-bottom: calc(env(safe-area-inset-bottom, 8px) + 8px);
+  padding-bottom: env(safe-area-inset-bottom, 8px);
   z-index: 100;
 }
 

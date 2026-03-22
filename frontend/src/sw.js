@@ -1,9 +1,16 @@
-import { precacheAndRoute } from 'workbox-precaching'
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 
-// Precache dos assets gerados pelo Vite
+// Ativa o novo SW imediatamente
+self.skipWaiting()
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+// Limpa caches antigos e precache dos assets
+cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
 // Cache da API
@@ -39,7 +46,6 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(title, {
       body,
       icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-192x192.png',
       vibrate: [200, 100, 200, 100, 200],
       requireInteraction: true
     })

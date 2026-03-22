@@ -26,6 +26,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'nome' => $user->nome,
                 'email' => $user->email,
+                'onboarding_completo' => $user->onboarding_completo,
             ],
             'token' => $token,
         ], 201);
@@ -53,6 +54,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'nome' => $user->nome,
                 'email' => $user->email,
+                'onboarding_completo' => $user->onboarding_completo,
             ],
             'token' => $token,
         ]);
@@ -73,6 +75,7 @@ class AuthController extends Controller
             'id' => $user->id,
             'nome' => $user->nome,
             'email' => $user->email,
+            'onboarding_completo' => $user->onboarding_completo,
         ]);
     }
 }

@@ -108,7 +108,7 @@ const statusLabel = {
 
 <style scoped>
 .configuracoes-page {
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   height: 100dvh;
   overflow: hidden;
 }
