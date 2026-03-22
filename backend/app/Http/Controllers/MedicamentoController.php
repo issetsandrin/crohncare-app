@@ -11,14 +11,16 @@ class MedicamentoController extends Controller
 {
     public function index()
     {
-        $medicamentos = Medicamento::with(['horarios', 'estoque'])->get();
+        $medicamentos = auth()->user()->medicamentos()->with(['horarios', 'estoque'])->get();
         return MedicamentoResource::collection($medicamentos);
     }
 
     public function store(MedicamentoRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $medicamento = Medicamento::create($request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo']));
+            $medicamento = auth()->user()->medicamentos()->create(
+                $request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo'])
+            );
 
             foreach ($request->horarios as $horario) {
                 $medicamento->horarios()->create(['horario' => $horario]);
@@ -33,12 +35,15 @@ class MedicamentoController extends Controller
 
     public function show(Medicamento $medicamento)
     {
+        $this->authorize('view', $medicamento);
         $medicamento->load(['horarios', 'estoque']);
         return new MedicamentoResource($medicamento);
     }
 
     public function update(MedicamentoRequest $request, Medicamento $medicamento)
     {
+        $this->authorize('update', $medicamento);
+
         return DB::transaction(function () use ($request, $medicamento) {
             $medicamento->update($request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo']));
 
@@ -61,6 +66,7 @@ class MedicamentoController extends Controller
 
     public function destroy(Medicamento $medicamento)
     {
+        $this->authorize('delete', $medicamento);
         $medicamento->delete();
         return response()->json(null, 204);
     }

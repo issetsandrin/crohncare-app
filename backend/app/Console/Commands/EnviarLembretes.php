@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\DeviceToken;
-use App\Models\Medicamento;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -20,47 +20,52 @@ class EnviarLembretes extends Command
         $horaAtual = $agora->format('H:i');
         $hora5min = $em5min->format('H:i');
 
-        $medicamentos = Medicamento::with(['horarios'])
-            ->where('ativo', true)
-            ->where('periodicidade_tipo', '!=', 'sob_demanda')
-            ->get();
+        $users = User::whereHas('medicamentos', function ($q) {
+            $q->where('ativo', true)->where('periodicidade_tipo', '!=', 'sob_demanda');
+        })->with(['medicamentos' => function ($q) {
+            $q->where('ativo', true)->where('periodicidade_tipo', '!=', 'sob_demanda')->with('horarios');
+        }])->get();
 
-        $notificacoes = [];
+        $totalEnviados = 0;
 
-        foreach ($medicamentos as $med) {
-            foreach ($med->horarios as $horario) {
-                $h = substr($horario->horario, 0, 5);
+        foreach ($users as $user) {
+            $notificacoes = [];
 
-                if ($h === $hora5min) {
-                    $notificacoes[] = [
-                        'title' => "{$med->nome} em 5 minutos",
-                        'body' => "{$med->dose} — {$h}",
-                    ];
+            foreach ($user->medicamentos as $med) {
+                foreach ($med->horarios as $horario) {
+                    $h = substr($horario->horario, 0, 5);
+
+                    if ($h === $hora5min) {
+                        $notificacoes[] = [
+                            'title' => "{$med->nome} em 5 minutos",
+                            'body' => "{$med->dose} — {$h}",
+                        ];
+                    }
+
+                    if ($h === $horaAtual) {
+                        $notificacoes[] = [
+                            'title' => "Hora do {$med->nome}!",
+                            'body' => "Tomar {$med->dose} agora — {$h}",
+                        ];
+                    }
                 }
+            }
 
-                if ($h === $horaAtual) {
-                    $notificacoes[] = [
-                        'title' => "Hora do {$med->nome}!",
-                        'body' => "Tomar {$med->dose} agora — {$h}",
-                    ];
+            if (empty($notificacoes)) {
+                continue;
+            }
+
+            $tokens = DeviceToken::where('user_id', $user->id)->pluck('token');
+
+            foreach ($notificacoes as $notif) {
+                foreach ($tokens as $token) {
+                    $this->enviarFcm($token, $notif['title'], $notif['body']);
+                    $totalEnviados++;
                 }
             }
         }
 
-        if (empty($notificacoes)) {
-            $this->info('Nenhum lembrete para enviar.');
-            return 0;
-        }
-
-        $tokens = DeviceToken::pluck('token');
-
-        foreach ($notificacoes as $notif) {
-            foreach ($tokens as $token) {
-                $this->enviarFcm($token, $notif['title'], $notif['body']);
-            }
-        }
-
-        $this->info('Lembretes enviados: ' . count($notificacoes));
+        $this->info("Lembretes enviados: {$totalEnviados}");
         return 0;
     }
 

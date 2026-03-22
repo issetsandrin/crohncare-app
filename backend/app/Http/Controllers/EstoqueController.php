@@ -10,6 +10,8 @@ class EstoqueController extends Controller
 {
     public function update(Request $request, Medicamento $medicamento)
     {
+        $this->authorize('update', $medicamento);
+
         $validated = $request->validate([
             'quantidade_atual' => 'required|integer|min:0',
             'dose_diaria' => 'required|integer|min:1',
@@ -26,6 +28,8 @@ class EstoqueController extends Controller
 
     public function reabastecer(Request $request, Medicamento $medicamento)
     {
+        $this->authorize('update', $medicamento);
+
         $validated = $request->validate([
             'quantidade' => 'required|integer|min:1',
         ]);

@@ -20,4 +20,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function medicamentos()
+    {
+        return $this->hasMany(Medicamento::class);
+    }
+
+    public function diarios()
+    {
+        return $this->hasMany(Diario::class);
+    }
+
+    public function crises()
+    {
+        return $this->hasMany(Crise::class);
+    }
 }

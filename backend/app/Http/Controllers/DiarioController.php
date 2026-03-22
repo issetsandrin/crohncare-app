@@ -12,7 +12,7 @@ class DiarioController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Diario::orderBy('data', 'desc');
+        $query = auth()->user()->diarios()->orderBy('data', 'desc');
 
         if ($request->has('mes')) {
             $parts = explode('-', $request->mes);
@@ -24,13 +24,14 @@ class DiarioController extends Controller
 
     public function store(DiarioRequest $request)
     {
-        $diario = Diario::create($request->validated());
+        $diario = auth()->user()->diarios()->create($request->validated());
         Tag::sincronizar($diario->sintomas, 'anotacao');
         return new DiarioResource($diario);
     }
 
     public function update(DiarioRequest $request, Diario $diario)
     {
+        $this->authorize('update', $diario);
         $diario->update($request->validated());
         Tag::sincronizar($diario->sintomas, 'anotacao');
         return new DiarioResource($diario);
@@ -38,13 +39,14 @@ class DiarioController extends Controller
 
     public function destroy(Diario $diario)
     {
+        $this->authorize('delete', $diario);
         $diario->delete();
         return response()->json(null, 204);
     }
 
     public function exportar(Request $request)
     {
-        $query = Diario::orderBy('data', 'desc');
+        $query = auth()->user()->diarios()->orderBy('data', 'desc');
 
         if ($request->has('mes')) {
             $parts = explode('-', $request->mes);
