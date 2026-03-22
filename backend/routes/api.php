@@ -8,6 +8,7 @@ use App\Http\Controllers\CriseController;
 use App\Http\Controllers\ResumoController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DeviceTokenController;
+use App\Http\Controllers\AvisoController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (public)
@@ -34,4 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('device-tokens', [DeviceTokenController::class, 'store']);
     Route::delete('device-tokens', [DeviceTokenController::class, 'destroy']);
+
+    Route::get('avisos', [AvisoController::class, 'index']);
+    Route::get('avisos/nao-lidos', [AvisoController::class, 'naoLidos']);
+    Route::put('avisos/{id}/lido', [AvisoController::class, 'marcarLido']);
+    Route::put('avisos/marcar-todos', [AvisoController::class, 'marcarTodosLidos']);
 });

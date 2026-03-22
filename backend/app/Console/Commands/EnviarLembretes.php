@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Aviso;
 use App\Models\DeviceToken;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -58,6 +59,12 @@ class EnviarLembretes extends Command
             $tokens = DeviceToken::where('user_id', $user->id)->pluck('token');
 
             foreach ($notificacoes as $notif) {
+                Aviso::create([
+                    'user_id' => $user->id,
+                    'titulo' => $notif['title'],
+                    'mensagem' => $notif['body'],
+                ]);
+
                 foreach ($tokens as $token) {
                     $this->enviarFcm($token, $notif['title'], $notif['body']);
                     $totalEnviados++;

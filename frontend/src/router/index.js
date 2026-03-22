@@ -36,6 +36,12 @@ const routes = [
     name: 'configuracoes',
     component: () => import('../pages/ConfiguracoesPage.vue'),
     meta: { auth: true }
+  },
+  {
+    path: '/avisos',
+    name: 'avisos',
+    component: () => import('../pages/AvisosPage.vue'),
+    meta: { auth: true }
   }
 ]
 

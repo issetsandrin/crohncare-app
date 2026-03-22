@@ -1,19 +1,29 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMedicamentosStore } from '../stores/medicamentos'
 import { useAuthStore } from '../stores/auth'
 import { useNotificacoesStore } from '../stores/notificacoes'
+import { useAvisosStore } from '../stores/avisos'
 
+const router = useRouter()
 const medStore = useMedicamentosStore()
 const authStore = useAuthStore()
 const notifStore = useNotificacoesStore()
+const avisosStore = useAvisosStore()
 
 const loading = ref(true)
+const naoLidosCount = ref(0)
+
+function abrirAvisos() {
+  router.push('/avisos')
+}
 
 onMounted(async () => {
   try {
     await medStore.fetchAll()
     notifStore.inicializar()
+    avisosStore.fetchNaoLidos().then(count => { naoLidosCount.value = count })
   } catch (e) {
     // stores already log errors
   } finally {
@@ -104,12 +114,12 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
               </Transition>
             </div>
           </div>
-          <button class="hero-alerts-btn" :class="{ 'has-alerts': alertasEstoque.length > 0 }">
+          <button class="hero-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 || alertasEstoque.length > 0 }" @click="abrirAvisos">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span v-if="alertasEstoque.length > 0" class="alerts-badge">{{ alertasEstoque.length }}</span>
+            <span v-if="naoLidosCount > 0 || alertasEstoque.length > 0" class="alerts-badge">{{ naoLidosCount + alertasEstoque.length }}</span>
           </button>
         </div>
 
