@@ -26,14 +26,17 @@
   padding: 0;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font-corpo);
   background: var(--branco-quente);
   color: var(--texto);
   max-width: 430px;
   margin: 0 auto;
-  min-height: 100vh;
-  padding-bottom: 80px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

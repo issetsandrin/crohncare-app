@@ -326,7 +326,9 @@ function formatarDataHora(dataHora) {
 
 <style scoped>
 .diario-page {
-  padding-bottom: 24px;
+  padding-bottom: 80px;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .page-content {
