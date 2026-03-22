@@ -86,15 +86,14 @@ class EnviarLembretes extends Command
                 ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
                     'message' => [
                         'token' => $token,
-                        'notification' => [
+                        'data' => [
                             'title' => $title,
                             'body' => $body,
                         ],
                         'webpush' => [
-                            'notification' => [
-                                'icon' => '/icons/icon-192x192.svg',
-                                'vibrate' => [200, 100, 200],
-                                'requireInteraction' => true,
+                            'headers' => [
+                                'Urgency' => 'high',
+                                'TTL' => '86400',
                             ],
                         ],
                     ],
