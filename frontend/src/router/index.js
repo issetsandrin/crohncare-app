@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/cadastro',
     name: 'cadastro',
-    component: () => import('../pages/CadastroPage.vue'),
+    component: () => import('../pages/OnboardingPage.vue'),
     meta: { guest: true }
   },
   {
@@ -42,12 +42,6 @@ const routes = [
     name: 'avisos',
     component: () => import('../pages/AvisosPage.vue'),
     meta: { auth: true }
-  },
-  {
-    path: '/onboarding',
-    name: 'onboarding',
-    component: () => import('../pages/OnboardingPage.vue'),
-    meta: { auth: true }
   }
 ]
 
@@ -58,14 +52,11 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
 
   if (to.meta.auth && !token) {
     next('/login')
   } else if (to.meta.guest && token) {
     next('/')
-  } else if (token && user && !user.onboarding_completo && to.name !== 'onboarding') {
-    next('/onboarding')
   } else {
     next()
   }

@@ -9,6 +9,7 @@ const auth = useAuthStore()
 
 const step = ref(0)
 const saving = ref(false)
+const registerError = ref('')
 
 const form = ref({
   tipo_doenca: null,
@@ -20,12 +21,14 @@ const form = ref({
   objetivos: []
 })
 
-const totalSteps = 6
-
-const firstName = computed(() => {
-  const nome = auth.user?.nome || ''
-  return nome.split(' ')[0]
+const conta = ref({
+  nome: '',
+  email: '',
+  password: '',
+  password_confirmation: ''
 })
+
+const totalSteps = 7
 
 const anosOptions = computed(() => {
   const atual = new Date().getFullYear()
@@ -66,21 +69,40 @@ function prev() {
   }
 }
 
+const canRegister = computed(() => {
+  return conta.value.nome && conta.value.email && conta.value.password && conta.value.password === conta.value.password_confirmation && conta.value.password.length >= 6
+})
+
 async function finalizar() {
   saving.value = true
+  registerError.value = ''
+  auth.errors = {}
   try {
-    await api.post('/perfil-crohn', form.value)
-    auth.marcarOnboardingCompleto()
+    const success = await auth.register(
+      conta.value.nome,
+      conta.value.email,
+      conta.value.password,
+      conta.value.password_confirmation
+    )
+    if (!success) {
+      registerError.value = Object.values(auth.errors).flat()[0] || 'Erro ao criar conta.'
+      return
+    }
+
+    // Salvar perfil crohn
+    try {
+      await api.post('/perfil-crohn', form.value)
+      auth.marcarOnboardingCompleto()
+    } catch (e) {
+      // Perfil é opcional, não bloquear
+    }
+
     router.push('/')
   } catch (e) {
-    console.error('Erro ao salvar perfil:', e)
+    registerError.value = 'Erro ao criar conta. Tente novamente.'
   } finally {
     saving.value = false
   }
-}
-
-function pular() {
-  finalizar()
 }
 </script>
 
@@ -92,8 +114,8 @@ function pular() {
     </div>
 
     <div class="step-container">
-      <!-- Step 0: Boas-vindas -->
       <Transition name="slide" mode="out-in">
+        <!-- Step 0: Boas-vindas -->
         <div v-if="step === 0" key="welcome" class="step">
           <div class="step-illustration">
             <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
@@ -102,7 +124,7 @@ function pular() {
               <path d="M36 24c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12-5.4-12-12-12zm-1 17l-5-5 1.4-1.4L35 38.2l7.6-7.6L44 32l-9 9z" fill="var(--verde-salvia)"/>
             </svg>
           </div>
-          <h1 class="step-title">Olá, {{ firstName }}!</h1>
+          <h1 class="step-title">Bem-vindo ao CrohnCare</h1>
           <p class="step-text">
             Sabemos que conviver com uma DII não é fácil, e estamos aqui para caminhar junto com você. Vamos te fazer algumas perguntas para entender melhor a sua jornada.
           </p>
@@ -141,7 +163,7 @@ function pular() {
           </div>
         </div>
 
-        <!-- Step 2: Localização da doença -->
+        <!-- Step 2: Localização -->
         <div v-else-if="step === 2" key="localizacao" class="step">
           <span class="step-label">Localização</span>
           <h2 class="step-title">Onde a doença se manifesta?</h2>
@@ -166,7 +188,7 @@ function pular() {
           </div>
         </div>
 
-        <!-- Step 3: Situação atual / Gravidade -->
+        <!-- Step 3: Gravidade -->
         <div v-else-if="step === 3" key="situacao" class="step">
           <span class="step-label">Momento atual</span>
           <h2 class="step-title">Como você está se sentindo?</h2>
@@ -195,7 +217,7 @@ function pular() {
           </div>
         </div>
 
-        <!-- Step 4: Acompanhamento médico -->
+        <!-- Step 4: Acompanhamento -->
         <div v-else-if="step === 4" key="acompanhamento" class="step">
           <span class="step-label">Acompanhamento</span>
           <h2 class="step-title">Você tem acompanhamento médico?</h2>
@@ -244,7 +266,7 @@ function pular() {
 
         <!-- Step 5: Objetivos -->
         <div v-else-if="step === 5" key="objetivos" class="step">
-          <span class="step-label">Quase lá!</span>
+          <span class="step-label">Seus objetivos</span>
           <h2 class="step-title">Como podemos te ajudar?</h2>
           <p class="step-text">Escolha o que mais importa para você no momento. Você sempre pode mudar isso depois, no seu ritmo.</p>
 
@@ -265,21 +287,87 @@ function pular() {
             </button>
           </div>
         </div>
+
+        <!-- Step 6: Criar conta -->
+        <div v-else-if="step === 6" key="conta" class="step">
+          <span class="step-label">Quase lá!</span>
+          <h2 class="step-title">Crie sua conta</h2>
+          <p class="step-text">Seus dados estão seguros conosco. A conta permite salvar tudo e acessar de qualquer lugar.</p>
+
+          <form class="register-form" @submit.prevent="finalizar">
+            <div class="form-group">
+              <label class="field-label">Como podemos te chamar?</label>
+              <input
+                v-model="conta.nome"
+                type="text"
+                class="field-input"
+                placeholder="Seu nome"
+                required
+                autocomplete="name"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Seu e-mail</label>
+              <input
+                v-model="conta.email"
+                type="email"
+                class="field-input"
+                placeholder="seu@email.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Crie uma senha</label>
+              <input
+                v-model="conta.password"
+                type="password"
+                class="field-input"
+                placeholder="Mínimo 6 caracteres"
+                required
+                autocomplete="new-password"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Confirme a senha</label>
+              <input
+                v-model="conta.password_confirmation"
+                type="password"
+                class="field-input"
+                placeholder="Repita a senha"
+                required
+                autocomplete="new-password"
+              />
+            </div>
+
+            <span v-if="registerError" class="form-error">{{ registerError }}</span>
+          </form>
+
+          <div class="login-link">
+            <span>Já tem uma conta?</span>
+            <router-link to="/login">Entrar</router-link>
+          </div>
+        </div>
       </Transition>
     </div>
 
     <!-- Actions -->
     <div class="actions">
       <button v-if="step > 0" class="btn-back" @click="prev">Voltar</button>
-      <div v-else></div>
+      <div v-else>
+        <router-link to="/login" class="btn-login-link">Já tenho conta</router-link>
+      </div>
 
       <div class="actions-right">
-        <button v-if="step > 0 && step < totalSteps - 1" class="btn-skip" @click="pular">Pular</button>
+        <button v-if="step > 0 && step < totalSteps - 1" class="btn-skip" @click="next">Pular</button>
         <button v-if="step < totalSteps - 1" class="btn-next" @click="next">
           {{ step === 0 ? 'Vamos lá' : 'Continuar' }}
         </button>
-        <button v-else class="btn-next" :disabled="saving" @click="finalizar">
-          {{ saving ? 'Salvando...' : 'Começar a usar' }}
+        <button v-else class="btn-next" :disabled="saving || !canRegister" @click="finalizar">
+          {{ saving ? 'Criando conta...' : 'Criar conta' }}
         </button>
       </div>
     </div>
@@ -318,6 +406,7 @@ function pular() {
   display: flex;
   align-items: center;
   padding: 24px 0;
+  overflow-y: auto;
 }
 
 .step {
@@ -402,7 +491,7 @@ function pular() {
   font-size: 13px;
 }
 
-/* Situação (cards com descrição) */
+/* Situação */
 .situacao-options {
   display: flex;
   flex-direction: column;
@@ -543,6 +632,57 @@ function pular() {
   border-color: var(--verde-salvia);
 }
 
+/* Register form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto);
+  background: #fff;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--verde-salvia);
+  box-shadow: 0 0 0 3px rgba(127, 168, 50, 0.1);
+}
+
+.form-error {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--terracota);
+  margin-top: 4px;
+}
+
+.login-link {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto-light);
+}
+
+.login-link a {
+  color: var(--verde-salvia);
+  font-weight: 600;
+  text-decoration: none;
+}
+
 /* Actions */
 .actions {
   display: flex;
@@ -573,6 +713,14 @@ function pular() {
 
 .btn-back:active {
   transform: scale(0.97);
+}
+
+.btn-login-link {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto-light);
+  text-decoration: none;
 }
 
 .btn-skip {
