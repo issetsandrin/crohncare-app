@@ -11,6 +11,7 @@ use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\PerfilCrohnController;
+use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (public)
@@ -46,6 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('perfil-crohn', [PerfilCrohnController::class, 'store']);
     Route::get('perfil-crohn', [PerfilCrohnController::class, 'show']);
+
+    Route::get('perfil/stats', [PerfilController::class, 'stats']);
 
     Route::apiResource('consultas', ConsultaController::class)->except(['show']);
 });
