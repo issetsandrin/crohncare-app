@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAvisosStore } from '../stores/avisos'
 import AppBar from '../components/AppBar.vue'
 import ModalBase from '../components/ModalBase.vue'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const router = useRouter()
 const store = useAvisosStore()
@@ -60,11 +61,7 @@ async function abrirAviso(aviso) {
 
     <div class="page-content">
       <!-- Loading -->
-      <div v-if="store.loading" class="loading-state">
-        <div class="loading-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
+      <LoadingDots v-if="store.loading" />
 
       <!-- Empty -->
       <div v-else-if="store.avisos.length === 0" class="empty-state">

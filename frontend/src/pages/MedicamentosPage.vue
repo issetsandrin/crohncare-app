@@ -6,6 +6,7 @@ import EstoqueIndicador from '../components/EstoqueIndicador.vue'
 import ModalBase from '../components/ModalBase.vue'
 import AppBar from '../components/AppBar.vue'
 import { useEstoque } from '../composables/useEstoque'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const store = useMedicamentosStore()
 const { nivelAlerta } = useEstoque()
@@ -209,9 +210,7 @@ onMounted(() => {
     <AppBar title="Medicamentos" subtitle="Gerencie seus remédios e estoque" />
 
     <div class="page-content">
-    <div v-if="store.loading && store.lista.length === 0" class="loading-state">
-      <p>Carregando...</p>
-    </div>
+    <LoadingDots v-if="store.loading && store.lista.length === 0" />
 
     <div v-else-if="store.lista.length === 0" class="empty-state">
       <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">

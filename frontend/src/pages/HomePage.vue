@@ -5,6 +5,7 @@ import { useMedicamentosStore } from '../stores/medicamentos'
 import { useAuthStore } from '../stores/auth'
 import { useNotificacoesStore } from '../stores/notificacoes'
 import { useAvisosStore } from '../stores/avisos'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const router = useRouter()
 const medStore = useMedicamentosStore()
@@ -155,11 +156,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
 
     <!-- Remédios do dia -->
-    <div v-if="loading" class="loading-state">
-      <div class="loading-dots">
-        <span></span><span></span><span></span>
-      </div>
-    </div>
+    <LoadingDots v-if="loading" />
 
     <div v-else class="remedios-section">
       <h3 class="section-title">Remédios de hoje</h3>

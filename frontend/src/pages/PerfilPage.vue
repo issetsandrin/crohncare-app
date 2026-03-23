@@ -6,6 +6,7 @@ import { useNotificacoesStore } from '../stores/notificacoes'
 import api from '../composables/useApi'
 import AppBar from '../components/AppBar.vue'
 import ModalBase from '../components/ModalBase.vue'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -110,9 +111,7 @@ function formatarProximaConsulta(consulta) {
 
     <div class="page-content">
       <!-- Loading -->
-      <div v-if="loading" class="loading-state">
-        <div class="loading-dots"><span></span><span></span><span></span></div>
-      </div>
+      <LoadingDots v-if="loading" />
 
       <template v-else>
         <!-- Header -->

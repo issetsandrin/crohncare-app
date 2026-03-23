@@ -8,6 +8,7 @@ import DiarioForm from '../components/DiarioForm.vue'
 import CriseForm from '../components/CriseForm.vue'
 import IntensidadeDots from '../components/IntensidadeDots.vue'
 import AppBar from '../components/AppBar.vue'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const diarioStore = useDiarioStore()
 const crisesStore = useCrisesStore()
@@ -175,9 +176,7 @@ function formatarDataHora(dataHora) {
       </button>
     </div>
 
-    <div v-if="diarioStore.loading" class="loading-state">
-      <p>Carregando...</p>
-    </div>
+    <LoadingDots v-if="diarioStore.loading" />
 
     <!-- Tab: Anotações -->
     <div v-else-if="activeTab === 'anotacoes'" class="tab-content">

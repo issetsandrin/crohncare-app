@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useConsultasStore } from '../stores/consultas'
 import AppBar from '../components/AppBar.vue'
 import ModalBase from '../components/ModalBase.vue'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const store = useConsultasStore()
 
@@ -156,11 +157,7 @@ const especialidades = [
 
     <div class="page-content">
       <!-- Loading -->
-      <div v-if="store.loading" class="loading-state">
-        <div class="loading-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
+      <LoadingDots v-if="store.loading" />
 
       <!-- Empty -->
       <div v-else-if="listaFiltrada.length === 0" class="empty-state">
