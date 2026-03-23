@@ -35,6 +35,10 @@ html, body {
   overflow: hidden;
 }
 
+html {
+  background: var(--verde-salvia);
+}
+
 body {
   font-family: var(--font-corpo);
   background: var(--branco-quente);

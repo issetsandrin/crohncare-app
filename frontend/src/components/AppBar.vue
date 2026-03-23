@@ -22,7 +22,7 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 20px 16px;
+  padding: calc(env(safe-area-inset-top, 24px) + 8px) 20px 16px;
   background: var(--verde-salvia);
   margin-bottom: 16px;
 }
