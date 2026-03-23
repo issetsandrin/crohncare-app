@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Aviso;
 use App\Models\DeviceToken;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -13,16 +14,21 @@ class TestarNotificacao extends Command
 
     public function handle()
     {
-        $tokens = DeviceToken::pluck('token');
+        $deviceTokens = DeviceToken::all();
 
-        if ($tokens->isEmpty()) {
+        if ($deviceTokens->isEmpty()) {
             $this->error('Nenhum dispositivo registrado. Ative as notificações no app primeiro.');
             return 1;
         }
 
-        $this->info("Enviando para {$tokens->count()} dispositivo(s)...");
+        $this->info("Enviando para {$deviceTokens->count()} dispositivo(s)...");
 
-        foreach ($tokens as $token) {
+        $title = 'Teste CrohnCare!';
+        $body = 'Se você recebeu isso, as notificações estão funcionando!';
+
+        $usuariosNotificados = [];
+
+        foreach ($deviceTokens as $deviceToken) {
             try {
                 $accessToken = $this->getAccessToken();
                 $projectId = config('services.firebase.project_id');
@@ -30,10 +36,10 @@ class TestarNotificacao extends Command
                 $response = Http::withToken($accessToken)
                     ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
                         'message' => [
-                            'token' => $token,
+                            'token' => $deviceToken->token,
                             'data' => [
-                                'title' => 'Teste CrohnCare!',
-                                'body' => 'Se você recebeu isso, as notificações estão funcionando!',
+                                'title' => $title,
+                                'body' => $body,
                             ],
                             'webpush' => [
                                 'headers' => [
@@ -46,6 +52,15 @@ class TestarNotificacao extends Command
 
                 if ($response->successful()) {
                     $this->info('Notificação enviada com sucesso!');
+
+                    if (!in_array($deviceToken->user_id, $usuariosNotificados)) {
+                        Aviso::create([
+                            'user_id' => $deviceToken->user_id,
+                            'titulo' => $title,
+                            'mensagem' => $body,
+                        ]);
+                        $usuariosNotificados[] = $deviceToken->user_id;
+                    }
                 } else {
                     $this->error('Erro: ' . $response->body());
                 }
