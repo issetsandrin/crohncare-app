@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useMedicamentosStore } from '../stores/medicamentos'
-import { useTomadasStore } from '../stores/tomadas'
+import { useRegistrosUsoStore } from '../stores/registrosUso'
 import MedicamentoCard from '../components/MedicamentoCard.vue'
 import EstoqueIndicador from '../components/EstoqueIndicador.vue'
 import ModalBase from '../components/ModalBase.vue'
@@ -10,7 +10,7 @@ import { useEstoque } from '../composables/useEstoque'
 import LoadingDots from '../components/LoadingDots.vue'
 
 const store = useMedicamentosStore()
-const tomadasStore = useTomadasStore()
+const registrosUsoStore = useRegistrosUsoStore()
 const { nivelAlerta } = useEstoque()
 
 // Modal de comprovação de tomada
@@ -24,14 +24,14 @@ function selecionarFoto(event) {
   fotoPreview.value = URL.createObjectURL(file)
 }
 
-async function confirmarTomada() {
-  await tomadasStore.registrar(tomadasStore.pendente.medicamentoId, fotoTomada.value)
+async function confirmarUso() {
+  await registrosUsoStore.registrar(registrosUsoStore.pendente.medicamentoId, fotoTomada.value)
   fotoTomada.value = null
   fotoPreview.value = null
 }
 
-function dispensarTomada() {
-  tomadasStore.dispensar()
+function dispensarUso() {
+  registrosUsoStore.dispensar()
   fotoTomada.value = null
   fotoPreview.value = null
 }
@@ -441,10 +441,10 @@ onMounted(() => {
                 <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.8"/>
               </svg>
-              Exigir foto ao confirmar tomada
+              Exigir foto ao registrar uso
             </span>
           </label>
-          <p class="toggle-hint">Ao receber o lembrete, o app pedirá uma foto como comprovante</p>
+          <p class="toggle-hint">Ao receber o lembrete, o app pedirá uma foto como comprovante do uso</p>
         </div>
 
         <div class="form-actions">
@@ -473,13 +473,13 @@ onMounted(() => {
       </svg>
     </button>
 
-    <!-- Modal Comprovação de Tomada -->
-    <ModalBase :model-value="!!tomadasStore.pendente" @update:model-value="dispensarTomada" title="Registrar tomada">
-      <div v-if="tomadasStore.pendente" class="tomada-content">
-        <p class="tomada-med-nome">{{ tomadasStore.pendente.nome }}</p>
+    <!-- Modal Registro de Uso -->
+    <ModalBase :model-value="!!registrosUsoStore.pendente" @update:model-value="dispensarUso" title="Registrar uso">
+      <div v-if="registrosUsoStore.pendente" class="tomada-content">
+        <p class="tomada-med-nome">{{ registrosUsoStore.pendente.nome }}</p>
 
-        <template v-if="tomadasStore.pendente.exige_comprovacao">
-          <p class="tomada-hint">Tire uma foto para comprovar que tomou o medicamento.</p>
+        <template v-if="registrosUsoStore.pendente.exige_comprovacao">
+          <p class="tomada-hint">Tire uma foto para registrar o uso do medicamento.</p>
 
           <label class="foto-upload-area" :class="{ 'has-foto': fotoPreview }">
             <input
@@ -503,27 +503,27 @@ onMounted(() => {
           </label>
 
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="dispensarTomada">Agora não</button>
+            <button class="btn btn-secondary" @click="dispensarUso">Agora não</button>
             <button
               class="btn btn-primary"
-              :disabled="!fotoTomada || tomadasStore.loading"
-              @click="confirmarTomada"
+              :disabled="!fotoTomada || registrosUsoStore.loading"
+              @click="confirmarUso"
             >
-              {{ tomadasStore.loading ? 'Enviando...' : 'Confirmar' }}
+              {{ registrosUsoStore.loading ? 'Enviando...' : 'Confirmar uso' }}
             </button>
           </div>
         </template>
 
         <template v-else>
-          <p class="tomada-hint">Confirme que você tomou o medicamento.</p>
+          <p class="tomada-hint">Confirme que você usou o medicamento.</p>
           <div class="form-actions">
-            <button class="btn btn-secondary" @click="dispensarTomada">Agora não</button>
+            <button class="btn btn-secondary" @click="dispensarUso">Agora não</button>
             <button
               class="btn btn-primary"
-              :disabled="tomadasStore.loading"
-              @click="confirmarTomada"
+              :disabled="registrosUsoStore.loading"
+              @click="confirmarUso"
             >
-              {{ tomadasStore.loading ? 'Registrando...' : 'Confirmei, tomei!' }}
+              {{ registrosUsoStore.loading ? 'Registrando...' : 'Confirmei, usei!' }}
             </button>
           </div>
         </template>

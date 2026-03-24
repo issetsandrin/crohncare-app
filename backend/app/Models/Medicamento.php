@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\RegistroUso;
 
 class Medicamento extends Model
 {
@@ -29,9 +30,9 @@ class Medicamento extends Model
         return $this->hasOne(Estoque::class);
     }
 
-    public function tomadas()
+    public function registrosUso()
     {
-        return $this->hasMany(Tomada::class);
+        return $this->hasMany(RegistroUso::class);
     }
 
     public function getDiasRestantesAttribute()
