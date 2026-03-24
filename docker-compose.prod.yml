@@ -22,6 +22,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_CLIENT=phpredis
       - QUEUE_CONNECTION=redis
+      - APP_TIMEZONE=America/Sao_Paulo
     restart: unless-stopped
 
   nginx:
