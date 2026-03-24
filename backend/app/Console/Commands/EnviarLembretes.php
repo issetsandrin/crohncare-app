@@ -34,6 +34,16 @@ class EnviarLembretes extends Command
 
                     $doseHoje = $med->dose_hoje;
 
+                    $isCiclo = $med->periodicidade_tipo === 'ciclo';
+                    $infoCiclo = '';
+                    if ($isCiclo) {
+                        $ciclo = $med->periodicidade_valor['ciclo'] ?? [];
+                        $diasDecorridos = $med->created_at->startOfDay()->diffInDays(now()->startOfDay());
+                        $diaCiclo = ($diasDecorridos % count($ciclo)) + 1;
+                        $totalDias = count($ciclo);
+                        $infoCiclo = " (Dia {$diaCiclo} de {$totalDias} do ciclo)";
+                    }
+
                     $dadosMed = [
                         'medicamento_id'    => (string) $med->id,
                         'medicamento_nome'  => $med->nome,
@@ -44,7 +54,7 @@ class EnviarLembretes extends Command
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
                             "Faltam 5 minutos para o {$med->nome}",
-                            "Prepare-se para tomar {$doseHoje} às {$h}",
+                            "Prepare-se para tomar {$doseHoje} às {$h}{$infoCiclo}",
                             $dadosMed,
                         );
                         $totalJobs++;
@@ -54,7 +64,7 @@ class EnviarLembretes extends Command
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
                             "Hora do seu remédio!",
-                            "Está no horário de tomar o seu remédio: {$med->nome} - {$doseHoje}",
+                            "Está no horário de tomar o seu remédio: {$med->nome} - {$doseHoje}{$infoCiclo}",
                             $dadosMed,
                         );
                         $totalJobs++;
