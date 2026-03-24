@@ -16,7 +16,8 @@ class MedicamentoResource extends JsonResource
             'instrucoes' => $this->instrucoes,
             'periodicidade_tipo' => $this->periodicidade_tipo ?? 'diario',
             'periodicidade_valor' => $this->periodicidade_valor,
-            'ativo' => $this->ativo,
+            'ativo'             => $this->ativo,
+            'exige_comprovacao' => (bool) $this->exige_comprovacao,
             'horarios' => $this->horarios->pluck('horario'),
             'estoque' => $this->estoque ? [
                 'quantidade_atual' => $this->estoque->quantidade_atual,

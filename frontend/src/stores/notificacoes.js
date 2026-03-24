@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getFcmToken, onForegroundMessage } from '../firebase'
 import api from '../composables/useApi'
+import { useTomadasStore } from './tomadas'
 
 export const useNotificacoesStore = defineStore('notificacoes', {
   state: () => ({
@@ -76,6 +77,17 @@ export const useNotificacoesStore = defineStore('notificacoes', {
             body,
             icon: '/icons/icon-192x192.svg'
           })
+        }
+
+        // Se for notificação de medicamento, sinalizar para o modal de tomada
+        const data = payload.data || {}
+        if (data.medicamento_id) {
+          const tomadasStore = useTomadasStore()
+          tomadasStore.pendente = {
+            medicamentoId:    Number(data.medicamento_id),
+            nome:             data.medicamento_nome || title,
+            exige_comprovacao: data.exige_comprovacao === 'true',
+          }
         }
       })
     },

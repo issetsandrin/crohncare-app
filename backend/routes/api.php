@@ -11,6 +11,7 @@ use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\ExameController;
+use App\Http\Controllers\TomadaController;
 use App\Http\Controllers\PerfilCrohnController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
@@ -54,4 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('consultas', ConsultaController::class)->except(['show']);
 
     Route::apiResource('exames', ExameController::class)->except(['show', 'destroy']);
+
+    Route::post('tomadas', [TomadaController::class, 'store']);
+    Route::get('medicamentos/{medicamento}/tomadas', [TomadaController::class, 'index']);
 });

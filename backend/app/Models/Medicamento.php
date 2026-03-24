@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Medicamento extends Model
 {
-    protected $fillable = ['user_id', 'nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo'];
+    protected $fillable = ['user_id', 'nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo', 'exige_comprovacao'];
 
     public function user()
     {
@@ -14,7 +14,8 @@ class Medicamento extends Model
     }
 
     protected $casts = [
-        'ativo' => 'boolean',
+        'ativo'               => 'boolean',
+        'exige_comprovacao'   => 'boolean',
         'periodicidade_valor' => 'array',
     ];
 
@@ -26,6 +27,11 @@ class Medicamento extends Model
     public function estoque()
     {
         return $this->hasOne(Estoque::class);
+    }
+
+    public function tomadas()
+    {
+        return $this->hasMany(Tomada::class);
     }
 
     public function getDiasRestantesAttribute()

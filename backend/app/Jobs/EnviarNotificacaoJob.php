@@ -21,6 +21,7 @@ class EnviarNotificacaoJob implements ShouldQueue
         public readonly int $userId,
         public readonly string $titulo,
         public readonly string $mensagem,
+        public readonly array $dados = [],
     ) {}
 
     public function handle(): void
@@ -47,10 +48,10 @@ class EnviarNotificacaoJob implements ShouldQueue
             ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
                 'message' => [
                     'token' => $token,
-                    'data'  => [
+                    'data'  => array_merge([
                         'title' => $this->titulo,
                         'body'  => $this->mensagem,
-                    ],
+                    ], $this->dados),
                     'webpush' => [
                         'headers' => [
                             'Urgency' => 'high',

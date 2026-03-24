@@ -36,6 +36,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 echo "[5/6] Running Laravel setup..."
 docker compose -f docker-compose.prod.yml exec app php artisan key:generate --force 2>/dev/null || true
 docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
+docker compose -f docker-compose.prod.yml exec app php artisan storage:link --force
 docker compose -f docker-compose.prod.yml exec app php artisan config:cache
 docker compose -f docker-compose.prod.yml exec app php artisan route:cache
 docker compose -f docker-compose.prod.yml exec app php artisan view:cache

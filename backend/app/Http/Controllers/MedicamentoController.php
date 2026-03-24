@@ -19,7 +19,7 @@ class MedicamentoController extends Controller
     {
         return DB::transaction(function () use ($request) {
             $medicamento = auth()->user()->medicamentos()->create(
-                $request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo'])
+                $request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo', 'exige_comprovacao'])
             );
 
             foreach ($request->horarios as $horario) {
@@ -45,7 +45,7 @@ class MedicamentoController extends Controller
         $this->authorize('update', $medicamento);
 
         return DB::transaction(function () use ($request, $medicamento) {
-            $medicamento->update($request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo']));
+            $medicamento->update($request->only(['nome', 'dose', 'instrucoes', 'periodicidade_tipo', 'periodicidade_valor', 'ativo', 'exige_comprovacao']));
 
             $medicamento->horarios()->delete();
             foreach ($request->horarios as $horario) {

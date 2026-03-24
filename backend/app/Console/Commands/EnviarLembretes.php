@@ -32,11 +32,18 @@ class EnviarLembretes extends Command
                 foreach ($med->horarios as $horario) {
                     $h = substr($horario->horario, 0, 5);
 
+                    $dadosMed = [
+                        'medicamento_id'    => (string) $med->id,
+                        'medicamento_nome'  => $med->nome,
+                        'exige_comprovacao' => $med->exige_comprovacao ? 'true' : 'false',
+                    ];
+
                     if ($h === $hora5min) {
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
                             "{$med->nome} em 5 minutos",
                             "{$med->dose} — {$h}",
+                            $dadosMed,
                         );
                         $totalJobs++;
                     }
@@ -46,6 +53,7 @@ class EnviarLembretes extends Command
                             $user->id,
                             "Hora do {$med->nome}!",
                             "Tomar {$med->dose} agora — {$h}",
+                            $dadosMed,
                         );
                         $totalJobs++;
                     }

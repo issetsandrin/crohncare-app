@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useMedicamentosStore } from '../stores/medicamentos'
+import { useTomadasStore } from '../stores/tomadas'
 import MedicamentoCard from '../components/MedicamentoCard.vue'
 import EstoqueIndicador from '../components/EstoqueIndicador.vue'
 import ModalBase from '../components/ModalBase.vue'
@@ -9,7 +10,31 @@ import { useEstoque } from '../composables/useEstoque'
 import LoadingDots from '../components/LoadingDots.vue'
 
 const store = useMedicamentosStore()
+const tomadasStore = useTomadasStore()
 const { nivelAlerta } = useEstoque()
+
+// Modal de comprovação de tomada
+const fotoTomada = ref(null)
+const fotoPreview = ref(null)
+
+function selecionarFoto(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  fotoTomada.value = file
+  fotoPreview.value = URL.createObjectURL(file)
+}
+
+async function confirmarTomada() {
+  await tomadasStore.registrar(tomadasStore.pendente.medicamentoId, fotoTomada.value)
+  fotoTomada.value = null
+  fotoPreview.value = null
+}
+
+function dispensarTomada() {
+  tomadasStore.dispensar()
+  fotoTomada.value = null
+  fotoPreview.value = null
+}
 
 const showFormModal = ref(false)
 const showDeleteModal = ref(false)
@@ -38,7 +63,8 @@ const form = reactive({
   periodicidade_dias: [],
   periodicidade_intervalo: 2,
   horarios: [''],
-  quantidade_atual: 0
+  quantidade_atual: 0,
+  exige_comprovacao: false,
 })
 
 function resetForm() {
@@ -50,6 +76,7 @@ function resetForm() {
   form.periodicidade_intervalo = 2
   form.horarios = ['']
   form.quantidade_atual = 0
+  form.exige_comprovacao = false
   editingMed.value = null
 }
 
@@ -75,6 +102,7 @@ function editarDoDetalhe() {
   form.periodicidade_intervalo = med.periodicidade_valor?.intervalo || 2
   form.horarios = med.horarios && med.horarios.length ? med.horarios.map(h => h.substring(0, 5)) : ['']
   form.quantidade_atual = med.estoque?.quantidade_atual || 0
+  form.exige_comprovacao = med.exige_comprovacao ?? false
   showFormModal.value = true
 }
 
@@ -156,6 +184,7 @@ async function salvar() {
     periodicidade_tipo: form.periodicidade_tipo,
     periodicidade_valor: periodicidade_valor,
     horarios: form.horarios.filter((h) => h.trim() !== ''),
+    exige_comprovacao: form.exige_comprovacao,
     estoque: {
       quantidade_atual: Number(form.quantidade_atual),
       dose_diaria: calcularDoseDiaria()
@@ -402,6 +431,22 @@ onMounted(() => {
           <input type="number" v-model.number="form.quantidade_atual" class="form-input" min="0" />
         </div>
 
+        <div class="form-group">
+          <label class="comprovacao-toggle" @click="form.exige_comprovacao = !form.exige_comprovacao">
+            <span class="toggle-track" :class="{ active: form.exige_comprovacao }">
+              <span class="toggle-thumb" />
+            </span>
+            <span class="toggle-label-text">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+              Exigir foto ao confirmar tomada
+            </span>
+          </label>
+          <p class="toggle-hint">Ao receber o lembrete, o app pedirá uma foto como comprovante</p>
+        </div>
+
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" @click="showFormModal = false">Cancelar</button>
           <button type="submit" class="btn btn-primary">Salvar</button>
@@ -427,6 +472,63 @@ onMounted(() => {
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </button>
+
+    <!-- Modal Comprovação de Tomada -->
+    <ModalBase :model-value="!!tomadasStore.pendente" @update:model-value="dispensarTomada" title="Registrar tomada">
+      <div v-if="tomadasStore.pendente" class="tomada-content">
+        <p class="tomada-med-nome">{{ tomadasStore.pendente.nome }}</p>
+
+        <template v-if="tomadasStore.pendente.exige_comprovacao">
+          <p class="tomada-hint">Tire uma foto para comprovar que tomou o medicamento.</p>
+
+          <label class="foto-upload-area" :class="{ 'has-foto': fotoPreview }">
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="foto-input-hidden"
+              @change="selecionarFoto"
+            />
+            <template v-if="fotoPreview">
+              <img :src="fotoPreview" class="foto-preview" alt="Preview" />
+              <span class="foto-trocar">Trocar foto</span>
+            </template>
+            <template v-else>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="foto-icon">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <span class="foto-upload-label">Tirar foto / Selecionar</span>
+            </template>
+          </label>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" @click="dispensarTomada">Agora não</button>
+            <button
+              class="btn btn-primary"
+              :disabled="!fotoTomada || tomadasStore.loading"
+              @click="confirmarTomada"
+            >
+              {{ tomadasStore.loading ? 'Enviando...' : 'Confirmar' }}
+            </button>
+          </div>
+        </template>
+
+        <template v-else>
+          <p class="tomada-hint">Confirme que você tomou o medicamento.</p>
+          <div class="form-actions">
+            <button class="btn btn-secondary" @click="dispensarTomada">Agora não</button>
+            <button
+              class="btn btn-primary"
+              :disabled="tomadasStore.loading"
+              @click="confirmarTomada"
+            >
+              {{ tomadasStore.loading ? 'Registrando...' : 'Confirmei, tomei!' }}
+            </button>
+          </div>
+        </template>
+      </div>
+    </ModalBase>
 
     <!-- Modal Reabastecer -->
     <ModalBase v-model="showReabastecerModal" title="Reabastecer">
@@ -867,5 +969,148 @@ onMounted(() => {
   font-weight: 600;
   color: var(--texto);
   margin: 0;
+}
+
+/* Toggle exige_comprovacao */
+.comprovacao-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-track {
+  position: relative;
+  width: 44px;
+  min-width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: #ddd;
+  transition: background 0.25s;
+}
+
+.toggle-track.active {
+  background: var(--verde-salvia);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  transition: transform 0.25s;
+}
+
+.toggle-track.active .toggle-thumb {
+  transform: translateX(18px);
+}
+
+.toggle-label-text {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texto);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-hint {
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  color: var(--texto-light);
+  margin: 2px 0 0;
+}
+
+/* Modal de tomada */
+.tomada-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tomada-med-nome {
+  font-family: var(--font-titulo);
+  font-size: 1.15rem;
+  color: var(--texto);
+  margin: 0;
+}
+
+.tomada-hint {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto-light);
+  margin: 0;
+}
+
+.foto-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed #ddd;
+  border-radius: 14px;
+  padding: 28px 16px;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  position: relative;
+  overflow: hidden;
+  min-height: 130px;
+}
+
+.foto-upload-area:hover {
+  border-color: var(--verde-salvia);
+}
+
+.foto-upload-area.has-foto {
+  padding: 0;
+  border-style: solid;
+  border-color: var(--verde-salvia);
+}
+
+.foto-input-hidden {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.foto-icon {
+  color: #bbb;
+}
+
+.foto-upload-label {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto-light);
+}
+
+.foto-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.foto-trocar {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-family: var(--font-corpo);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0,0,0,.45);
+  padding: 3px 8px;
+  border-radius: 8px;
 }
 </style>
