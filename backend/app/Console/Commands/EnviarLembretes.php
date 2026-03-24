@@ -51,8 +51,8 @@ class EnviarLembretes extends Command
                     if ($h === $horaAtual) {
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
-                            "Hora do seu {$med->nome}!",
-                            "Cuide-se: tome {$med->dose} agora",
+                            "Hora do seu remédio!",
+                            "Está no horário de tomar o seu remédio: {$med->nome} - {$med->dose}",
                             $dadosMed,
                         );
                         $totalJobs++;
