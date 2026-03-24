@@ -40,13 +40,9 @@ docker compose -f docker-compose.prod.yml exec app php artisan config:cache
 docker compose -f docker-compose.prod.yml exec app php artisan route:cache
 docker compose -f docker-compose.prod.yml exec app php artisan view:cache
 
-# 6. Permissões + Cron
-echo "[6/6] Setting permissions and cron..."
+# 6. Permissões
+echo "[6/6] Setting permissions..."
 docker compose -f docker-compose.prod.yml exec app chown -R www-data:www-data /var/www/backend/storage /var/www/backend/bootstrap/cache
-
-# Adicionar cron do Laravel (se não existir)
-CRON_CMD="* * * * * cd /opt/chroncare/backend && php artisan schedule:run >> /dev/null 2>&1"
-(crontab -l 2>/dev/null | grep -v "schedule:run"; echo "$CRON_CMD") | crontab -
 
 echo ""
 echo "=== Deploy concluído! ==="

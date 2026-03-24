@@ -68,10 +68,12 @@ export const useNotificacoesStore = defineStore('notificacoes', {
       if (this.foregroundUnsub) return
 
       this.foregroundUnsub = onForegroundMessage((payload) => {
-        const { title, body } = payload.notification || {}
+        const msgData = payload.notification || payload.data || {}
+        const title = msgData.title
+        const body = msgData.body || ''
         if (title && Notification.permission === 'granted') {
           new Notification(title, {
-            body: body || '',
+            body,
             icon: '/icons/icon-192x192.svg'
           })
         }
