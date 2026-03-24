@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Aviso;
-use App\Models\DeviceToken;
+use App\Jobs\EnviarNotificacaoJob;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class VerificarEstoque extends Command
 {
@@ -21,15 +19,9 @@ class VerificarEstoque extends Command
             $q->where('ativo', true)->with('estoque');
         }])->get();
 
-        $totalEnviados = 0;
+        $totalJobs = 0;
 
         foreach ($users as $user) {
-            $tokens = DeviceToken::where('user_id', $user->id)->pluck('token');
-
-            if ($tokens->isEmpty()) {
-                continue;
-            }
-
             foreach ($user->medicamentos as $med) {
                 if (!$med->estoque || $med->estoque->dose_diaria === 0) {
                     continue;
@@ -42,67 +34,16 @@ class VerificarEstoque extends Command
                 }
 
                 $title = "Estoque baixo: {$med->nome}";
-                $body = $diasRestantes === 0
+                $body  = $diasRestantes === 0
                     ? "Estoque esgotado! Reabasteça o quanto antes."
                     : "Restam apenas {$diasRestantes} dia(s) de estoque. Reabasteça em breve.";
 
-                Aviso::create([
-                    'user_id' => $user->id,
-                    'titulo' => $title,
-                    'mensagem' => $body,
-                ]);
-
-                foreach ($tokens as $token) {
-                    $this->enviarFcm($token, $title, $body);
-                    $totalEnviados++;
-                }
+                EnviarNotificacaoJob::dispatch($user->id, $title, $body);
+                $totalJobs++;
             }
         }
 
-        $this->info("Alertas de estoque enviados: {$totalEnviados}");
+        $this->info("Jobs de estoque enfileirados: {$totalJobs}");
         return 0;
-    }
-
-    private function enviarFcm(string $token, string $title, string $body): void
-    {
-        try {
-            $accessToken = $this->getAccessToken();
-            $projectId = config('services.firebase.project_id');
-
-            Http::withToken($accessToken)
-                ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
-                    'message' => [
-                        'token' => $token,
-                        'data' => [
-                            'title' => $title,
-                            'body' => $body,
-                        ],
-                        'webpush' => [
-                            'headers' => [
-                                'Urgency' => 'high',
-                                'TTL' => '86400',
-                            ],
-                        ],
-                    ],
-                ]);
-        } catch (\Exception $e) {
-            $this->error("Erro FCM: {$e->getMessage()}");
-
-            if (str_contains($e->getMessage(), 'NOT_FOUND') || str_contains($e->getMessage(), 'UNREGISTERED')) {
-                DeviceToken::where('token', $token)->delete();
-            }
-        }
-    }
-
-    private function getAccessToken(): string
-    {
-        $credentialsPath = config('services.firebase.credentials');
-        $client = new \Google\Client();
-        $client->setAuthConfig($credentialsPath);
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        $client->fetchAccessTokenWithAssertion();
-        $token = $client->getAccessToken();
-
-        return $token['access_token'];
     }
 }

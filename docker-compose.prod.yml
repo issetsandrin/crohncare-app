@@ -6,6 +6,7 @@ services:
       - ./backend:/var/www/backend
     depends_on:
       - postgres
+      - redis
     environment:
       - APP_NAME=CrohnCare
       - APP_ENV=production
@@ -17,6 +18,10 @@ services:
       - DB_DATABASE=${DB_DATABASE:-chroncare}
       - DB_USERNAME=${DB_USERNAME:-chroncare}
       - DB_PASSWORD=${DB_PASSWORD:-chroncare}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_CLIENT=phpredis
+      - QUEUE_CONNECTION=redis
     restart: unless-stopped
 
   nginx:
@@ -41,6 +46,7 @@ services:
       - ./backend:/var/www/backend
     depends_on:
       - postgres
+      - redis
     environment:
       - APP_NAME=CrohnCare
       - APP_ENV=production
@@ -52,8 +58,44 @@ services:
       - DB_DATABASE=${DB_DATABASE:-chroncare}
       - DB_USERNAME=${DB_USERNAME:-chroncare}
       - DB_PASSWORD=${DB_PASSWORD:-chroncare}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_CLIENT=phpredis
+      - QUEUE_CONNECTION=redis
     command: php artisan schedule:work
     restart: unless-stopped
+
+  queue:
+    build:
+      context: ./docker/php
+    volumes:
+      - ./backend:/var/www/backend
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - APP_NAME=CrohnCare
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL:-http://localhost}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-chroncare}
+      - DB_USERNAME=${DB_USERNAME:-chroncare}
+      - DB_PASSWORD=${DB_PASSWORD:-chroncare}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_CLIENT=phpredis
+      - QUEUE_CONNECTION=redis
+    command: php artisan queue:work --sleep=3 --tries=3
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
 
   postgres:
     image: postgres:16-alpine
@@ -67,4 +109,5 @@ services:
 
 volumes:
   pgdata:
+  redisdata:
   ssl-certs:

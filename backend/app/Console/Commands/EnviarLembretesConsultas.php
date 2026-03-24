@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Aviso;
+use App\Jobs\EnviarNotificacaoJob;
 use App\Models\Consulta;
-use App\Models\DeviceToken;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 
 class EnviarLembretesConsultas extends Command
 {
@@ -21,10 +19,7 @@ class EnviarLembretesConsultas extends Command
 
         $consultas = Consulta::where('status', 'agendada')
             ->whereBetween('data_hora', [$inicio, $fim])
-            ->with('user')
             ->get();
-
-        $totalEnviados = 0;
 
         foreach ($consultas as $consulta) {
             $hora  = $consulta->data_hora->format('H:i');
@@ -35,64 +30,10 @@ class EnviarLembretesConsultas extends Command
                 $body .= " em {$consulta->local}";
             }
 
-            Aviso::create([
-                'user_id'  => $consulta->user_id,
-                'titulo'   => $title,
-                'mensagem' => $body,
-            ]);
-
-            $tokens = DeviceToken::where('user_id', $consulta->user_id)->pluck('token');
-
-            foreach ($tokens as $token) {
-                $this->enviarFcm($token, $title, $body);
-                $totalEnviados++;
-            }
+            EnviarNotificacaoJob::dispatch($consulta->user_id, $title, $body);
         }
 
-        $this->info("Lembretes de consultas enviados: {$totalEnviados}");
+        $this->info("Jobs de consultas enfileirados: {$consultas->count()}");
         return 0;
-    }
-
-    private function enviarFcm(string $token, string $title, string $body): void
-    {
-        try {
-            $accessToken = $this->getAccessToken();
-            $projectId   = config('services.firebase.project_id');
-
-            Http::withToken($accessToken)
-                ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
-                    'message' => [
-                        'token' => $token,
-                        'data'  => [
-                            'title' => $title,
-                            'body'  => $body,
-                        ],
-                        'webpush' => [
-                            'headers' => [
-                                'Urgency' => 'high',
-                                'TTL'     => '86400',
-                            ],
-                        ],
-                    ],
-                ]);
-        } catch (\Exception $e) {
-            $this->error("Erro FCM: {$e->getMessage()}");
-
-            if (str_contains($e->getMessage(), 'NOT_FOUND') || str_contains($e->getMessage(), 'UNREGISTERED')) {
-                DeviceToken::where('token', $token)->delete();
-            }
-        }
-    }
-
-    private function getAccessToken(): string
-    {
-        $credentialsPath = config('services.firebase.credentials');
-        $client = new \Google\Client();
-        $client->setAuthConfig($credentialsPath);
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        $client->fetchAccessTokenWithAssertion();
-        $token = $client->getAccessToken();
-
-        return $token['access_token'];
     }
 }
