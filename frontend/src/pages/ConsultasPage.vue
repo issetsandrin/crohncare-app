@@ -242,23 +242,23 @@ const tiposExame = [
     <!-- Tabs -->
     <div class="tabs">
       <button
-        class="tab"
+        class="tab-btn"
         :class="{ active: activeTab === 'proximas' }"
         @click="activeTab = 'proximas'"
       >
         Próximas
-        <span v-if="store.proximas.length" class="tab-badge">{{ store.proximas.length }}</span>
+        <span v-if="store.proximas.length" class="tab-count">{{ store.proximas.length }}</span>
       </button>
       <button
-        class="tab"
+        class="tab-btn"
         :class="{ active: activeTab === 'exames' }"
         @click="activeTab = 'exames'"
       >
         Exames
-        <span v-if="examesStore.proximos.length" class="tab-badge">{{ examesStore.proximos.length }}</span>
+        <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
       </button>
       <button
-        class="tab"
+        class="tab-btn"
         :class="{ active: activeTab === 'historico' }"
         @click="activeTab = 'historico'"
       >
@@ -273,15 +273,13 @@ const tiposExame = [
       <!-- Aba Consultas (Próximas / Histórico) -->
       <template v-else-if="activeTab !== 'exames'">
         <div v-if="listaFiltrada.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <p class="empty-title">{{ activeTab === 'proximas' ? 'Nenhuma consulta agendada' : 'Sem histórico ainda' }}</p>
-          <p class="empty-hint">{{ activeTab === 'proximas' ? 'Agende sua próxima consulta aqui' : 'Suas consultas realizadas aparecerão aqui' }}</p>
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>{{ activeTab === 'proximas' ? 'Nenhuma consulta agendada' : 'Nenhuma consulta no histórico' }}</p>
+          <p class="empty-hint">{{ activeTab === 'proximas' ? 'Toque no botão + para agendar' : 'Suas consultas realizadas aparecerão aqui' }}</p>
         </div>
 
         <div v-else class="consultas-list">
@@ -323,15 +321,13 @@ const tiposExame = [
       <template v-else>
         <!-- Lista de próximos -->
         <div v-if="examesStore.proximos.length === 0 && examesStore.historico.length === 0" class="empty-state">
-          <div class="empty-icon exame-icon-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-              <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <p class="empty-title">Nenhum exame cadastrado</p>
-          <p class="empty-hint">Registre seus exames para acompanhar e receber lembretes</p>
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>Nenhum exame cadastrado</p>
+          <p class="empty-hint">Toque no botão + para registrar</p>
         </div>
 
         <div v-else class="consultas-list">
@@ -654,49 +650,48 @@ const tiposExame = [
 .tabs {
   display: flex;
   gap: 4px;
-  padding: 0 16px 12px;
-  background: #fff;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+  margin: 0 16px 12px;
 }
 
-.tab {
+.tab-btn {
   flex: 1;
   padding: 10px 8px;
-  border-radius: 10px;
   border: none;
-  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  background: transparent;
   font-family: var(--font-corpo);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--texto-light);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.35s var(--ease-smooth);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
 }
 
-.tab.active {
+.tab-btn.active {
+  background: #fff;
+  color: var(--verde-salvia);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tab-count {
   background: var(--verde-salvia);
   color: #fff;
-}
-
-.tab-badge {
+  font-size: 10px;
+  font-weight: 700;
   min-width: 18px;
   height: 18px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.3);
-  font-size: 11px;
-  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 5px;
-}
-
-.tab:not(.active) .tab-badge {
-  background: var(--verde-salvia);
-  color: #fff;
 }
 
 /* Content */
@@ -720,7 +715,9 @@ const tiposExame = [
 /* Empty */
 .empty-state {
   text-align: center;
-  padding: 60px 16px;
+  padding: 48px 16px;
+  color: var(--texto-light);
+  font-family: var(--font-corpo);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -728,30 +725,18 @@ const tiposExame = [
 }
 
 .empty-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 20px;
-  background: rgba(127, 168, 50, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bbb;
+  color: #ccc;
   margin-bottom: 4px;
 }
 
-.empty-title {
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
+.empty-state p {
   margin: 0;
+  font-size: 14px;
 }
 
 .empty-hint {
-  font-family: var(--font-corpo);
   font-size: 13px;
-  color: var(--texto-light);
-  margin: 0;
+  margin-top: 4px;
 }
 
 /* List */
