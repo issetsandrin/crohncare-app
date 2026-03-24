@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tomada extends Model
 {
+    protected $table = 'registros_uso';
+
     protected $fillable = ['user_id', 'medicamento_id', 'foto_path', 'tomado_em'];
 
     protected $casts = [
