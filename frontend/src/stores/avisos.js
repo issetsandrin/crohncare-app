@@ -36,7 +36,10 @@ export const useAvisosStore = defineStore('avisos', () => {
     try {
       await api.put(`/avisos/${id}/lido`)
       const aviso = avisos.value.find(a => a.id === id)
-      if (aviso) aviso.lido = true
+      if (aviso && !aviso.lido) {
+        aviso.lido = true
+        if (naoLidosCount.value > 0) naoLidosCount.value--
+      }
     } catch (e) {
       // silent
     }
@@ -46,6 +49,7 @@ export const useAvisosStore = defineStore('avisos', () => {
     try {
       await api.put('/avisos/marcar-todos')
       avisos.value.forEach(a => a.lido = true)
+      naoLidosCount.value = 0
     } catch (e) {
       // silent
     }

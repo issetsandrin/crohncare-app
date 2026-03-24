@@ -1,7 +1,4 @@
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
-import { StaleWhileRevalidate } from 'workbox-strategies'
-import { ExpirationPlugin } from 'workbox-expiration'
 
 // Ativa o novo SW imediatamente
 self.skipWaiting()
@@ -13,19 +10,7 @@ self.addEventListener('activate', (event) => {
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
-// Cache da API
-registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/'),
-  new StaleWhileRevalidate({
-    cacheName: 'api-cache',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 60 * 60 * 24
-      })
-    ]
-  })
-)
+// Rotas de API não são cacheadas — dados precisam ser sempre frescos
 
 // Push notifications - intercepta o evento push diretamente
 self.addEventListener('push', (event) => {
