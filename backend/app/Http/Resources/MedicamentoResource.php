@@ -24,6 +24,7 @@ class MedicamentoResource extends JsonResource
                 'dose_diaria' => $this->estoque->dose_diaria,
                 'data_ultimo_reabastecimento' => $this->estoque->data_ultimo_reabastecimento?->format('Y-m-d'),
             ] : null,
+            'dose_hoje' => $this->dose_hoje,
             'dias_restantes' => $this->dias_restantes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

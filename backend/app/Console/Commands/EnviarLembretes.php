@@ -32,6 +32,8 @@ class EnviarLembretes extends Command
                 foreach ($med->horarios as $horario) {
                     $h = substr($horario->horario, 0, 5);
 
+                    $doseHoje = $med->dose_hoje;
+
                     $dadosMed = [
                         'medicamento_id'    => (string) $med->id,
                         'medicamento_nome'  => $med->nome,
@@ -42,7 +44,7 @@ class EnviarLembretes extends Command
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
                             "Faltam 5 minutos para o {$med->nome}",
-                            "Prepare-se para tomar {$med->dose} às {$h}",
+                            "Prepare-se para tomar {$doseHoje} às {$h}",
                             $dadosMed,
                         );
                         $totalJobs++;
@@ -52,7 +54,7 @@ class EnviarLembretes extends Command
                         EnviarNotificacaoJob::dispatch(
                             $user->id,
                             "Hora do seu remédio!",
-                            "Está no horário de tomar o seu remédio: {$med->nome} - {$med->dose}",
+                            "Está no horário de tomar o seu remédio: {$med->nome} - {$doseHoje}",
                             $dadosMed,
                         );
                         $totalJobs++;

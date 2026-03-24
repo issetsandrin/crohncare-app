@@ -62,6 +62,7 @@ const form = reactive({
   periodicidade_tipo: 'diario',
   periodicidade_dias: [],
   periodicidade_intervalo: 2,
+  periodicidade_ciclo: ['', ''],
   horarios: [''],
   quantidade_atual: 0,
   exige_comprovacao: false,
@@ -74,6 +75,7 @@ function resetForm() {
   form.periodicidade_tipo = 'diario'
   form.periodicidade_dias = []
   form.periodicidade_intervalo = 2
+  form.periodicidade_ciclo = ['', '']
   form.horarios = ['']
   form.quantidade_atual = 0
   form.exige_comprovacao = false
@@ -100,6 +102,7 @@ function editarDoDetalhe() {
   form.periodicidade_tipo = med.periodicidade_tipo || 'diario'
   form.periodicidade_dias = med.periodicidade_valor?.dias || []
   form.periodicidade_intervalo = med.periodicidade_valor?.intervalo || 2
+  form.periodicidade_ciclo = med.periodicidade_valor?.ciclo || ['', '']
   form.horarios = med.horarios && med.horarios.length ? med.horarios.map(h => h.substring(0, 5)) : ['']
   form.quantidade_atual = med.estoque?.quantidade_atual || 0
   form.exige_comprovacao = med.exige_comprovacao ?? false
@@ -151,6 +154,9 @@ function periodicidadeTexto(med) {
   if (tipo === 'dias_semana' && valor?.dias?.length) {
     return valor.dias.sort((a, b) => a - b).map(d => diasSemanaLabel[d]).join(', ')
   }
+  if (tipo === 'ciclo' && valor?.ciclo?.length) {
+    return `Ciclo: ${valor.ciclo.join(' → ')}`
+  }
   return 'Todos os dias'
 }
 
@@ -158,6 +164,7 @@ function calcularDoseDiaria() {
   const horariosValidos = form.horarios.filter(h => h.trim() !== '').length
   const tipo = form.periodicidade_tipo
   if (tipo === 'diario') return horariosValidos || 1
+  if (tipo === 'ciclo') return horariosValidos || 1
   if (tipo === 'dias_semana') {
     const diasPorSemana = form.periodicidade_dias.length || 1
     return Math.max(1, Math.round((horariosValidos * diasPorSemana) / 7))
@@ -169,17 +176,34 @@ function calcularDoseDiaria() {
   return 1
 }
 
+function adicionarDiaCiclo() {
+  form.periodicidade_ciclo.push('')
+}
+
+function removerDiaCiclo(index) {
+  if (form.periodicidade_ciclo.length > 2) {
+    form.periodicidade_ciclo.splice(index, 1)
+  }
+}
+
 async function salvar() {
   let periodicidade_valor = null
   if (form.periodicidade_tipo === 'dias_semana') {
     periodicidade_valor = { dias: [...form.periodicidade_dias].sort((a, b) => a - b) }
   } else if (form.periodicidade_tipo === 'intervalo') {
     periodicidade_valor = { intervalo: Number(form.periodicidade_intervalo) }
+  } else if (form.periodicidade_tipo === 'ciclo') {
+    const cicloValido = form.periodicidade_ciclo.filter(d => d.trim() !== '')
+    periodicidade_valor = { ciclo: cicloValido }
   }
+
+  const dosePayload = form.periodicidade_tipo === 'ciclo'
+    ? `Ciclo: ${form.periodicidade_ciclo.filter(d => d.trim()).join(' → ')}`
+    : form.dose
 
   const payload = {
     nome: form.nome,
-    dose: form.dose,
+    dose: dosePayload,
     instrucoes: form.instrucoes,
     periodicidade_tipo: form.periodicidade_tipo,
     periodicidade_valor: periodicidade_valor,
@@ -340,7 +364,7 @@ onMounted(() => {
           <input type="text" v-model="form.nome" class="form-input" placeholder="Ex: Mesalazina" required />
         </div>
 
-        <div class="form-group">
+        <div v-if="form.periodicidade_tipo !== 'ciclo'" class="form-group">
           <label class="form-label">Dose</label>
           <input type="text" v-model="form.dose" class="form-input" placeholder="Ex: 500mg" />
         </div>
@@ -378,6 +402,14 @@ onMounted(() => {
             >
               Sob demanda
             </button>
+            <button
+              type="button"
+              class="periodicidade-chip"
+              :class="{ active: form.periodicidade_tipo === 'ciclo' }"
+              @click="form.periodicidade_tipo = 'ciclo'"
+            >
+              Ciclo alternado
+            </button>
           </div>
 
           <!-- Dias da semana selector -->
@@ -392,6 +424,31 @@ onMounted(() => {
             >
               {{ dia.label }}
             </button>
+          </div>
+
+          <!-- Ciclo alternado -->
+          <div v-if="form.periodicidade_tipo === 'ciclo'" class="ciclo-editor">
+            <p class="ciclo-hint">Defina a dose de cada dia do ciclo. O ciclo se repete automaticamente.</p>
+            <div v-for="(_, i) in form.periodicidade_ciclo" :key="i" class="ciclo-row">
+              <span class="ciclo-dia-label">Dia {{ i + 1 }}</span>
+              <input
+                type="text"
+                v-model="form.periodicidade_ciclo[i]"
+                class="form-input ciclo-dose-input"
+                :placeholder="`Ex: ${i % 2 === 0 ? '2 comprimidos' : '3 comprimidos'}`"
+              />
+              <button
+                v-if="form.periodicidade_ciclo.length > 2"
+                type="button"
+                class="btn-remove-horario"
+                @click="removerDiaCiclo(i)"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="btn-add-horario" @click="adicionarDiaCiclo">+ Dia</button>
           </div>
 
           <!-- Intervalo input -->
@@ -558,6 +615,33 @@ onMounted(() => {
   padding: 0 16px;
 }
 
+
+/* Ciclo alternado */
+.ciclo-editor {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ciclo-hint {
+  font-size: 12px;
+  color: var(--text-muted, #888);
+  margin: 0 0 4px;
+}
+.ciclo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ciclo-dia-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #666);
+  min-width: 38px;
+}
+.ciclo-dose-input {
+  flex: 1;
+}
 
 /* FAB */
 .fab {

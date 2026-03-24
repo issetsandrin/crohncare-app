@@ -42,4 +42,21 @@ class Medicamento extends Model
         }
         return (int) floor($this->estoque->quantidade_atual / $this->estoque->dose_diaria);
     }
+
+    public function getDoseHojeAttribute(): string
+    {
+        if ($this->periodicidade_tipo !== 'ciclo') {
+            return $this->dose;
+        }
+
+        $ciclo = $this->periodicidade_valor['ciclo'] ?? [];
+        if (empty($ciclo)) {
+            return $this->dose;
+        }
+
+        $diasDecorridos = $this->created_at->startOfDay()->diffInDays(now()->startOfDay());
+        $indice = $diasDecorridos % count($ciclo);
+
+        return $ciclo[$indice];
+    }
 }
