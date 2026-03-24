@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('lembretes:enviar')->everyMinute();
 Schedule::command('estoque:verificar')->dailyAt('08:00');
+Schedule::command('lembretes:exames')->dailyAt('08:00');

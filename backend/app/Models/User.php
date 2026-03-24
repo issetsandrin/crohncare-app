@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Consulta::class);
     }
+
+    public function exames()
+    {
+        return $this->hasMany(Exame::class);
+    }
 }

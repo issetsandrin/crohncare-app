@@ -10,6 +10,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ConsultaController;
+use App\Http\Controllers\ExameController;
 use App\Http\Controllers\PerfilCrohnController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
@@ -51,4 +52,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('perfil/stats', [PerfilController::class, 'stats']);
 
     Route::apiResource('consultas', ConsultaController::class)->except(['show']);
+
+    Route::apiResource('exames', ExameController::class)->except(['show', 'destroy']);
 });

@@ -1,12 +1,15 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useConsultasStore } from '../stores/consultas'
+import { useExamesStore } from '../stores/exames'
 import AppBar from '../components/AppBar.vue'
 import ModalBase from '../components/ModalBase.vue'
 import LoadingDots from '../components/LoadingDots.vue'
 
 const store = useConsultasStore()
+const examesStore = useExamesStore()
 
+// ─── Consultas ──────────────────────────────────────────────
 const showForm = ref(false)
 const showDetail = ref(false)
 const showDeleteConfirm = ref(false)
@@ -25,16 +28,6 @@ function defaultForm() {
     status: 'agendada'
   }
 }
-
-onMounted(() => {
-  store.fetchAll()
-})
-
-const activeTab = ref('proximas')
-
-const listaFiltrada = computed(() => {
-  return activeTab.value === 'proximas' ? store.proximas : store.passadas
-})
 
 function abrirNova() {
   editing.value = null
@@ -90,6 +83,108 @@ async function confirmarExclusao() {
   selected.value = null
 }
 
+// ─── Exames ──────────────────────────────────────────────────
+const showExameForm = ref(false)
+const showExameDetail = ref(false)
+const showExameCancelConfirm = ref(false)
+const editingExame = ref(null)
+const selectedExame = ref(null)
+
+const exameForm = ref(defaultExameForm())
+
+function defaultExameForm() {
+  return {
+    nome: '',
+    tipo: '',
+    data: '',
+    local: '',
+    observacoes: '',
+    status: 'agendado'
+  }
+}
+
+function abrirNovoExame() {
+  editingExame.value = null
+  exameForm.value = defaultExameForm()
+  showExameForm.value = true
+}
+
+function abrirDetalhesExame(exame) {
+  selectedExame.value = exame
+  showExameDetail.value = true
+}
+
+function editarExameDoDetalhe() {
+  showExameDetail.value = false
+  editingExame.value = selectedExame.value
+  exameForm.value = {
+    nome: selectedExame.value.nome,
+    tipo: selectedExame.value.tipo || '',
+    data: selectedExame.value.data,
+    local: selectedExame.value.local || '',
+    observacoes: selectedExame.value.observacoes || '',
+    status: selectedExame.value.status
+  }
+  showExameForm.value = true
+}
+
+function cancelarExameDoDetalhe() {
+  showExameDetail.value = false
+  showExameCancelConfirm.value = true
+}
+
+async function salvarExame() {
+  try {
+    if (editingExame.value) {
+      await examesStore.update(editingExame.value.id, exameForm.value)
+    } else {
+      await examesStore.create(exameForm.value)
+    }
+    showExameForm.value = false
+  } catch (e) {
+    // store logs
+  }
+}
+
+async function confirmarCancelamentoExame() {
+  if (!selectedExame.value) return
+  try {
+    await examesStore.update(selectedExame.value.id, { ...selectedExame.value, status: 'cancelado' })
+  } catch (e) {
+    // store logs
+  }
+  showExameCancelConfirm.value = false
+  selectedExame.value = null
+}
+
+// ─── Tabs ────────────────────────────────────────────────────
+const activeTab = ref('proximas')
+
+const listaFiltrada = computed(() => {
+  if (activeTab.value === 'proximas') return store.proximas
+  if (activeTab.value === 'historico') return store.passadas
+  return []
+})
+
+const listaExamesFiltrada = computed(() => {
+  return activeTab.value === 'exames' ? examesStore.proximos : []
+})
+
+onMounted(() => {
+  store.fetchAll()
+  examesStore.fetchAll()
+})
+
+// ─── FAB contextual ─────────────────────────────────────────
+function abrirNovoPorTab() {
+  if (activeTab.value === 'exames') {
+    abrirNovoExame()
+  } else {
+    abrirNova()
+  }
+}
+
+// ─── Formatação ──────────────────────────────────────────────
 function formatarData(dt) {
   if (!dt) return ''
   const d = new Date(dt)
@@ -130,11 +225,19 @@ const especialidades = [
   'Reumatologista',
   'Outro'
 ]
+
+const tiposExame = [
+  'Laboratorial',
+  'Imagem',
+  'Endoscopia',
+  'Patologia',
+  'Outro'
+]
 </script>
 
 <template>
   <div class="consultas-page">
-    <AppBar title="Consultas" subtitle="Suas consultas médicas" />
+    <AppBar title="Consultas e Exames" subtitle="Seus atendimentos médicos" />
 
     <!-- Tabs -->
     <div class="tabs">
@@ -148,6 +251,14 @@ const especialidades = [
       </button>
       <button
         class="tab"
+        :class="{ active: activeTab === 'exames' }"
+        @click="activeTab = 'exames'"
+      >
+        Exames
+        <span v-if="examesStore.proximos.length" class="tab-badge">{{ examesStore.proximos.length }}</span>
+      </button>
+      <button
+        class="tab"
         :class="{ active: activeTab === 'historico' }"
         @click="activeTab = 'historico'"
       >
@@ -157,65 +268,150 @@ const especialidades = [
 
     <div class="page-content">
       <!-- Loading -->
-      <LoadingDots v-if="store.loading" />
+      <LoadingDots v-if="store.loading || examesStore.loading" />
 
-      <!-- Empty -->
-      <div v-else-if="listaFiltrada.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <p class="empty-title">{{ activeTab === 'proximas' ? 'Nenhuma consulta agendada' : 'Sem histórico ainda' }}</p>
-        <p class="empty-hint">{{ activeTab === 'proximas' ? 'Agende sua próxima consulta aqui' : 'Suas consultas realizadas aparecerão aqui' }}</p>
-      </div>
-
-      <!-- List -->
-      <div v-else class="consultas-list">
-        <div
-          v-for="(consulta, i) in listaFiltrada"
-          :key="consulta.id"
-          class="consulta-card"
-          :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
-          :style="{ animationDelay: i * 0.04 + 's' }"
-          @click="abrirDetalhes(consulta)"
-        >
-          <div class="consulta-icon-box" :class="consulta.status">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- Aba Consultas (Próximas / Histórico) -->
+      <template v-else-if="activeTab !== 'exames'">
+        <div v-if="listaFiltrada.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
-          <div class="consulta-info">
-            <span class="consulta-medico">{{ consulta.medico }}</span>
-            <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-            <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-            <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
-          </div>
-          <div class="consulta-badge-area">
-            <span v-if="diasAte(consulta.data_hora) && consulta.status === 'agendada'" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
-            <span v-else-if="consulta.status === 'realizada'" class="status-badge realizada">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-            <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </span>
+          <p class="empty-title">{{ activeTab === 'proximas' ? 'Nenhuma consulta agendada' : 'Sem histórico ainda' }}</p>
+          <p class="empty-hint">{{ activeTab === 'proximas' ? 'Agende sua próxima consulta aqui' : 'Suas consultas realizadas aparecerão aqui' }}</p>
+        </div>
+
+        <div v-else class="consultas-list">
+          <div
+            v-for="(consulta, i) in listaFiltrada"
+            :key="consulta.id"
+            class="consulta-card"
+            :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhes(consulta)"
+          >
+            <div class="consulta-icon-box" :class="consulta.status">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ consulta.medico }}</span>
+              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+            </div>
+            <div class="consulta-badge-area">
+              <span v-if="diasAte(consulta.data_hora) && consulta.status === 'agendada'" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
+              <span v-else-if="consulta.status === 'realizada'" class="status-badge realizada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
+      <!-- Aba Exames -->
+      <template v-else>
+        <!-- Lista de próximos -->
+        <div v-if="examesStore.proximos.length === 0 && examesStore.historico.length === 0" class="empty-state">
+          <div class="empty-icon exame-icon-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="empty-title">Nenhum exame cadastrado</p>
+          <p class="empty-hint">Registre seus exames para acompanhar e receber lembretes</p>
+        </div>
+
+        <div v-else class="consultas-list">
+          <!-- Próximos -->
+          <template v-if="examesStore.proximos.length > 0">
+            <p class="section-label">Agendados</p>
+            <div
+              v-for="(exame, i) in examesStore.proximos"
+              :key="'p' + exame.id"
+              class="consulta-card"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhesExame(exame)"
+            >
+              <div class="consulta-icon-box exame-agendado">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ exame.nome }}</span>
+                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
+                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Histórico de exames -->
+          <template v-if="examesStore.historico.length > 0">
+            <p class="section-label" :style="{ marginTop: examesStore.proximos.length ? '16px' : '0' }">Histórico</p>
+            <div
+              v-for="(exame, i) in examesStore.historico"
+              :key="'h' + exame.id"
+              class="consulta-card"
+              :class="{ cancelada: exame.status === 'cancelado', realizada: exame.status === 'realizado' }"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhesExame(exame)"
+            >
+              <div class="consulta-icon-box" :class="exame.status === 'realizado' ? 'realizada' : exame.status === 'cancelado' ? 'cancelada' : 'exame-agendado'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ exame.nome }}</span>
+                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
+                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="exame.status === 'realizado'" class="status-badge realizada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span v-else-if="exame.status === 'cancelado'" class="status-badge cancelada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
 
     <!-- FAB -->
-    <button class="fab" @click="abrirNova" aria-label="Agendar consulta">
+    <button class="fab" @click="abrirNovoPorTab" :aria-label="activeTab === 'exames' ? 'Registrar exame' : 'Agendar consulta'">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </button>
 
-    <!-- Modal Form -->
+    <!-- ─── Modais Consultas ──────────────────────────────────── -->
+
+    <!-- Modal Form Consulta -->
     <ModalBase v-model="showForm" :title="editing ? 'Editar consulta' : 'Nova consulta'">
       <form class="form" @submit.prevent="salvar">
         <div class="form-group">
@@ -280,7 +476,7 @@ const especialidades = [
       </form>
     </ModalBase>
 
-    <!-- Modal Detalhes -->
+    <!-- Modal Detalhes Consulta -->
     <ModalBase v-model="showDetail" title="">
       <div v-if="selected" class="detail">
         <div class="detail-header">
@@ -315,12 +511,132 @@ const especialidades = [
       </div>
     </ModalBase>
 
-    <!-- Modal Confirmar exclusão -->
+    <!-- Modal Confirmar exclusão consulta -->
     <ModalBase v-model="showDeleteConfirm" title="Excluir consulta?">
       <p class="delete-text">Essa ação não pode ser desfeita.</p>
       <div class="delete-actions">
         <button class="btn-detail edit" @click="showDeleteConfirm = false">Cancelar</button>
         <button class="btn-detail delete" @click="confirmarExclusao">Excluir</button>
+      </div>
+    </ModalBase>
+
+    <!-- ─── Modais Exames ──────────────────────────────────────── -->
+
+    <!-- Modal Form Exame -->
+    <ModalBase v-model="showExameForm" :title="editingExame ? 'Editar exame' : 'Novo exame'">
+      <form class="form" @submit.prevent="salvarExame">
+        <div class="form-group">
+          <label class="form-label">Nome do exame</label>
+          <input v-model="exameForm.nome" type="text" class="form-input" placeholder="Ex: Colonoscopia, Calprotectina..." required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <div class="chips-row">
+            <button
+              v-for="tipo in tiposExame"
+              :key="tipo"
+              type="button"
+              class="chip"
+              :class="{ selected: exameForm.tipo === tipo }"
+              @click="exameForm.tipo = exameForm.tipo === tipo ? '' : tipo"
+            >
+              {{ tipo }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Data e hora</label>
+          <input v-model="exameForm.data" type="datetime-local" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Local (opcional)</label>
+          <input v-model="exameForm.local" type="text" class="form-input" placeholder="Hospital, laboratório..." />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observações (opcional)</label>
+          <textarea v-model="exameForm.observacoes" class="form-input form-textarea" rows="3" placeholder="Preparo, jejum, instruções..."></textarea>
+        </div>
+
+        <div v-if="editingExame" class="form-group">
+          <label class="form-label">Status</label>
+          <div class="chips-row">
+            <button
+              v-for="s in [
+                { value: 'agendado', label: 'Agendado' },
+                { value: 'realizado', label: 'Realizado' },
+                { value: 'cancelado', label: 'Cancelado' }
+              ]"
+              :key="s.value"
+              type="button"
+              class="chip"
+              :class="{ selected: exameForm.status === s.value, ['chip-status-' + s.value]: true }"
+              @click="exameForm.status = s.value"
+            >
+              {{ s.label }}
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          {{ editingExame ? 'Salvar alterações' : 'Registrar exame' }}
+        </button>
+      </form>
+    </ModalBase>
+
+    <!-- Modal Detalhes Exame -->
+    <ModalBase v-model="showExameDetail" title="">
+      <div v-if="selectedExame" class="detail">
+        <div class="detail-header">
+          <div class="detail-icon-wrap exame-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="detail-header-text">
+            <span class="detail-status" :class="selectedExame.status === 'cancelado' ? 'cancelada' : selectedExame.status === 'realizado' ? 'realizada' : 'agendada'">
+              {{ selectedExame.status === 'agendado' ? 'Agendado' : selectedExame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
+            </span>
+            <span class="detail-data">{{ formatarDataCompleta(selectedExame.data) }}</span>
+          </div>
+        </div>
+
+        <h3 class="detail-medico">{{ selectedExame.nome }}</h3>
+        <span v-if="selectedExame.tipo" class="detail-especialidade">{{ selectedExame.tipo }}</span>
+
+        <div v-if="selectedExame.local" class="detail-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span>{{ selectedExame.local }}</span>
+        </div>
+
+        <div v-if="selectedExame.observacoes" class="detail-obs">
+          <p>{{ selectedExame.observacoes }}</p>
+        </div>
+
+        <div class="detail-actions">
+          <button class="btn-detail edit" @click="editarExameDoDetalhe">Editar</button>
+          <button
+            v-if="selectedExame.status === 'agendado'"
+            class="btn-detail delete"
+            @click="cancelarExameDoDetalhe"
+          >
+            Cancelar exame
+          </button>
+        </div>
+      </div>
+    </ModalBase>
+
+    <!-- Modal Confirmar cancelamento exame -->
+    <ModalBase v-model="showExameCancelConfirm" title="Cancelar exame?">
+      <p class="delete-text">O exame ficará registrado no histórico como cancelado.</p>
+      <div class="delete-actions">
+        <button class="btn-detail edit" @click="showExameCancelConfirm = false">Voltar</button>
+        <button class="btn-detail delete" @click="confirmarCancelamentoExame">Confirmar</button>
       </div>
     </ModalBase>
   </div>
@@ -344,12 +660,12 @@ const especialidades = [
 
 .tab {
   flex: 1;
-  padding: 10px 16px;
+  padding: 10px 8px;
   border-radius: 10px;
   border: none;
   background: rgba(0, 0, 0, 0.04);
   font-family: var(--font-corpo);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--texto-light);
   cursor: pointer;
@@ -357,7 +673,7 @@ const especialidades = [
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .tab.active {
@@ -390,32 +706,15 @@ const especialidades = [
   padding: 0 16px 120px;
 }
 
-/* Loading */
-.loading-state {
-  display: flex;
-  justify-content: center;
-  padding: 48px 0;
-}
-
-.loading-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.loading-dots span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--verde-salvia);
-  animation: loadingBounce 1s ease infinite;
-}
-
-.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes loadingBounce {
-  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
+/* Section label */
+.section-label {
+  font-family: var(--font-corpo);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-light);
+  margin: 8px 0 6px;
 }
 
 /* Empty */
@@ -460,6 +759,7 @@ const especialidades = [
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-top: 8px;
 }
 
 .consulta-card {
@@ -507,6 +807,11 @@ const especialidades = [
 .consulta-icon-box.cancelada {
   background: rgba(0, 0, 0, 0.04);
   color: var(--texto-light);
+}
+
+.consulta-icon-box.exame-agendado {
+  background: rgba(74, 144, 196, 0.1);
+  color: #4a90c4;
 }
 
 .consulta-data-text {
@@ -690,7 +995,8 @@ const especialidades = [
   color: var(--verde-salvia);
 }
 
-.chip-cancelada.selected {
+.chip-cancelada.selected,
+.chip-status-cancelado.selected {
   border-color: var(--terracota);
   background: rgba(196, 120, 74, 0.08);
   color: var(--terracota);
@@ -737,6 +1043,11 @@ const especialidades = [
   justify-content: center;
   color: var(--verde-salvia);
   flex-shrink: 0;
+}
+
+.detail-icon-wrap.exame-icon-wrap {
+  background: linear-gradient(135deg, rgba(74, 144, 196, 0.15), rgba(74, 144, 196, 0.08));
+  color: #4a90c4;
 }
 
 .detail-header-text {
