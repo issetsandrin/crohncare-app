@@ -31,7 +31,7 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(title, {
       body,
       icon: '/icons/icon-192x192.png',
-      badge: '/icons/badge-96x96.png',
+      badge: '/icons/badge.svg',
       vibrate: [200, 100, 200, 100, 200],
       requireInteraction: true
     })
