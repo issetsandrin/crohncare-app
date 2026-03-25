@@ -176,9 +176,9 @@ function getError(field) {
 }
 
 .logo-img {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
   object-fit: cover;
 }
 
