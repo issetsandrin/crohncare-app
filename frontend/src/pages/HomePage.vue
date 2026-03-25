@@ -175,26 +175,28 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
           v-for="(item, i) in proximosRemedios"
           :key="item.medicamentoId + '-' + item.horario"
           class="remedio-card"
-          :class="{ passado: item.passado }"
+          :class="[statusRemedio(item), { passado: item.passado }]"
           :style="{ animationDelay: i * 0.04 + 's' }"
         >
-          <div class="remedio-hora-box" :class="{ tomado: item.passado }">
+          <div class="remedio-accent" :class="statusRemedio(item)" />
+          <div class="remedio-hora-box" :class="statusRemedio(item)">
             <span class="remedio-hora">{{ item.horario }}</span>
           </div>
           <div class="remedio-info">
-            <span class="remedio-nome">{{ item.nome }}</span>
+            <div class="remedio-nome-row">
+              <span class="remedio-nome">{{ item.nome }}</span>
+              <span v-if="item.diaCiclo" class="ciclo-badge">Dia {{ item.diaCiclo }}/{{ item.totalCiclo }}</span>
+            </div>
             <span class="remedio-dose">{{ item.dose }}</span>
           </div>
-          <div class="remedio-status" :class="statusRemedio(item)">
-            <!-- Próximo: relógio amarelo pulsante -->
-            <svg v-if="statusRemedio(item) === 'proximo'" width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="remedio-status-icon" :class="statusRemedio(item)">
+            <svg v-if="statusRemedio(item) === 'proximo'" width="16" height="16" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <!-- Perdido ou pendente: relógio -->
-            <svg v-else width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg v-else width="16" height="16" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
         </div>
@@ -532,47 +534,73 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 .remedio-card {
   display: flex;
   align-items: center;
-  gap: 12px;
   background: #fff;
   border-radius: 14px;
-  padding: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
   animation: fadeInUp 0.4s var(--ease-out-smooth) both;
-  transition: opacity 0.4s var(--ease-smooth), transform 0.3s var(--ease-smooth);
+  transition: opacity 0.4s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+}
+
+.remedio-card:active {
+  transform: scale(0.985);
 }
 
 .remedio-card.passado {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
+/* Accent bar esquerda */
+.remedio-accent {
+  width: 4px;
+  align-self: stretch;
+  flex-shrink: 0;
+  background: var(--verde-salvia);
+}
+.remedio-accent.proximo { background: var(--ambar); }
+.remedio-accent.perdido { background: rgba(91, 147, 199, 0.6); }
+.remedio-accent.pendente { background: var(--verde-salvia); }
+
+/* Hora box */
 .remedio-hora-box {
   width: 52px;
-  height: 44px;
-  border-radius: 12px;
+  height: 42px;
+  border-radius: 10px;
   background: rgba(127, 168, 50, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin: 12px 0 12px 12px;
 }
-
-.remedio-hora-box.tomado {
-  background: rgba(127, 168, 50, 0.06);
-}
+.remedio-hora-box.proximo { background: rgba(212, 160, 60, 0.12); }
+.remedio-hora-box.perdido { background: rgba(91, 147, 199, 0.1); }
+.remedio-hora-box.pendente { background: rgba(127, 168, 50, 0.1); }
 
 .remedio-hora {
   font-family: var(--font-corpo);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--verde-salvia);
 }
+.remedio-hora-box.proximo .remedio-hora { color: var(--ambar); }
+.remedio-hora-box.perdido .remedio-hora { color: #5B93C7; }
 
+/* Info */
 .remedio-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
+  padding: 12px;
+}
+
+.remedio-nome-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .remedio-nome {
@@ -580,6 +608,21 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   font-size: 14px;
   font-weight: 600;
   color: var(--texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ciclo-badge {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--verde-salvia);
+  background: rgba(127, 168, 50, 0.12);
+  border-radius: 20px;
+  padding: 1px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .remedio-dose {
@@ -588,32 +631,32 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   color: var(--texto-light);
 }
 
-.remedio-status {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+/* Status icon */
+.remedio-status-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--texto-light);
-  background: rgba(0, 0, 0, 0.04);
+  margin-right: 12px;
+  color: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.03);
 }
-
-.remedio-status.proximo {
+.remedio-status-icon.proximo {
   color: var(--ambar);
   background: rgba(212, 160, 60, 0.12);
   animation: pulseAmbar 2s ease infinite;
 }
-
-.remedio-status.perdido {
+.remedio-status-icon.perdido {
   color: #5B93C7;
   background: rgba(91, 147, 199, 0.1);
 }
 
 @keyframes pulseAmbar {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 160, 60, 0.3); }
-  50% { box-shadow: 0 0 0 6px rgba(212, 160, 60, 0); }
+  50% { box-shadow: 0 0 0 5px rgba(212, 160, 60, 0); }
 }
 
 </style>

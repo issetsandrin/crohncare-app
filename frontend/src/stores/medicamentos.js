@@ -27,6 +27,22 @@ export const useMedicamentosStore = defineStore('medicamentos', {
 
       state.lista.forEach((med) => {
         if (!med.ativo || !med.horarios || med.periodicidade_tipo === 'sob_demanda') return
+
+        let diaCiclo = null
+        let totalCiclo = null
+        if (med.periodicidade_tipo === 'ciclo') {
+          const ciclo = med.periodicidade_valor?.ciclo
+          if (ciclo?.length) {
+            const inicio = new Date(med.created_at)
+            inicio.setHours(0, 0, 0, 0)
+            const hoje = new Date()
+            hoje.setHours(0, 0, 0, 0)
+            const diasDecorridos = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24))
+            diaCiclo = (diasDecorridos % ciclo.length) + 1
+            totalCiclo = ciclo.length
+          }
+        }
+
         med.horarios.forEach((h) => {
           const partes = h.substring(0, 5)
           const [hh, mm] = partes.split(':').map(Number)
@@ -34,10 +50,13 @@ export const useMedicamentosStore = defineStore('medicamentos', {
           horarios.push({
             medicamentoId: med.id,
             nome: med.nome,
-            dose: med.dose,
+            dose: med.dose_hoje || med.dose,
             horario: partes,
             minutos,
-            passado: minutos < horaAtual
+            passado: minutos < horaAtual,
+            periodicidade_tipo: med.periodicidade_tipo,
+            diaCiclo,
+            totalCiclo
           })
         })
       })
