@@ -18,13 +18,25 @@ const selected = ref(null)
 
 const form = ref(defaultForm())
 
+function hojeFormatado() {
+  const d = new Date()
+  const dia = String(d.getDate()).padStart(2, '0')
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  return `${dia}/${mes}/${d.getFullYear()}`
+}
+
+function horaAtual() {
+  const d = new Date()
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 function defaultForm() {
   return {
     medico: '',
     especialidade: '',
     data_hora: '',
-    data_input: '',
-    hora_input: '',
+    data_input: hojeFormatado(),
+    hora_input: horaAtual(),
     local: '',
     observacoes: '',
     status: 'agendada'
@@ -121,8 +133,8 @@ function defaultExameForm() {
     nome: '',
     tipo: '',
     data: '',
-    data_input: '',
-    hora_input: '',
+    data_input: hojeFormatado(),
+    hora_input: horaAtual(),
     local: '',
     observacoes: '',
     status: 'agendado'
