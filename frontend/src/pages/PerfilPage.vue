@@ -39,11 +39,11 @@ const initials = computed(() => {
 })
 
 const situacaoLabels = {
-  remissao: 'Em remissao',
+  remissao: 'Em remissão',
   crise_leve: 'Crise leve',
   crise_moderada: 'Crise moderada',
   crise_grave: 'Crise intensa',
-  recente: 'Diagnostico recente'
+  recente: 'Diagnóstico recente'
 }
 
 const situacaoColors = {
@@ -55,13 +55,12 @@ const situacaoColors = {
 }
 
 const tipoLabels = {
-  crohn: 'Doenca de Crohn',
+  crohn: 'Doença de Crohn',
   retocolite: 'Retocolite Ulcerativa',
   indeterminada: 'Colite Indeterminada',
-  nao_sei: 'Nao definido'
+  nao_sei: 'Não definido'
 }
 
-const permissionStatus = computed(() => notifStore.permissao)
 const notificacoesAtivas = computed(() => notifStore.ativa)
 
 async function toggleNotificacoes() {
@@ -98,7 +97,7 @@ function formatarProximaConsulta(consulta) {
   const diff = Math.ceil((d - hoje) / (1000 * 60 * 60 * 24))
   let quando = ''
   if (diff === 0) quando = 'Hoje'
-  else if (diff === 1) quando = 'Amanha'
+  else if (diff === 1) quando = 'Amanhã'
   else quando = `Em ${diff} dias`
   const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
   return { quando, hora, medico: consulta.medico, especialidade: consulta.especialidade }
@@ -110,11 +109,10 @@ function formatarProximaConsulta(consulta) {
     <AppBar title="Perfil" subtitle="Seu resumo pessoal" />
 
     <div class="page-content">
-      <!-- Loading -->
       <LoadingDots v-if="loading" />
 
       <template v-else>
-        <!-- Header -->
+        <!-- Hero -->
         <section class="hero">
           <div class="avatar">
             <span class="avatar-text">{{ initials }}</span>
@@ -134,128 +132,102 @@ function formatarProximaConsulta(consulta) {
           </button>
         </section>
 
-        <!-- Situacao atual -->
-        <section v-if="perfil?.situacao_atual" class="situacao-banner" :style="{ '--cor': situacaoColors[perfil.situacao_atual] || '#888' }">
-          <div class="situacao-dot"></div>
+        <!-- Situação atual -->
+        <div v-if="perfil?.situacao_atual" class="situacao-chip" :style="{ '--cor': situacaoColors[perfil.situacao_atual] || '#888' }">
+          <span class="situacao-dot"></span>
           <span class="situacao-text">{{ situacaoLabels[perfil.situacao_atual] || perfil.situacao_atual }}</span>
-        </section>
+        </div>
 
-        <!-- Stats grid -->
-        <section v-if="stats" class="stats-section">
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-number">{{ stats.meds_ativos }}</span>
-              <span class="stat-label">Remedios ativos</span>
-              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.5"/>
-                <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5"/>
-              </svg>
-            </div>
-
-            <div class="stat-card">
-              <span class="stat-number">{{ stats.total_diarios }}</span>
-              <span class="stat-label">Registros no diario</span>
-              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-
-            <div class="stat-card" :class="{ destaque: stats.dias_sem_crise !== null && stats.dias_sem_crise >= 7 }">
-              <span class="stat-number">{{ stats.dias_sem_crise !== null ? stats.dias_sem_crise : '-' }}</span>
-              <span class="stat-label">{{ stats.dias_sem_crise !== null ? 'Dias sem crise' : 'Nenhuma crise' }}</span>
-              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-
-            <div class="stat-card">
-              <span class="stat-number">{{ stats.consultas_realizadas }}</span>
-              <span class="stat-label">Consultas realizadas</span>
-              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
+        <!-- Stats compactos -->
+        <div v-if="stats" class="stats-card">
+          <div class="stat-item">
+            <span class="stat-num">{{ stats.meds_ativos }}</span>
+            <span class="stat-lbl">Remédios</span>
           </div>
-
-          <!-- Streak -->
-          <div v-if="stats.streak_diario > 0" class="streak-card">
-            <div class="streak-fire">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2c.5 4-3 6-3 10a5 5 0 0010 0c0-4-2-6-3-8-1 2-3 3-4 2 0-2 .5-4 0-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="streak-info">
-              <span class="streak-count">{{ stats.streak_diario }} {{ stats.streak_diario === 1 ? 'dia' : 'dias' }} seguidos</span>
-              <span class="streak-hint">registrando no diario</span>
-            </div>
+          <div class="stat-divider" />
+          <div class="stat-item">
+            <span class="stat-num">{{ stats.total_diarios }}</span>
+            <span class="stat-lbl">Registros</span>
           </div>
-        </section>
+          <div class="stat-divider" />
+          <div class="stat-item" :class="{ 'stat-green': stats.dias_sem_crise !== null && stats.dias_sem_crise >= 7 }">
+            <span class="stat-num">{{ stats.dias_sem_crise !== null ? stats.dias_sem_crise : '—' }}</span>
+            <span class="stat-lbl">Sem crise</span>
+          </div>
+          <div class="stat-divider" />
+          <div class="stat-item">
+            <span class="stat-num">{{ stats.consultas_realizadas }}</span>
+            <span class="stat-lbl">Consultas</span>
+          </div>
+        </div>
 
-        <!-- Proxima consulta -->
-        <section v-if="stats?.proxima_consulta" class="section">
-          <h3 class="section-title">Proxima consulta</h3>
-          <div class="proxima-card" @click="router.push('/consultas')">
-            <div class="proxima-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="proxima-info">
-              <span class="proxima-medico">{{ formatarProximaConsulta(stats.proxima_consulta).medico }}</span>
-              <span v-if="stats.proxima_consulta.especialidade" class="proxima-esp">{{ stats.proxima_consulta.especialidade }}</span>
-              <span class="proxima-quando">{{ formatarProximaConsulta(stats.proxima_consulta).quando }} as {{ formatarProximaConsulta(stats.proxima_consulta).hora }}</span>
-            </div>
-            <svg class="proxima-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <!-- Streak -->
+        <div v-if="stats?.streak_diario > 0" class="streak-row">
+          <div class="streak-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2c.5 4-3 6-3 10a5 5 0 0010 0c0-4-2-6-3-8-1 2-3 3-4 2 0-2 .5-4 0-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="streak-text"><strong>{{ stats.streak_diario }} {{ stats.streak_diario === 1 ? 'dia' : 'dias' }}</strong> seguidos no diário</span>
+        </div>
+
+        <!-- Próxima consulta -->
+        <div v-if="stats?.proxima_consulta" class="proxima-card" @click="router.push('/consultas')">
+          <div class="proxima-left">
+            <span class="proxima-label">Próxima consulta</span>
+            <span class="proxima-medico">{{ formatarProximaConsulta(stats.proxima_consulta).medico }}</span>
+            <span v-if="stats.proxima_consulta.especialidade" class="proxima-esp">{{ stats.proxima_consulta.especialidade }}</span>
+          </div>
+          <div class="proxima-right">
+            <span class="proxima-quando">{{ formatarProximaConsulta(stats.proxima_consulta).quando }}</span>
+            <span class="proxima-hora">{{ formatarProximaConsulta(stats.proxima_consulta).hora }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="proxima-arrow">
               <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-        </section>
+        </div>
 
-        <!-- Configuracoes -->
-        <section class="section">
-          <h3 class="section-title">Configuracoes</h3>
-          <div class="setting-card">
-            <div class="setting-row">
-              <div class="setting-info">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <!-- Configurações unificadas -->
+        <div class="settings-card">
+          <!-- Notificações -->
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-icon-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                   <path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                 </svg>
-                <div class="setting-text">
-                  <span class="setting-label">Notificacoes</span>
-                  <span class="setting-hint">Lembretes de remedios</span>
-                </div>
               </div>
-              <button
-                class="toggle"
-                :class="{ active: notificacoesAtivas }"
-                @click="toggleNotificacoes"
-                role="switch"
-                :aria-checked="notificacoesAtivas"
-              >
-                <span class="toggle-thumb" />
-              </button>
+              <div class="settings-text">
+                <span class="settings-label">Notificações</span>
+                <span class="settings-hint">Lembretes de remédios</span>
+              </div>
             </div>
+            <button class="toggle" :class="{ active: notificacoesAtivas }" @click="toggleNotificacoes" role="switch" :aria-checked="notificacoesAtivas">
+              <span class="toggle-thumb" />
+            </button>
           </div>
-        </section>
 
-        <!-- Sair -->
-        <section class="section last-section">
-          <div class="about-line">
-            <span class="about-name">CrohnCare</span>
-            <span class="about-version">v1.0.0</span>
-          </div>
-          <button class="btn-logout" @click="handleLogout">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="settings-sep" />
+
+          <!-- Sair -->
+          <button class="settings-row settings-logout" @click="handleLogout">
+            <div class="settings-row-left">
+              <div class="settings-icon-box logout-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="settings-label logout-label">Sair da conta</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Sair da conta
           </button>
-        </section>
+        </div>
+
+        <!-- Footer -->
+        <p class="footer-version">CrohnCare · v1.0.0</p>
       </template>
     </div>
 
@@ -283,34 +255,6 @@ function formatarProximaConsulta(consulta) {
   flex: 1;
   overflow-y: auto;
   padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px) + 16px);
-}
-
-/* Loading */
-.loading-state {
-  display: flex;
-  justify-content: center;
-  padding: 60px 0;
-}
-
-.loading-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.loading-dots span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--verde-salvia);
-  animation: bounce 1s ease infinite;
-}
-
-.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes bounce {
-  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
 }
 
 /* Hero */
@@ -399,182 +343,136 @@ function formatarProximaConsulta(consulta) {
   cursor: pointer;
 }
 
-/* Situacao banner */
-.situacao-banner {
-  display: flex;
+/* Situação chip */
+.situacao-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--cor) 8%, #fff);
-  border: 1px solid color-mix(in srgb, var(--cor) 20%, transparent);
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--cor) 10%, transparent);
   margin-bottom: 16px;
 }
 
 .situacao-dot {
-  width: 10px;
-  height: 10px;
-  min-width: 10px;
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
   border-radius: 50%;
   background: var(--cor);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor) 25%, transparent);
 }
 
 .situacao-text {
   font-family: var(--font-corpo);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--cor);
 }
 
-/* Stats */
-.stats-section {
-  margin-bottom: 20px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.stat-card {
+/* Stats compactos */
+.stats-card {
+  display: flex;
+  align-items: center;
   background: #fff;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+}
+
+.stat-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
+  align-items: center;
+  gap: 3px;
 }
 
-.stat-card.destaque {
-  background: linear-gradient(135deg, rgba(127, 168, 50, 0.08), rgba(127, 168, 50, 0.02));
-  border: 1px solid rgba(127, 168, 50, 0.15);
+.stat-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.07);
+  flex-shrink: 0;
 }
 
-.stat-number {
+.stat-num {
   font-family: var(--font-titulo);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: var(--texto);
   line-height: 1;
 }
 
-.stat-card.destaque .stat-number {
+.stat-lbl {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--texto-light);
+}
+
+.stat-green .stat-num {
   color: var(--verde-salvia);
 }
 
-.stat-label {
-  font-family: var(--font-corpo);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--texto-light);
-  margin-top: 2px;
-}
-
-.stat-icon {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: rgba(0, 0, 0, 0.08);
-}
-
 /* Streak */
-.streak-card {
+.streak-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, rgba(232, 138, 58, 0.1), rgba(232, 138, 58, 0.04));
-  border: 1px solid rgba(232, 138, 58, 0.2);
-  border-radius: 14px;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(232, 138, 58, 0.07);
+  border-radius: 12px;
+  margin-bottom: 10px;
 }
 
-.streak-fire {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border-radius: 10px;
-  background: rgba(232, 138, 58, 0.15);
+.streak-icon {
   color: #E88A3A;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.streak-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.streak-count {
+.streak-text {
   font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 700;
-  color: #E88A3A;
-}
-
-.streak-hint {
-  font-family: var(--font-corpo);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--texto-light);
 }
 
-/* Section */
-.section {
-  margin-bottom: 20px;
+.streak-text strong {
+  color: #E88A3A;
 }
 
-.last-section {
-  margin-bottom: 8px;
-}
-
-.section-title {
-  font-family: var(--font-titulo);
-  font-size: 1rem;
-  color: var(--texto);
-  margin: 0 0 10px;
-}
-
-/* Proxima consulta */
+/* Próxima consulta */
 .proxima-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   background: #fff;
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 16px;
+  padding: 14px 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  border-left: 3px solid var(--verde-salvia);
 }
 
 .proxima-card:active {
   transform: scale(0.98);
 }
 
-.proxima-icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: 12px;
-  background: rgba(127, 168, 50, 0.1);
-  color: var(--verde-salvia);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.proxima-info {
-  flex: 1;
+.proxima-left {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
+}
+
+.proxima-label {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--verde-salvia);
 }
 
 .proxima-medico {
@@ -582,6 +480,9 @@ function formatarProximaConsulta(consulta) {
   font-size: 14px;
   font-weight: 600;
   color: var(--texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .proxima-esp {
@@ -590,65 +491,116 @@ function formatarProximaConsulta(consulta) {
   color: var(--texto-light);
 }
 
+.proxima-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
 .proxima-quando {
   font-family: var(--font-corpo);
   font-size: 12px;
-  font-weight: 600;
-  color: var(--verde-salvia);
-  margin-top: 2px;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.proxima-hora {
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  color: var(--texto-light);
 }
 
 .proxima-arrow {
   color: var(--texto-light);
-  flex-shrink: 0;
+  margin-top: 4px;
 }
 
-/* Settings */
-.setting-card {
+/* Settings card */
+.settings-card {
   background: #fff;
-  border-radius: 14px;
-  padding: 14px 16px;
+  border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
-.setting-row {
+.settings-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 }
 
-.setting-info {
+.settings-row-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--texto-light);
 }
 
-.setting-text {
+.settings-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logout-icon {
+  background: rgba(229, 115, 115, 0.1);
+  color: var(--terracota);
+}
+
+.settings-text {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-.setting-label {
+.settings-label {
   font-family: var(--font-corpo);
   font-size: 14px;
   font-weight: 600;
   color: var(--texto);
 }
 
-.setting-hint {
+.logout-label {
+  color: var(--terracota);
+}
+
+.settings-hint {
   font-family: var(--font-corpo);
   font-size: 11px;
+  color: var(--texto-light);
+}
+
+.settings-sep {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.05);
+  margin: 0 16px;
+}
+
+.settings-logout svg:last-child {
   color: var(--texto-light);
 }
 
 /* Toggle */
 .toggle {
   position: relative;
-  width: 48px;
-  height: 28px;
-  border-radius: 14px;
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
   background: #ddd;
   border: none;
   cursor: pointer;
@@ -665,8 +617,8 @@ function formatarProximaConsulta(consulta) {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #fff;
   transition: transform 0.35s var(--ease-smooth);
@@ -674,50 +626,17 @@ function formatarProximaConsulta(consulta) {
 }
 
 .toggle.active .toggle-thumb {
-  transform: translateX(20px);
+  transform: translateX(18px);
 }
 
-/* About + Logout */
-.about-line {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.about-name {
-  font-family: var(--font-titulo);
-  font-size: 0.95rem;
-  color: var(--verde-salvia);
-}
-
-.about-version {
+/* Footer */
+.footer-version {
   font-family: var(--font-corpo);
   font-size: 11px;
   color: var(--texto-light);
-}
-
-.btn-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1.5px solid rgba(229, 115, 115, 0.3);
-  background: rgba(229, 115, 115, 0.04);
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--terracota);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-logout:active {
-  transform: scale(0.98);
-  opacity: 0.8;
+  text-align: center;
+  margin: 4px 0 0;
+  opacity: 0.6;
 }
 
 /* Edit modal */
