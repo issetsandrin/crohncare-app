@@ -282,72 +282,56 @@ onMounted(() => {
     </div>
 
     <!-- Modal Detalhes -->
-    <ModalBase v-model="showDetailModal" title="Detalhes do Medicamento">
-      <div v-if="selectedMed" class="detail-content">
-        <div class="detail-row">
-          <span class="detail-label">Nome</span>
-          <span class="detail-value detail-nome">{{ selectedMed.nome }}</span>
-        </div>
-
-        <div class="detail-row">
-          <span class="detail-label">Dose</span>
-          <span class="detail-value">{{ selectedMed.dose || '—' }}</span>
-        </div>
-
-        <div class="detail-row">
-          <span class="detail-label">Frequência</span>
-          <span class="detail-value">{{ periodicidadeTexto(selectedMed) }}</span>
-        </div>
-
-        <div v-if="selectedMed.instrucoes" class="detail-row">
-          <span class="detail-label">Instruções</span>
-          <p class="detail-obs">{{ selectedMed.instrucoes }}</p>
-        </div>
-
-        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && selectedMed.horarios && selectedMed.horarios.length" class="detail-row">
-          <span class="detail-label">Horários</span>
-          <div class="detail-tags">
-            <span v-for="h in selectedMed.horarios" :key="h" class="detail-tag">
-              {{ h.substring(0, 5) }}
+    <ModalBase v-model="showDetailModal" title="">
+      <div v-if="selectedMed" class="detail">
+        <div class="detail-header">
+          <div class="detail-icon-wrap" :class="nivelAlerta(diasRestantes(selectedMed))">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+          </div>
+          <div class="detail-header-text">
+            <span class="detail-status" :class="nivelAlerta(diasRestantes(selectedMed))">
+              {{ nivelAlerta(diasRestantes(selectedMed)) === 'urgente' ? 'Estoque crítico' : nivelAlerta(diasRestantes(selectedMed)) === 'atencao' ? 'Estoque baixo' : 'Em dia' }}
             </span>
+            <span class="detail-data">{{ periodicidadeTexto(selectedMed) }}</span>
+          </div>
+        </div>
+
+        <h3 class="detail-medico">{{ selectedMed.nome }}</h3>
+        <span class="detail-especialidade">{{ selectedMed.dose_hoje || selectedMed.dose || '—' }}</span>
+
+        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && selectedMed.horarios?.length" class="detail-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <div class="detail-tags">
+            <span v-for="h in selectedMed.horarios" :key="h" class="detail-tag">{{ h.substring(0, 5) }}</span>
           </div>
         </div>
 
         <div class="detail-row">
-          <span class="detail-label">Estoque</span>
-          <div class="detail-estoque">
-            <EstoqueIndicador :dias-restantes="diasRestantes(selectedMed) === Infinity ? 0 : diasRestantes(selectedMed)" />
-            <div class="detail-estoque-info">
-              <span class="estoque-info-item">
-                <strong>{{ selectedMed.estoque?.quantidade_atual ?? 0 }}</strong> unidades
-              </span>
-            </div>
-          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M5 8h14M5 12h9M5 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          <span>{{ selectedMed.estoque?.quantidade_atual ?? 0 }} unidades restantes</span>
+        </div>
+
+        <div v-if="selectedMed.instrucoes" class="detail-obs">
+          <p>{{ selectedMed.instrucoes }}</p>
         </div>
 
         <div class="detail-actions">
-          <button class="btn btn-primary" @click="editarDoDetalhe">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M12 1.5l2.5 2.5-8 8H4v-2.5l8-8z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Editar
-          </button>
+          <button class="btn-detail edit" @click="editarDoDetalhe">Editar</button>
           <button
             v-if="nivelAlerta(diasRestantes(selectedMed)) !== 'ok'"
-            class="btn btn-ambar"
+            class="btn-detail restock"
             @click="reabastecerDoDetalhe"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2v12M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Reabastecer
-          </button>
-          <button class="btn btn-danger-outline" @click="excluirDoDetalhe">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M2.5 4.5h11M6 4.5V2.5h4v2M5 7v5M8 7v5M11 7v5M3.5 4.5l.5 9h8l.5-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Excluir
-          </button>
+          >Reabastecer</button>
+          <button class="btn-detail delete" @click="excluirDoDetalhe">Excluir</button>
         </div>
       </div>
     </ModalBase>
@@ -703,36 +687,90 @@ onMounted(() => {
 }
 
 /* Detail modal */
-.detail-content {
+.detail {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.detail-row {
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde-salvia);
+  flex-shrink: 0;
+}
+
+.detail-icon-wrap.atencao {
+  background: linear-gradient(135deg, rgba(212, 160, 60, 0.15), rgba(212, 160, 60, 0.08));
+  color: var(--ambar);
+}
+
+.detail-icon-wrap.urgente {
+  background: linear-gradient(135deg, rgba(229, 115, 115, 0.15), rgba(229, 115, 115, 0.08));
+  color: var(--intensidade-5);
+}
+
+.detail-header-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
-.detail-label {
+.detail-status {
   font-family: var(--font-corpo);
   font-size: 11px;
-  font-weight: 600;
-  color: var(--texto-light);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  color: var(--verde-salvia);
 }
 
-.detail-value {
+.detail-status.atencao { color: var(--ambar); }
+.detail-status.urgente { color: var(--intensidade-5); }
+
+.detail-data {
   font-family: var(--font-corpo);
-  font-size: 15px;
+  font-size: 13px;
+  color: var(--texto-light);
+}
+
+.detail-medico {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+}
+
+.detail-especialidade {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto-light);
+  margin-top: -8px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-corpo);
+  font-size: 14px;
   color: var(--texto);
 }
 
-.detail-nome {
-  font-family: var(--font-titulo);
-  font-size: 1.2rem;
+.detail-row svg {
+  color: var(--texto-light);
+  flex-shrink: 0;
 }
 
 .detail-tags {
@@ -742,57 +780,65 @@ onMounted(() => {
 }
 
 .detail-tag {
-  padding: 5px 12px;
+  padding: 4px 10px;
   background: rgba(127, 168, 50, 0.12);
   color: var(--verde-salvia);
-  border-radius: 8px;
+  border-radius: 20px;
   font-family: var(--font-corpo);
   font-size: 13px;
   font-weight: 600;
 }
 
 .detail-obs {
+  background: var(--fundo, #FAF8F5);
+  border-radius: 14px;
+  padding: 16px;
+  border-left: 3px solid var(--verde-salvia);
+}
+
+.detail-obs p {
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
-}
-
-.detail-estoque {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.detail-estoque-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  color: var(--texto-light);
-}
-
-.estoque-info-item strong {
-  color: var(--texto);
-}
-
-.estoque-info-sep {
-  color: #ccc;
 }
 
 .detail-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-.detail-actions .btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+.btn-detail {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detail:active {
+  transform: scale(0.97);
+}
+
+.btn-detail.edit {
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
+}
+
+.btn-detail.restock {
+  background: rgba(212, 160, 60, 0.1);
+  color: var(--ambar);
+}
+
+.btn-detail.delete {
+  background: rgba(196, 120, 74, 0.1);
+  color: var(--terracota);
 }
 
 /* Periodicidade */
