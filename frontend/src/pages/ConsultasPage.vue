@@ -204,7 +204,8 @@ function abrirNovoPorTab() {
   }
 }
 
-const totalProximas = computed(() => store.proximas.length + examesStore.proximos.length)
+
+const totalProximas = computed(() => store.proximas.length)
 
 // ─── Formatação ──────────────────────────────────────────────
 function formatarData(dt) {
@@ -285,76 +286,43 @@ const tiposExame = [
       <!-- Loading -->
       <LoadingDots v-if="store.loading || examesStore.loading" />
 
-      <!-- Aba Próximas: consultas + exames agendados -->
+      <!-- Aba Próximas: apenas consultas -->
       <template v-else-if="activeTab === 'proximas'">
-        <div v-if="store.proximas.length === 0 && examesStore.proximos.length === 0" class="empty-state">
+        <div v-if="store.proximas.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <p>Nenhuma consulta ou exame agendado</p>
+          <p>Nenhuma consulta agendada</p>
           <p class="empty-hint">Toque no botão + para agendar</p>
         </div>
 
         <div v-else class="consultas-list">
-          <!-- Consultas Agendadas -->
-          <template v-if="store.proximas.length > 0">
-            <p class="section-label">Consultas Agendadas</p>
-            <div
-              v-for="(consulta, i) in store.proximas"
-              :key="'c' + consulta.id"
-              class="consulta-card"
-              :style="{ animationDelay: i * 0.04 + 's' }"
-              @click="abrirDetalhes(consulta)"
-            >
-              <div class="consulta-icon-box" :class="consulta.status">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="consulta-info">
-                <span class="consulta-medico">{{ consulta.medico }}</span>
-                <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-                <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-                <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
-              </div>
-              <div class="consulta-badge-area">
-                <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
-              </div>
+          <div
+            v-for="(consulta, i) in store.proximas"
+            :key="consulta.id"
+            class="consulta-card"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhes(consulta)"
+          >
+            <div class="consulta-icon-box" :class="consulta.status">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </div>
-          </template>
-
-          <!-- Exames Agendados -->
-          <template v-if="examesStore.proximos.length > 0">
-            <p class="section-label" :style="{ marginTop: store.proximas.length ? '16px' : '0' }">Exames Agendados</p>
-            <div
-              v-for="(exame, i) in examesStore.proximos"
-              :key="'e' + exame.id"
-              class="consulta-card"
-              :style="{ animationDelay: i * 0.04 + 's' }"
-              @click="abrirDetalhesExame(exame)"
-            >
-              <div class="consulta-icon-box exame-agendado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="consulta-info">
-                <span class="consulta-medico">{{ exame.nome }}</span>
-                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
-                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
-                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
-              </div>
-              <div class="consulta-badge-area">
-                <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
-              </div>
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ consulta.medico }}</span>
+              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
             </div>
-          </template>
+            <div class="consulta-badge-area">
+              <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
+            </div>
+          </div>
         </div>
       </template>
 
