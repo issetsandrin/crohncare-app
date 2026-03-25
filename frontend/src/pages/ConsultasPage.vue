@@ -299,6 +299,7 @@ const tiposExame = [
         </div>
 
         <div v-else class="consultas-list">
+          <p class="section-label">Agendados</p>
           <div
             v-for="(consulta, i) in store.proximas"
             :key="consulta.id"
