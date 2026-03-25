@@ -1,8 +1,9 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const items = [
   { path: '/', label: 'Início' },
@@ -16,17 +17,25 @@ const activeIndex = computed(() => {
   const idx = items.findIndex(i => i.path === route.path)
   return idx >= 0 ? idx : 0
 })
+
+function navTo(path) {
+  if (route.path === path) {
+    router.replace({ path, query: { _r: Date.now() } })
+  } else {
+    router.push(path)
+  }
+}
 </script>
 
 <template>
   <nav class="bottom-nav">
     <div class="nav-indicator" :style="{ width: (100 / items.length) + '%', transform: `translateX(${activeIndex * 100}%)` }" />
-    <router-link
+    <button
       v-for="item in items"
       :key="item.path"
-      :to="item.path"
       class="nav-item"
       :class="{ active: route.path === item.path }"
+      @click="navTo(item.path)"
     >
       <!-- Início -->
       <svg v-if="item.path === '/'" class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -54,7 +63,7 @@ const activeIndex = computed(() => {
         <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
       </svg>
       <span class="nav-label">{{ item.label }}</span>
-    </router-link>
+    </button>
   </nav>
 </template>
 
@@ -94,7 +103,9 @@ const activeIndex = computed(() => {
   border-radius: 8px;
   transition: color 0.3s var(--ease-smooth);
   color: var(--texto-light);
-  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
   flex: 1;
 }
 

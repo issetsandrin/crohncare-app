@@ -12,7 +12,7 @@ const showNav = computed(() => {
 </script>
 
 <template>
-  <router-view />
+  <router-view :key="route.fullPath" />
   <BottomNav v-if="showNav" />
   <AppToast />
 </template>
