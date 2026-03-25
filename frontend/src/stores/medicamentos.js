@@ -43,6 +43,15 @@ export const useMedicamentosStore = defineStore('medicamentos', {
           }
         }
 
+        let doseLabel = med.dose_hoje || med.dose
+        if (med.periodicidade_tipo === 'ciclo') {
+          const raw = String(doseLabel).trim()
+          if (/^\d+$/.test(raw)) {
+            const n = parseInt(raw)
+            doseLabel = `${n} comprimido${n !== 1 ? 's' : ''}`
+          }
+        }
+
         med.horarios.forEach((h) => {
           const partes = h.substring(0, 5)
           const [hh, mm] = partes.split(':').map(Number)
@@ -50,7 +59,7 @@ export const useMedicamentosStore = defineStore('medicamentos', {
           horarios.push({
             medicamentoId: med.id,
             nome: med.nome,
-            dose: med.dose_hoje || med.dose,
+            dose: doseLabel,
             horario: partes,
             minutos,
             passado: minutos < horaAtual,
