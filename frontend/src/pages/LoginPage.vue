@@ -34,12 +34,7 @@ function getError(field) {
       <!-- Logo + Welcome -->
       <div class="welcome">
         <div class="logo-wrap">
-          <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-            <rect width="52" height="52" rx="16" fill="var(--verde-salvia)"/>
-            <path d="M26 14c-4 0-7.5 2-9 5.5-1.5 3.5-.5 7.5 2 10s6.5 3.5 10 2S34 26 34 22c0-4.5-3.5-8-8-8z" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <path d="M22 22c1 2 3 3 5 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="26" cy="18" r="1.5" fill="#fff"/>
-          </svg>
+          <img src="/icons/icon-192x192.png" alt="CrohnCare" class="logo-img" />
         </div>
         <h1 class="welcome-title">CrohnCare</h1>
         <p class="welcome-text">Seu companheiro no cuidado com a saude intestinal</p>
@@ -178,6 +173,13 @@ function getError(field) {
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
+}
+
+.logo-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  object-fit: cover;
 }
 
 .welcome-title {
