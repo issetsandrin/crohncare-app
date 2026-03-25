@@ -246,47 +246,49 @@ function formatarDataHora(dataHora) {
     </div>
 
     <!-- Modal Detalhes -->
-    <ModalBase v-model="showDetailModal" :title="selectedType === 'crise' ? 'Detalhes da Crise' : 'Detalhes da Anotação'">
-      <div v-if="selectedItem" class="detail-content">
-        <div class="detail-row">
-          <span class="detail-label">{{ selectedType === 'crise' ? 'Data e Hora' : 'Data' }}</span>
-          <span class="detail-value">
-            {{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}
-          </span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Intensidade</span>
-          <IntensidadeDots :valor="selectedItem.intensidade" />
-        </div>
-        <div v-if="selectedItem.sintomas" class="detail-row">
-          <span class="detail-label">Sintomas</span>
-          <div class="detail-tags">
-            <span v-for="tag in selectedItem.sintomas.split(',')" :key="tag" class="detail-tag" :class="{ 'detail-tag-crise': selectedType === 'crise' }">
-              {{ tag.trim() }}
-            </span>
+    <ModalBase v-model="showDetailModal" title="">
+      <div v-if="selectedItem" class="detail">
+        <div class="detail-header">
+          <div class="detail-icon-wrap" :class="{ 'crise-icon-wrap': selectedType === 'crise' }">
+            <svg v-if="selectedType === 'crise'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="detail-header-text">
+            <span class="detail-tipo" :class="selectedType">{{ selectedType === 'crise' ? 'Crise' : 'Anotação' }}</span>
+            <span class="detail-data-text">{{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}</span>
           </div>
         </div>
+
+        <div class="detail-intensidade-row">
+          <span class="detail-row-label">Intensidade</span>
+          <IntensidadeDots :valor="selectedItem.intensidade" />
+        </div>
+
+        <div v-if="selectedItem.sintomas" class="detail-tags">
+          <span v-for="tag in selectedItem.sintomas.split(',')" :key="tag" class="detail-tag" :class="selectedType">{{ tag.trim() }}</span>
+        </div>
+
         <div v-if="selectedType === 'crise' && selectedItem.duracao_estimada" class="detail-row">
-          <span class="detail-label">Duração</span>
-          <span class="detail-value">{{ selectedItem.duracao_estimada }}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>{{ selectedItem.duracao_estimada }}</span>
         </div>
-        <div v-if="selectedItem.observacoes" class="detail-row">
-          <span class="detail-label">Observações</span>
-          <p class="detail-obs">{{ selectedItem.observacoes }}</p>
+
+        <div v-if="selectedItem.observacoes" class="detail-obs" :class="{ 'detail-obs-crise': selectedType === 'crise' }">
+          <p>{{ selectedItem.observacoes }}</p>
         </div>
+
         <div class="detail-actions">
-          <button class="btn btn-primary" @click="editarDoDetalhe">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M12 1.5l2.5 2.5-8 8H4v-2.5l8-8z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Editar
-          </button>
-          <button class="btn btn-danger-outline" @click="excluirDoDetalhe">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M2.5 4.5h11M6 4.5V2.5h4v2M5 7v5M8 7v5M11 7v5M3.5 4.5l.5 9h8l.5-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Excluir
-          </button>
+          <button class="btn-detail edit" @click="editarDoDetalhe">Editar</button>
+          <button class="btn-detail delete" @click="excluirDoDetalhe">Excluir</button>
         </div>
       </div>
     </ModalBase>
@@ -511,31 +513,70 @@ function formatarDataHora(dataHora) {
 }
 
 /* Detail modal */
-.detail-content {
+.detail {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.detail-row {
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
+  color: var(--verde-salvia);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.crise-icon-wrap {
+  background: linear-gradient(135deg, rgba(229, 115, 115, 0.15), rgba(229, 115, 115, 0.08));
+  color: var(--terracota);
+}
+
+.detail-header-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
-.detail-label {
+.detail-tipo {
   font-family: var(--font-corpo);
   font-size: 11px;
-  font-weight: 600;
-  color: var(--texto-light);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  color: var(--verde-salvia);
 }
 
-.detail-value {
+.detail-tipo.crise {
+  color: var(--terracota);
+}
+
+.detail-data-text {
   font-family: var(--font-corpo);
-  font-size: 15px;
-  color: var(--texto);
+  font-size: 13px;
+  color: var(--texto-light);
+}
+
+.detail-intensidade-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-row-label {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto-light);
 }
 
 .detail-tags {
@@ -546,7 +587,7 @@ function formatarDataHora(dataHora) {
 
 .detail-tag {
   padding: 5px 10px;
-  background: rgba(76, 175, 80, 0.1);
+  background: rgba(127, 168, 50, 0.1);
   color: var(--verde-salvia);
   border-radius: 6px;
   font-family: var(--font-corpo);
@@ -554,44 +595,73 @@ function formatarDataHora(dataHora) {
   font-weight: 500;
 }
 
-.detail-tag-crise {
+.detail-tag.crise {
   background: rgba(229, 115, 115, 0.1);
   color: var(--terracota);
 }
 
-.detail-obs {
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
-  line-height: 1.5;
+}
+
+.detail-row svg {
+  color: var(--texto-light);
+  flex-shrink: 0;
+}
+
+.detail-obs {
+  background: var(--fundo, #FAF8F5);
+  border-radius: 14px;
+  padding: 16px;
+  border-left: 3px solid var(--verde-salvia);
+}
+
+.detail-obs.detail-obs-crise {
+  border-left-color: var(--terracota);
+}
+
+.detail-obs p {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto);
+  line-height: 1.6;
   margin: 0;
 }
 
 .detail-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 8px;
 }
 
-.detail-actions .btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+.btn-detail {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn-primary {
-  background: var(--verde-salvia);
-  color: #fff;
+.btn-detail:active {
+  transform: scale(0.97);
 }
 
-.btn-danger-outline {
-  background: var(--terracota);
-  color: #fff;
+.btn-detail.edit {
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
 }
 
-.btn-danger-outline:active {
-  opacity: 0.8;
+.btn-detail.delete {
+  background: rgba(229, 115, 115, 0.1);
+  color: var(--terracota);
 }
 
 /* Confirm modal */
