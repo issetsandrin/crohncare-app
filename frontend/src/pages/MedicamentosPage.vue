@@ -197,13 +197,9 @@ async function salvar() {
     periodicidade_valor = { ciclo: cicloValido }
   }
 
-  const dosePayload = form.periodicidade_tipo === 'ciclo'
-    ? `Ciclo: ${form.periodicidade_ciclo.filter(d => d.trim()).join(' → ')}`
-    : form.dose
-
   const payload = {
     nome: form.nome,
-    dose: dosePayload,
+    dose: form.dose,
     instrucoes: form.instrucoes,
     periodicidade_tipo: form.periodicidade_tipo,
     periodicidade_valor: periodicidade_valor,
@@ -364,7 +360,7 @@ onMounted(() => {
           <input type="text" v-model="form.nome" class="form-input" placeholder="Ex: Mesalazina" required />
         </div>
 
-        <div v-if="form.periodicidade_tipo !== 'ciclo'" class="form-group">
+        <div class="form-group">
           <label class="form-label">Dose</label>
           <input type="text" v-model="form.dose" class="form-input" placeholder="Ex: 500mg" />
         </div>
