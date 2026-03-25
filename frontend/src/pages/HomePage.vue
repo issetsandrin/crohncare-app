@@ -74,6 +74,18 @@ onUnmounted(() => {
   if (pollingInterval) clearInterval(pollingInterval)
 })
 
+const firstName = computed(() => {
+  const nome = authStore.userName
+  return nome ? nome.split(' ')[0] : 'Usuário'
+})
+
+const saudacao = computed(() => {
+  const hora = new Date().getHours()
+  if (hora < 12) return 'Bom dia'
+  if (hora < 18) return 'Boa tarde'
+  return 'Boa noite'
+})
+
 const proximoAlarme = computed(() => {
   const proximos = medStore.proximosHorarios.filter(h => !h.passado)
   return proximos.length > 0 ? proximos[0] : null
