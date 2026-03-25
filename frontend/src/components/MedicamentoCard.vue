@@ -11,6 +11,7 @@ const emit = defineEmits(['click'])
 const { nivelAlerta } = useEstoque()
 
 const dias = computed(() => props.medicamento.dias_restantes ?? 0)
+const quantidade = computed(() => props.medicamento.estoque?.quantidade_atual ?? 0)
 const nivel = computed(() => nivelAlerta(dias.value))
 
 const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -29,9 +30,9 @@ const periodicidadeTexto = computed(() => {
 const doseHoje = computed(() => props.medicamento.dose_hoje || props.medicamento.dose || '')
 
 const estoqueLabel = computed(() => {
-  if (dias.value <= 0) return 'Sem estoque'
-  if (nivel.value === 'urgente') return `${dias.value}d restantes`
-  if (nivel.value === 'atencao') return `${dias.value}d restantes`
+  if (quantidade.value <= 0) return 'Sem estoque'
+  if (nivel.value === 'urgente') return `${quantidade.value} un restantes`
+  if (nivel.value === 'atencao') return `${quantidade.value} un restantes`
   return null
 })
 </script>
@@ -54,7 +55,7 @@ const estoqueLabel = computed(() => {
           </div>
           <span class="card-periodicidade">{{ periodicidadeTexto }}</span>
         </div>
-        <div v-if="nivel !== 'ok'" class="card-alerta-pill" :class="nivel">{{ dias }}d</div>
+        <div v-if="nivel !== 'ok'" class="card-alerta-pill" :class="nivel">{{ quantidade }} un</div>
       </div>
 
       <div v-if="medicamento.periodicidade_tipo !== 'sob_demanda' && medicamento.horarios?.length" class="card-bottom">
