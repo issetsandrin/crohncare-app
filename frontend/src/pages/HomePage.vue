@@ -161,13 +161,11 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
     <div v-else class="remedios-section">
       <h3 class="section-title">Remédios de hoje</h3>
       <div v-if="proximosRemedios.length === 0" class="empty-state">
-        <div class="empty-illustration">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.5"/>
-            <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <p class="empty-title">Nenhum horário cadastrado</p>
+        <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+          <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <p>Nenhum horário cadastrado</p>
         <p class="empty-hint">Adicione medicamentos para ver seus horários aqui</p>
       </div>
       <div v-else class="remedios-list">
@@ -490,38 +488,28 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 /* Empty state */
 .empty-state {
   text-align: center;
-  padding: 40px 16px;
+  padding: 48px 16px;
+  color: var(--texto-light);
+  font-family: var(--font-corpo);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.empty-illustration {
-  width: 72px;
-  height: 72px;
-  border-radius: 20px;
-  background: rgba(127, 168, 50, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bbb;
+.empty-icon {
+  color: #ccc;
   margin-bottom: 4px;
 }
 
-.empty-title {
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
+.empty-state p {
   margin: 0;
+  font-size: 14px;
 }
 
 .empty-hint {
-  font-family: var(--font-corpo);
   font-size: 13px;
-  color: var(--texto-light);
-  margin: 0;
+  margin-top: 4px;
 }
 
 /* Remédios list */

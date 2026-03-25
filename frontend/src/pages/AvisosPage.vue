@@ -65,13 +65,11 @@ async function abrirAviso(aviso) {
 
       <!-- Empty -->
       <div v-else-if="store.avisos.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p class="empty-title">Nenhum aviso ainda</p>
+        <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p>Nenhum aviso ainda</p>
         <p class="empty-hint">Os lembretes de medicamentos aparecerão aqui</p>
       </div>
 
@@ -208,7 +206,9 @@ async function abrirAviso(aviso) {
 /* Empty */
 .empty-state {
   text-align: center;
-  padding: 60px 16px;
+  padding: 48px 16px;
+  color: var(--texto-light);
+  font-family: var(--font-corpo);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -216,30 +216,18 @@ async function abrirAviso(aviso) {
 }
 
 .empty-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 20px;
-  background: rgba(127, 168, 50, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bbb;
+  color: #ccc;
   margin-bottom: 4px;
 }
 
-.empty-title {
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
+.empty-state p {
   margin: 0;
+  font-size: 14px;
 }
 
 .empty-hint {
-  font-family: var(--font-corpo);
   font-size: 13px;
-  color: var(--texto-light);
-  margin: 0;
+  margin-top: 4px;
 }
 
 /* List */

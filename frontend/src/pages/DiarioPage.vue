@@ -186,6 +186,7 @@ function formatarDataHora(dataHora) {
           <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
         </svg>
         <p>Nenhuma anotação neste mês</p>
+        <p class="empty-hint">Toque em + para registrar</p>
       </div>
       <template v-else>
         <div class="entries-list">
@@ -394,7 +395,6 @@ function formatarDataHora(dataHora) {
   animation: fadeInUp 0.35s var(--ease-out-smooth);
 }
 
-.loading-state,
 .empty-state {
   text-align: center;
   padding: 48px 16px;
@@ -414,14 +414,11 @@ function formatarDataHora(dataHora) {
 .empty-state p {
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
 }
 
 .empty-hint {
-  font-size: 13px !important;
-  font-weight: 400 !important;
-  color: var(--texto-light) !important;
+  font-size: 13px;
+  margin-top: 4px;
 }
 
 /* FAB */

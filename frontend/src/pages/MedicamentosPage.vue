@@ -657,7 +657,6 @@ onMounted(() => {
   }
 }
 
-.loading-state,
 .empty-state {
   text-align: center;
   padding: 48px 16px;
