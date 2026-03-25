@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -13,12 +13,15 @@ const items = [
   { path: '/perfil', label: 'Perfil' }
 ]
 
+const clickKeys = ref({})
+
 const activeIndex = computed(() => {
   const idx = items.findIndex(i => i.path === route.path)
   return idx >= 0 ? idx : 0
 })
 
 function navTo(path) {
+  clickKeys.value[path] = (clickKeys.value[path] || 0) + 1
   if (route.path === path) {
     router.replace({ path, query: { _r: Date.now() } })
   } else {
@@ -38,30 +41,65 @@ function navTo(path) {
       @click="navTo(item.path)"
     >
       <!-- Início -->
-      <svg v-if="item.path === '/'" class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <svg
+        v-if="item.path === '/'"
+        :key="'home-' + (clickKeys[item.path] || 0)"
+        class="nav-icon"
+        :class="{ 'anim-home': route.path === item.path }"
+        width="22" height="22" viewBox="0 0 24 24" fill="none"
+      >
         <path d="M3 12l9-8 9 8M5 10v9a1 1 0 001 1h3v-5h6v5h3a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+
       <!-- Remédios -->
-      <svg v-else-if="item.path === '/medicamentos'" class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <svg
+        v-else-if="item.path === '/medicamentos'"
+        :key="'med-' + (clickKeys[item.path] || 0)"
+        class="nav-icon"
+        :class="{ 'anim-pill': route.path === item.path }"
+        width="22" height="22" viewBox="0 0 24 24" fill="none"
+      >
         <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
         <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
       </svg>
+
       <!-- Diário -->
-      <svg v-else-if="item.path === '/diario'" class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <svg
+        v-else-if="item.path === '/diario'"
+        :key="'diario-' + (clickKeys[item.path] || 0)"
+        class="nav-icon"
+        :class="{ 'anim-diario': route.path === item.path }"
+        width="22" height="22" viewBox="0 0 24 24" fill="none"
+      >
         <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <!-- Consultas -->
-      <svg v-else-if="item.path === '/consultas'" class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+
+      <!-- Atendimentos -->
+      <svg
+        v-else-if="item.path === '/consultas'"
+        :key="'consult-' + (clickKeys[item.path] || 0)"
+        class="nav-icon"
+        :class="{ 'anim-consult': route.path === item.path }"
+        width="22" height="22" viewBox="0 0 24 24" fill="none"
+      >
         <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
         <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
         <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
+
       <!-- Perfil -->
-      <svg v-else class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <svg
+        v-else
+        :key="'perfil-' + (clickKeys[item.path] || 0)"
+        class="nav-icon"
+        :class="{ 'anim-perfil': route.path === item.path }"
+        width="22" height="22" viewBox="0 0 24 24" fill="none"
+      >
         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
       </svg>
+
       <span class="nav-label">{{ item.label }}</span>
     </button>
   </nav>
@@ -123,4 +161,53 @@ function navTo(path) {
   font-size: 10px;
   font-weight: 500;
 }
+
+/* ── Animações ── */
+
+@keyframes bounce-home {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-5px) scale(1.12); }
+  55%  { transform: translateY(2px) scale(0.94); }
+  75%  { transform: translateY(-2px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes wiggle-pill {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(-18deg); }
+  40%  { transform: rotate(18deg); }
+  65%  { transform: rotate(-10deg); }
+  82%  { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes flip-diario {
+  0%   { transform: scaleY(1); }
+  25%  { transform: scaleY(0.6) scaleX(1.1); }
+  50%  { transform: scaleY(1.15) scaleX(0.95); }
+  75%  { transform: scaleY(0.92); }
+  100% { transform: scaleY(1) scaleX(1); }
+}
+
+@keyframes pulse-consult {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.22); }
+  45%  { transform: scale(0.88); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pop-perfil {
+  0%   { transform: scale(1) translateY(0); }
+  35%  { transform: scale(1.2) translateY(-3px); }
+  60%  { transform: scale(0.9) translateY(1px); }
+  80%  { transform: scale(1.06) translateY(-1px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.anim-home   { animation: bounce-home   0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-pill   { animation: wiggle-pill   0.5s  ease-in-out forwards; }
+.anim-diario { animation: flip-diario   0.4s  ease-in-out forwards; }
+.anim-consult{ animation: pulse-consult 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-perfil { animation: pop-perfil    0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 </style>
