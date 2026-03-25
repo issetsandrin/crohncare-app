@@ -186,18 +186,15 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
             <span class="remedio-dose">{{ item.dose }}</span>
           </div>
           <div class="remedio-status" :class="statusRemedio(item)">
-            <!-- Perdido: X vermelho -->
-            <svg v-if="statusRemedio(item) === 'perdido'" width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <!-- Próximo: relógio amarelo -->
-            <svg v-else-if="statusRemedio(item) === 'proximo'" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <!-- Próximo: relógio amarelo pulsante -->
+            <svg v-if="statusRemedio(item) === 'proximo'" width="18" height="18" viewBox="0 0 18 18" fill="none">
               <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
               <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <!-- Pendente: círculo tracejado -->
+            <!-- Perdido ou pendente: relógio -->
             <svg v-else width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M9 5.5V9l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
         </div>
@@ -450,11 +447,13 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 }
 
 .section-title {
-  font-family: var(--font-titulo);
-  font-size: 16px;
+  font-family: var(--font-corpo);
+  font-size: 11px;
   font-weight: 700;
-  color: var(--texto);
-  margin: 0 0 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-light);
+  margin: 0 0 10px;
 }
 
 
@@ -608,8 +607,8 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 }
 
 .remedio-status.perdido {
-  color: var(--intensidade-5, #e57373);
-  background: rgba(229, 115, 115, 0.1);
+  color: #5B93C7;
+  background: rgba(91, 147, 199, 0.1);
 }
 
 @keyframes pulseAmbar {

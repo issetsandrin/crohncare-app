@@ -211,10 +211,11 @@ function formatarDataHora(dataHora) {
     <div v-else-if="activeTab === 'crises'" class="tab-content">
       <div v-if="crisesMes.length === 0" class="empty-state">
         <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
-          <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        <p>Nenhuma crise registrada neste mês</p>
+        <p>Nenhuma crise neste mês</p>
+        <p class="empty-hint">Toque em + para registrar uma crise</p>
       </div>
       <template v-else>
         <div class="entries-list">
@@ -413,6 +414,14 @@ function formatarDataHora(dataHora) {
 .empty-state p {
   margin: 0;
   font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.empty-hint {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--texto-light) !important;
 }
 
 /* FAB */

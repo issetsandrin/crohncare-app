@@ -90,18 +90,7 @@ async function handleLogout() {
   router.push('/login')
 }
 
-function formatarProximaConsulta(consulta) {
-  if (!consulta) return null
-  const d = new Date(consulta.data_hora)
-  const hoje = new Date()
-  const diff = Math.ceil((d - hoje) / (1000 * 60 * 60 * 24))
-  let quando = ''
-  if (diff === 0) quando = 'Hoje'
-  else if (diff === 1) quando = 'Amanhã'
-  else quando = `Em ${diff} dias`
-  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-  return { quando, hora, medico: consulta.medico, especialidade: consulta.especialidade }
-}
+
 </script>
 
 <template>
@@ -169,22 +158,6 @@ function formatarProximaConsulta(consulta) {
             </svg>
           </div>
           <span class="streak-text"><strong>{{ stats.streak_diario }} {{ stats.streak_diario === 1 ? 'dia' : 'dias' }}</strong> seguidos no diário</span>
-        </div>
-
-        <!-- Próxima consulta -->
-        <div v-if="stats?.proxima_consulta" class="proxima-card" @click="router.push('/consultas')">
-          <div class="proxima-left">
-            <span class="proxima-label">Próxima consulta</span>
-            <span class="proxima-medico">{{ formatarProximaConsulta(stats.proxima_consulta).medico }}</span>
-            <span v-if="stats.proxima_consulta.especialidade" class="proxima-esp">{{ stats.proxima_consulta.especialidade }}</span>
-          </div>
-          <div class="proxima-right">
-            <span class="proxima-quando">{{ formatarProximaConsulta(stats.proxima_consulta).quando }}</span>
-            <span class="proxima-hora">{{ formatarProximaConsulta(stats.proxima_consulta).hora }}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="proxima-arrow">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
         </div>
 
         <!-- Configurações unificadas -->
@@ -438,84 +411,6 @@ function formatarProximaConsulta(consulta) {
 
 .streak-text strong {
   color: #E88A3A;
-}
-
-/* Próxima consulta */
-.proxima-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  border-left: 3px solid var(--verde-salvia);
-}
-
-.proxima-card:active {
-  transform: scale(0.98);
-}
-
-.proxima-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.proxima-label {
-  font-family: var(--font-corpo);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--verde-salvia);
-}
-
-.proxima-medico {
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.proxima-esp {
-  font-family: var(--font-corpo);
-  font-size: 12px;
-  color: var(--texto-light);
-}
-
-.proxima-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-  flex-shrink: 0;
-  margin-left: 12px;
-}
-
-.proxima-quando {
-  font-family: var(--font-corpo);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--texto);
-}
-
-.proxima-hora {
-  font-family: var(--font-corpo);
-  font-size: 12px;
-  color: var(--texto-light);
-}
-
-.proxima-arrow {
-  color: var(--texto-light);
-  margin-top: 4px;
 }
 
 /* Settings card */
