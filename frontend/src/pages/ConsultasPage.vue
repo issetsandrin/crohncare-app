@@ -23,10 +23,30 @@ function defaultForm() {
     medico: '',
     especialidade: '',
     data_hora: '',
+    data_input: '',
+    hora_input: '',
     local: '',
     observacoes: '',
     status: 'agendada'
   }
+}
+
+function splitDataHora(isoStr) {
+  if (!isoStr) return { data: '', hora: '' }
+  const d = new Date(isoStr)
+  const dia = String(d.getDate()).padStart(2, '0')
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const ano = d.getFullYear()
+  const h = String(d.getHours()).padStart(2, '0')
+  const m = String(d.getMinutes()).padStart(2, '0')
+  return { data: `${dia}/${mes}/${ano}`, hora: `${h}:${m}` }
+}
+
+function parseDataHora(dataStr, horaStr) {
+  if (!dataStr) return ''
+  const [dia, mes, ano] = dataStr.split('/')
+  const hora = horaStr || '00:00'
+  return `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}T${hora}:00`
 }
 
 function abrirNova() {
@@ -43,10 +63,13 @@ function abrirDetalhes(consulta) {
 function editarDoDetalhe() {
   showDetail.value = false
   editing.value = selected.value
+  const dt = splitDataHora(selected.value.data_hora)
   form.value = {
     medico: selected.value.medico,
     especialidade: selected.value.especialidade || '',
     data_hora: selected.value.data_hora,
+    data_input: dt.data,
+    hora_input: dt.hora,
     local: selected.value.local || '',
     observacoes: selected.value.observacoes || '',
     status: selected.value.status
@@ -61,10 +84,11 @@ function excluirDoDetalhe() {
 
 async function salvar() {
   try {
+    const payload = { ...form.value, data_hora: parseDataHora(form.value.data_input, form.value.hora_input) }
     if (editing.value) {
-      await store.update(editing.value.id, form.value)
+      await store.update(editing.value.id, payload)
     } else {
-      await store.create(form.value)
+      await store.create(payload)
     }
     showForm.value = false
   } catch (e) {
@@ -97,6 +121,8 @@ function defaultExameForm() {
     nome: '',
     tipo: '',
     data: '',
+    data_input: '',
+    hora_input: '',
     local: '',
     observacoes: '',
     status: 'agendado'
@@ -117,10 +143,13 @@ function abrirDetalhesExame(exame) {
 function editarExameDoDetalhe() {
   showExameDetail.value = false
   editingExame.value = selectedExame.value
+  const dtEx = splitDataHora(selectedExame.value.data)
   exameForm.value = {
     nome: selectedExame.value.nome,
     tipo: selectedExame.value.tipo || '',
     data: selectedExame.value.data,
+    data_input: dtEx.data,
+    hora_input: dtEx.hora,
     local: selectedExame.value.local || '',
     observacoes: selectedExame.value.observacoes || '',
     status: selectedExame.value.status
@@ -135,10 +164,11 @@ function cancelarExameDoDetalhe() {
 
 async function salvarExame() {
   try {
+    const payload = { ...exameForm.value, data: parseDataHora(exameForm.value.data_input, exameForm.value.hora_input) }
     if (editingExame.value) {
-      await examesStore.update(editingExame.value.id, exameForm.value)
+      await examesStore.update(editingExame.value.id, payload)
     } else {
-      await examesStore.create(exameForm.value)
+      await examesStore.create(payload)
     }
     showExameForm.value = false
   } catch (e) {
@@ -160,16 +190,6 @@ async function confirmarCancelamentoExame() {
 // ─── Tabs ────────────────────────────────────────────────────
 const activeTab = ref('proximas')
 
-const listaFiltrada = computed(() => {
-  if (activeTab.value === 'proximas') return store.proximas
-  if (activeTab.value === 'historico') return store.passadas
-  return []
-})
-
-const listaExamesFiltrada = computed(() => {
-  return activeTab.value === 'exames' ? examesStore.proximos : []
-})
-
 onMounted(() => {
   store.fetchAll()
   examesStore.fetchAll()
@@ -183,6 +203,8 @@ function abrirNovoPorTab() {
     abrirNova()
   }
 }
+
+const totalProximas = computed(() => store.proximas.length + examesStore.proximos.length)
 
 // ─── Formatação ──────────────────────────────────────────────
 function formatarData(dt) {
@@ -247,7 +269,7 @@ const tiposExame = [
         @click="activeTab = 'proximas'"
       >
         Próximas
-        <span v-if="store.proximas.length" class="tab-count">{{ store.proximas.length }}</span>
+        <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
       </button>
       <button
         class="tab-btn"
@@ -257,63 +279,82 @@ const tiposExame = [
         Exames
         <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
       </button>
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'historico' }"
-        @click="activeTab = 'historico'"
-      >
-        Histórico
-      </button>
     </div>
 
     <div class="page-content">
       <!-- Loading -->
       <LoadingDots v-if="store.loading || examesStore.loading" />
 
-      <!-- Aba Consultas (Próximas / Histórico) -->
-      <template v-else-if="activeTab !== 'exames'">
-        <div v-if="listaFiltrada.length === 0" class="empty-state">
+      <!-- Aba Próximas: consultas + exames agendados -->
+      <template v-else-if="activeTab === 'proximas'">
+        <div v-if="store.proximas.length === 0 && examesStore.proximos.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <p>{{ activeTab === 'proximas' ? 'Nenhuma consulta agendada' : 'Nenhuma consulta no histórico' }}</p>
-          <p class="empty-hint">{{ activeTab === 'proximas' ? 'Toque no botão + para agendar' : 'Suas consultas realizadas aparecerão aqui' }}</p>
+          <p>Nenhuma consulta ou exame agendado</p>
+          <p class="empty-hint">Toque no botão + para agendar</p>
         </div>
 
         <div v-else class="consultas-list">
-          <div
-            v-for="(consulta, i) in listaFiltrada"
-            :key="consulta.id"
-            class="consulta-card"
-            :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
-            :style="{ animationDelay: i * 0.04 + 's' }"
-            @click="abrirDetalhes(consulta)"
-          >
-            <div class="consulta-icon-box" :class="consulta.status">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
+          <!-- Consultas Agendadas -->
+          <template v-if="store.proximas.length > 0">
+            <p class="section-label">Consultas Agendadas</p>
+            <div
+              v-for="(consulta, i) in store.proximas"
+              :key="'c' + consulta.id"
+              class="consulta-card"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhes(consulta)"
+            >
+              <div class="consulta-icon-box" :class="consulta.status">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ consulta.medico }}</span>
+                <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+                <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+                <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
+              </div>
             </div>
-            <div class="consulta-info">
-              <span class="consulta-medico">{{ consulta.medico }}</span>
-              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+          </template>
+
+          <!-- Exames Agendados -->
+          <template v-if="examesStore.proximos.length > 0">
+            <p class="section-label" :style="{ marginTop: store.proximas.length ? '16px' : '0' }">Exames Agendados</p>
+            <div
+              v-for="(exame, i) in examesStore.proximos"
+              :key="'e' + exame.id"
+              class="consulta-card"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhesExame(exame)"
+            >
+              <div class="consulta-icon-box exame-agendado">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ exame.nome }}</span>
+                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
+                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
+              </div>
             </div>
-            <div class="consulta-badge-area">
-              <span v-if="diasAte(consulta.data_hora) && consulta.status === 'agendada'" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
-              <span v-else-if="consulta.status === 'realizada'" class="status-badge realizada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-              </span>
-            </div>
-          </div>
+          </template>
         </div>
       </template>
 
@@ -433,7 +474,10 @@ const tiposExame = [
 
         <div class="form-group">
           <label class="form-label">Data e hora</label>
-          <input v-model="form.data_hora" type="datetime-local" class="form-input" required />
+          <div class="data-hora-row">
+            <input v-model="form.data_input" type="text" class="form-input" placeholder="DD/MM/AAAA" required />
+            <input v-model="form.hora_input" type="text" class="form-input hora-input" placeholder="HH:MM" required />
+          </div>
         </div>
 
         <div class="form-group">
@@ -544,7 +588,10 @@ const tiposExame = [
 
         <div class="form-group">
           <label class="form-label">Data e hora</label>
-          <input v-model="exameForm.data" type="datetime-local" class="form-input" required />
+          <div class="data-hora-row">
+            <input v-model="exameForm.data_input" type="text" class="form-input" placeholder="DD/MM/AAAA" required />
+            <input v-model="exameForm.hora_input" type="text" class="form-input hora-input" placeholder="HH:MM" required />
+          </div>
         </div>
 
         <div class="form-group">
@@ -1143,5 +1190,14 @@ const tiposExame = [
 .delete-actions {
   display: flex;
   gap: 8px;
+}
+
+.data-hora-row {
+  display: flex;
+  gap: 8px;
+}
+
+.hora-input {
+  max-width: 100px;
 }
 </style>
