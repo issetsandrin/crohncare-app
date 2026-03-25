@@ -14,35 +14,13 @@ const notifStore = useNotificacoesStore()
 const avisosStore = useAvisosStore()
 
 const loading = ref(true)
-const naoLidosCount = ref(0)
+
+// Usa diretamente o estado reativo do store (não ref local)
+const naoLidosCount = computed(() => avisosStore.naoLidosCount)
 
 function abrirAvisos() {
   router.push('/avisos')
 }
-
-onMounted(async () => {
-  try {
-    await medStore.fetchAll()
-    notifStore.inicializar()
-    avisosStore.fetchNaoLidos().then(count => { naoLidosCount.value = count })
-  } catch (e) {
-    // stores already log errors
-  } finally {
-    loading.value = false
-  }
-})
-
-const firstName = computed(() => {
-  const nome = authStore.user?.nome || ''
-  return nome.split(' ')[0]
-})
-
-const saudacao = computed(() => {
-  const hora = new Date().getHours()
-  if (hora < 12) return 'Bom dia'
-  if (hora < 18) return 'Boa tarde'
-  return 'Boa noite'
-})
 
 const dicasSaude = [
   'Beber bastante água ajuda na digestão e reduz inflamações',
@@ -61,6 +39,7 @@ const dicasSaude = [
 
 const dicaAtual = ref(0)
 let dicaInterval = null
+let pollingInterval = null
 
 function shuffleDicas() {
   const shuffled = [...dicasSaude].sort(() => Math.random() - 0.5)
@@ -69,14 +48,30 @@ function shuffleDicas() {
 
 shuffleDicas()
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    await medStore.fetchAll()
+    notifStore.inicializar()
+    avisosStore.fetchNaoLidos()
+  } catch (e) {
+    // stores already log errors
+  } finally {
+    loading.value = false
+  }
+
   dicaInterval = setInterval(() => {
     dicaAtual.value = (dicaAtual.value + 1) % dicasSaude.length
   }, 6000)
+
+  // Polling a cada 30s para manter badge atualizado
+  pollingInterval = setInterval(() => {
+    avisosStore.fetchNaoLidos()
+  }, 30000)
 })
 
 onUnmounted(() => {
   if (dicaInterval) clearInterval(dicaInterval)
+  if (pollingInterval) clearInterval(pollingInterval)
 })
 
 const proximoAlarme = computed(() => {
