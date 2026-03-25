@@ -25,8 +25,16 @@ export const useMedicamentosStore = defineStore('medicamentos', {
 
       const horarios = []
 
+      const diaSemanaHoje = agora.getDay() // 0=Dom, 1=Seg, ... 6=Sáb
+
       state.lista.forEach((med) => {
         if (!med.ativo || !med.horarios || med.periodicidade_tipo === 'sob_demanda') return
+
+        // Dias da semana: só exibe nos dias configurados
+        if (med.periodicidade_tipo === 'dias_semana') {
+          const dias = med.periodicidade_valor?.dias ?? []
+          if (!dias.includes(diaSemanaHoje)) return
+        }
 
         let diaCiclo = null
         let totalCiclo = null
