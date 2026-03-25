@@ -9,7 +9,7 @@ const items = [
   { path: '/', label: 'Início' },
   { path: '/medicamentos', label: 'Remédios' },
   { path: '/diario', label: 'Diário' },
-  { path: '/consultas', label: 'Atendimentos' },
+  { path: '/consultas', label: 'Consultas' },
   { path: '/perfil', label: 'Perfil' }
 ]
 
