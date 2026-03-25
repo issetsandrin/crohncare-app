@@ -487,20 +487,20 @@ const tiposExame = [
 
     <!-- Modal Detalhes Consulta -->
     <ModalBase v-model="showDetail" title="">
-      <div v-if="selected" class="detail">
-        <div class="detail-header">
-          <div class="detail-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="detail-header-text">
-            <span class="detail-status" :class="selected.status">{{ selected.status === 'agendada' ? 'Agendada' : selected.status === 'realizada' ? 'Realizada' : 'Cancelada' }}</span>
-            <span class="detail-data">{{ formatarDataCompleta(selected.data_hora) }}</span>
-          </div>
+      <template v-if="selected" #header>
+        <div class="detail-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
         </div>
+        <div class="detail-header-text">
+          <span class="detail-status" :class="selected.status">{{ selected.status === 'agendada' ? 'Agendada' : selected.status === 'realizada' ? 'Realizada' : 'Cancelada' }}</span>
+          <span class="detail-data">{{ formatarDataCompleta(selected.data_hora) }}</span>
+        </div>
+      </template>
 
+      <div v-if="selected" class="detail">
         <h3 class="detail-medico">{{ selected.medico }}</h3>
         <span v-if="selected.especialidade" class="detail-especialidade">{{ selected.especialidade }}</span>
 
@@ -601,23 +601,23 @@ const tiposExame = [
 
     <!-- Modal Detalhes Exame -->
     <ModalBase v-model="showExameDetail" title="">
-      <div v-if="selectedExame" class="detail">
-        <div class="detail-header">
-          <div class="detail-icon-wrap exame-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="detail-header-text">
-            <span class="detail-status" :class="selectedExame.status === 'cancelado' ? 'cancelada' : selectedExame.status === 'realizado' ? 'realizada' : 'agendada'">
-              {{ selectedExame.status === 'agendado' ? 'Agendado' : selectedExame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
-            </span>
-            <span class="detail-data">{{ formatarDataCompleta(selectedExame.data) }}</span>
-          </div>
+      <template v-if="selectedExame" #header>
+        <div class="detail-icon-wrap exame-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
         </div>
+        <div class="detail-header-text">
+          <span class="detail-status" :class="selectedExame.status === 'cancelado' ? 'cancelada' : selectedExame.status === 'realizado' ? 'realizada' : 'agendada'">
+            {{ selectedExame.status === 'agendado' ? 'Agendado' : selectedExame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
+          </span>
+          <span class="detail-data">{{ formatarDataCompleta(selectedExame.data) }}</span>
+        </div>
+      </template>
 
+      <div v-if="selectedExame" class="detail">
         <h3 class="detail-medico">{{ selectedExame.nome }}</h3>
         <span v-if="selectedExame.tipo" class="detail-especialidade">{{ selectedExame.tipo }}</span>
 
@@ -1055,6 +1055,7 @@ const tiposExame = [
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-left: 12px;
 }
 
 .detail-status {

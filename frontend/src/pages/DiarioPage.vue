@@ -247,24 +247,24 @@ function formatarDataHora(dataHora) {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <div v-if="selectedItem" class="detail">
-        <div class="detail-header">
-          <div class="detail-icon-wrap" :class="{ 'crise-icon-wrap': selectedType === 'crise' }">
-            <svg v-if="selectedType === 'crise'" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="detail-header-text">
-            <span class="detail-tipo" :class="selectedType">{{ selectedType === 'crise' ? 'Crise' : 'Anotação' }}</span>
-            <span class="detail-data-text">{{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}</span>
-          </div>
+      <template v-if="selectedItem" #header>
+        <div class="detail-icon-wrap" :class="{ 'crise-icon-wrap': selectedType === 'crise' }">
+          <svg v-if="selectedType === 'crise'" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
         </div>
+        <div class="detail-header-text">
+          <span class="detail-tipo" :class="selectedType">{{ selectedType === 'crise' ? 'Crise' : 'Anotação' }}</span>
+          <span class="detail-data-text">{{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}</span>
+        </div>
+      </template>
 
+      <div v-if="selectedItem" class="detail">
         <div class="detail-intensidade-row">
           <span class="detail-row-label">Intensidade</span>
           <IntensidadeDots :valor="selectedItem.intensidade" />
@@ -546,6 +546,7 @@ function formatarDataHora(dataHora) {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-left: 12px;
 }
 
 .detail-tipo {

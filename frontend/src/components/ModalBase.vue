@@ -21,7 +21,11 @@ function onBackdropClick(e) {
       <div v-if="modelValue" class="modal-backdrop" @click="onBackdropClick">
         <div class="modal-card">
           <div class="modal-header">
-            <h2 class="modal-title">{{ title }}</h2>
+            <div class="modal-header-left">
+              <slot name="header">
+                <h2 class="modal-title">{{ title }}</h2>
+              </slot>
+            </div>
             <button class="modal-close" @click="close" aria-label="Fechar">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -62,7 +66,15 @@ function onBackdropClick(e) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
+}
+
+.modal-header-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
 }
 
 .modal-title {

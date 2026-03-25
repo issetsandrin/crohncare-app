@@ -283,32 +283,36 @@ onMounted(() => {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <div v-if="selectedMed" class="detail">
-        <div class="detail-header">
-          <div class="detail-icon-wrap" :class="nivelAlerta(diasRestantes(selectedMed))">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
-              <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
-            </svg>
-          </div>
-          <div class="detail-header-text">
-            <span class="detail-status" :class="nivelAlerta(diasRestantes(selectedMed))">
-              {{ nivelAlerta(diasRestantes(selectedMed)) === 'urgente' ? 'Estoque crítico' : nivelAlerta(diasRestantes(selectedMed)) === 'atencao' ? 'Estoque baixo' : 'Em dia' }}
-            </span>
-            <span class="detail-data">{{ periodicidadeTexto(selectedMed) }}</span>
-          </div>
-        </div>
-
-        <h3 class="detail-medico">{{ selectedMed.nome }}</h3>
-        <span class="detail-especialidade">{{ selectedMed.dose_hoje || selectedMed.dose || '—' }}</span>
-
-        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && selectedMed.horarios?.length" class="detail-row">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <template v-if="selectedMed" #header>
+        <div class="detail-icon-wrap" :class="nivelAlerta(diasRestantes(selectedMed))">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
           </svg>
-          <div class="detail-tags">
-            <span v-for="h in selectedMed.horarios" :key="h" class="detail-tag">{{ h.substring(0, 5) }}</span>
+        </div>
+        <div class="detail-header-text">
+          <span class="detail-status" :class="nivelAlerta(diasRestantes(selectedMed))">
+            {{ nivelAlerta(diasRestantes(selectedMed)) === 'urgente' ? 'Estoque crítico' : nivelAlerta(diasRestantes(selectedMed)) === 'atencao' ? 'Estoque baixo' : 'Em dia' }}
+          </span>
+          <span class="detail-data">{{ periodicidadeTexto(selectedMed) }}</span>
+        </div>
+      </template>
+
+      <div v-if="selectedMed" class="detail">
+        <h3 class="detail-medico">{{ selectedMed.nome }}</h3>
+
+        <!-- Callout de dosagem -->
+        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && (selectedMed.dose_hoje || selectedMed.dose)" class="detail-tomar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          <div class="detail-tomar-text">
+            <span class="detail-tomar-principal">Tomar {{ selectedMed.dose_hoje || selectedMed.dose }}</span>
+            <span v-if="selectedMed.horarios?.length" class="detail-tomar-sub">
+              {{ selectedMed.horarios.length === 1 ? '1x hoje' : `${selectedMed.horarios.length}x hoje` }}
+              · às {{ selectedMed.horarios.map(h => h.substring(0, 5)).join(', ') }}
+            </span>
           </div>
         </div>
 
@@ -693,12 +697,6 @@ onMounted(() => {
   gap: 16px;
 }
 
-.detail-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .detail-icon-wrap {
   width: 48px;
   height: 48px;
@@ -725,6 +723,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-left: 12px;
 }
 
 .detail-status {
@@ -752,11 +751,34 @@ onMounted(() => {
   margin: 0;
 }
 
-.detail-especialidade {
+.detail-tomar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(127, 168, 50, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--verde-salvia);
+  color: var(--verde-salvia);
+}
+
+.detail-tomar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-tomar-principal {
   font-family: var(--font-corpo);
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--verde-salvia);
+}
+
+.detail-tomar-sub {
+  font-family: var(--font-corpo);
+  font-size: 12px;
   color: var(--texto-light);
-  margin-top: -8px;
 }
 
 .detail-row {
