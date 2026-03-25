@@ -29,6 +29,16 @@ const periodicidadeTexto = computed(() => {
 
 const doseHoje = computed(() => props.medicamento.dose_hoje || props.medicamento.dose || '')
 
+const doseTomar = computed(() => {
+  const raw = String(doseHoje.value).trim()
+  if (!raw) return ''
+  if (props.medicamento.periodicidade_tipo === 'ciclo' && /^\d+$/.test(raw)) {
+    const n = parseInt(raw)
+    return `Tomar ${n} comprimido${n !== 1 ? 's' : ''}`
+  }
+  return `Tomar ${raw}`
+})
+
 const estoqueLabel = computed(() => {
   if (quantidade.value <= 0) return 'Sem estoque'
   if (nivel.value === 'urgente') return `${quantidade.value} un restantes`
@@ -51,7 +61,7 @@ const estoqueLabel = computed(() => {
         <div class="card-main">
           <div class="card-title-row">
             <h3 class="card-nome">{{ medicamento.nome }}</h3>
-            <span class="card-dose-badge">{{ doseHoje }}</span>
+            <span class="card-dose-badge">{{ doseTomar }}</span>
           </div>
           <span class="card-periodicidade">{{ periodicidadeTexto }}</span>
         </div>

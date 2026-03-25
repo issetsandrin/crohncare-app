@@ -185,7 +185,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
               <span class="remedio-nome">{{ item.nome }}</span>
               <span v-if="item.diaCiclo" class="ciclo-badge">Dia {{ item.diaCiclo }}/{{ item.totalCiclo }}</span>
             </div>
-            <span class="remedio-dose">{{ item.dose }}</span>
+            <span class="remedio-dose">Tomar {{ item.dose }}</span>
           </div>
           <div class="remedio-status-icon" :class="statusRemedio(item)">
             <svg v-if="statusRemedio(item) === 'proximo'" width="16" height="16" viewBox="0 0 18 18" fill="none">
