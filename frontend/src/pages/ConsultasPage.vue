@@ -269,7 +269,7 @@ const tiposExame = [
         :class="{ active: activeTab === 'proximas' }"
         @click="activeTab = 'proximas'"
       >
-        Próximas
+        Consultas
         <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
       </button>
       <button
