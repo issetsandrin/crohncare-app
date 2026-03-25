@@ -4,6 +4,9 @@ import router from './router'
 import App from './App.vue'
 import './styles/global.css'
 import { useAuthStore } from './stores/auth'
+import { aplicarTema } from './composables/useTheme'
+
+aplicarTema(localStorage.getItem('tema') || 'verde')
 
 const app = createApp(App)
 const pinia = createPinia()

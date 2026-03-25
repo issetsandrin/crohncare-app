@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useNotificacoesStore } from '../stores/notificacoes'
+import { useTheme, LISTA_TEMAS } from '../composables/useTheme'
 import api from '../composables/useApi'
 import AppBar from '../components/AppBar.vue'
 import ModalBase from '../components/ModalBase.vue'
@@ -59,6 +60,14 @@ const tipoLabels = {
   retocolite: 'Retocolite Ulcerativa',
   indeterminada: 'Colite Indeterminada',
   nao_sei: 'Não definido'
+}
+
+const { getTema, setTema } = useTheme()
+const temaAtual = ref(getTema())
+
+function selecionarTema(id) {
+  temaAtual.value = id
+  setTema(id)
 }
 
 const notificacoesAtivas = computed(() => notifStore.ativa)
@@ -179,6 +188,36 @@ async function handleLogout() {
             <button class="toggle" :class="{ active: notificacoesAtivas }" @click="toggleNotificacoes" role="switch" :aria-checked="notificacoesAtivas">
               <span class="toggle-thumb" />
             </button>
+          </div>
+
+          <div class="settings-sep" />
+
+          <!-- Tema -->
+          <div class="settings-row settings-row--tema">
+            <div class="settings-row-left">
+              <div class="settings-icon-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M12 3a9 9 0 000 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <circle cx="12" cy="12" r="3" fill="currentColor" opacity=".3"/>
+                </svg>
+              </div>
+              <div class="settings-text">
+                <span class="settings-label">Tema</span>
+                <span class="settings-hint">Cor principal do app</span>
+              </div>
+            </div>
+            <div class="tema-swatches">
+              <button
+                v-for="t in LISTA_TEMAS"
+                :key="t.id"
+                class="swatch"
+                :class="{ active: temaAtual === t.id }"
+                :style="{ '--swatch-cor': t.cor }"
+                :aria-label="t.label"
+                @click="selecionarTema(t.id)"
+              />
+            </div>
           </div>
 
           <div class="settings-sep" />
@@ -522,6 +561,42 @@ async function handleLogout() {
 
 .toggle.active .toggle-thumb {
   transform: translateX(18px);
+}
+
+/* Tema swatches */
+.settings-row--tema {
+  cursor: default;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tema-swatches {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--swatch-cor);
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.swatch.active {
+  border-color: var(--swatch-cor);
+  outline: 2px solid color-mix(in srgb, var(--swatch-cor) 30%, transparent);
+  outline-offset: 2px;
+  transform: scale(1.15);
+}
+
+.swatch:active {
+  transform: scale(0.9);
 }
 
 /* Footer */
