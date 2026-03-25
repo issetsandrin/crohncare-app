@@ -116,7 +116,10 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
             </div>
           </div>
           <button class="hero-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <svg
+              width="22" height="22" viewBox="0 0 24 24" fill="none"
+              :class="{ 'bell-ring': naoLidosCount > 0 }"
+            >
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -645,6 +648,22 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 @keyframes pulseAmbar {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 160, 60, 0.3); }
   50% { box-shadow: 0 0 0 5px rgba(212, 160, 60, 0); }
+}
+
+/* Bell ring animation — ativa somente quando há avisos não lidos */
+@keyframes bell-ring {
+  0%, 75%, 100% { transform: rotate(0); }
+  78%  { transform: rotate(18deg); }
+  82%  { transform: rotate(-15deg); }
+  86%  { transform: rotate(12deg); }
+  90%  { transform: rotate(-8deg); }
+  93%  { transform: rotate(5deg); }
+  96%  { transform: rotate(-2deg); }
+}
+
+.bell-ring {
+  transform-origin: top center;
+  animation: bell-ring 3.5s ease infinite;
 }
 
 </style>

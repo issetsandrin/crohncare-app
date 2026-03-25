@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { getFcmToken, onForegroundMessage } from '../firebase'
 import api from '../composables/useApi'
 import { useRegistrosUsoStore } from './registrosUso'
+import { useAvisosStore } from './avisos'
 
 export const useNotificacoesStore = defineStore('notificacoes', {
   state: () => ({
@@ -75,9 +76,13 @@ export const useNotificacoesStore = defineStore('notificacoes', {
         if (title && Notification.permission === 'granted') {
           new Notification(title, {
             body,
-            icon: '/icons/icon-192x192.svg'
+            icon: '/icons/icon-192x192.png'
           })
         }
+
+        // Atualiza badge de avisos não lidos em tempo real
+        const avisosStore = useAvisosStore()
+        avisosStore.incrementarNaoLidos()
 
         // Se for notificação de medicamento, sinalizar para o modal de tomada
         const data = payload.data || {}

@@ -55,5 +55,11 @@ export const useAvisosStore = defineStore('avisos', () => {
     }
   }
 
-  return { avisos, loading, naoLidos, naoLidosCount, fetchAll, fetchNaoLidos, marcarLido, marcarTodosLidos }
+  function incrementarNaoLidos() {
+    naoLidosCount.value++
+    // Atualiza a lista em background para refletir o novo aviso
+    fetchAll().catch(() => {})
+  }
+
+  return { avisos, loading, naoLidos, naoLidosCount, fetchAll, fetchNaoLidos, marcarLido, marcarTodosLidos, incrementarNaoLidos }
 })
