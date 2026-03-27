@@ -247,9 +247,17 @@ const estoqueLabel = computed(() => {
 .estoque-label.atencao { color: var(--ambar); }
 
 @media (min-width: 769px) {
+  .medicamento-card {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s var(--ease-smooth);
+  }
+
   .medicamento-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow: none;
+    border-color: var(--verde-salvia);
   }
 
   .medicamento-card:active {

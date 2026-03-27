@@ -677,8 +677,8 @@ async function handleLogout() {
     align-items: center;
     justify-content: space-between;
     padding: 28px 40px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    background: transparent;
     flex-shrink: 0;
   }
 
@@ -743,6 +743,9 @@ async function handleLogout() {
     border-radius: 20px;
     padding: 20px 0;
     margin-bottom: 16px;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .stat-num {
@@ -755,6 +758,9 @@ async function handleLogout() {
 
   .settings-card {
     border-radius: 20px;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .settings-row {

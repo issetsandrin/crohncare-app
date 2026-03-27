@@ -10,7 +10,6 @@ const items = [
   { path: '/medicamentos', label: 'Remédios' },
   { path: '/diario', label: 'Diário' },
   { path: '/consultas', label: 'Consultas' },
-  { path: '/perfil', label: 'Perfil' }
 ]
 
 const clickKeys = ref({})
@@ -109,8 +108,8 @@ function navTo(path) {
   width: 220px;
   min-width: 220px;
   height: 100%;
-  background: #fff;
-  border-right: 1px solid #e8e8e8;
+  background: var(--verde-bg);
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
   position: sticky;

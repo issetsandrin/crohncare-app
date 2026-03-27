@@ -709,8 +709,8 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
     align-items: center;
     justify-content: space-between;
     padding: 28px 40px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    background: transparent;
     flex-shrink: 0;
   }
 
@@ -792,6 +792,9 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   .stat-card {
     padding: 20px 24px;
     border-radius: 16px;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .stat-number {
@@ -820,11 +823,14 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
   .remedio-card {
     cursor: default;
-    transition: box-shadow 0.2s var(--ease-smooth);
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s var(--ease-smooth);
   }
 
   .remedio-card:hover {
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    border-color: var(--verde-salvia);
     transform: none;
   }
 

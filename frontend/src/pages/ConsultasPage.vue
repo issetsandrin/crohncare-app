@@ -1218,7 +1218,7 @@ const tiposExame = [
     align-items: center;
     justify-content: space-between;
     padding: 24px 40px 20px;
-    background: #fff;
+    background: transparent;
     flex-shrink: 0;
   }
 
@@ -1318,11 +1318,14 @@ const tiposExame = [
   }
 
   .consulta-card {
-    transition: box-shadow 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s var(--ease-smooth);
   }
 
   .consulta-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--verde-salvia);
     transform: translateY(-1px);
   }
 }
