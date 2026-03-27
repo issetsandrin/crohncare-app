@@ -680,15 +680,19 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    height: 100%;
   }
 
+  /* No desktop, a hero vira um header clean sem fundo verde */
   .hero {
-    padding: 28px 32px 28px;
+    padding: 28px 40px 20px;
     flex-shrink: 0;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
   }
 
   .hero-bg {
-    border-radius: 0 0 20px 20px;
+    display: none;
   }
 
   .hero-content {
@@ -701,22 +705,49 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
     flex: 1;
   }
 
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(127, 168, 50, 0.12);
+    color: var(--verde-salvia);
+    font-size: 20px;
+  }
+
   .hero-greeting {
-    font-size: 24px;
+    font-size: 1.5rem;
+    color: var(--texto);
   }
 
   .hero-dica-texto {
     font-size: 13px;
+    color: var(--texto-light);
+  }
+
+  .hero-alerts-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--texto-light);
+  }
+
+  .hero-alerts-btn.has-alerts {
+    color: var(--terracota);
+    background: rgba(229, 115, 115, 0.1);
   }
 
   .proximo-card {
-    min-width: 300px;
-    max-width: 380px;
+    min-width: 280px;
+    max-width: 360px;
     flex-shrink: 0;
+    background: rgba(127, 168, 50, 0.08);
+    border: 1px solid rgba(127, 168, 50, 0.15);
   }
 
+  .proximo-icon { color: var(--verde-salvia); }
+  .proximo-label { color: var(--texto-light); }
+  .proximo-detail { color: var(--texto); }
+
   .stats-row {
-    padding: 20px 32px 0;
+    padding: 24px 40px 0;
     gap: 16px;
   }
 
@@ -734,7 +765,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   }
 
   .remedios-section {
-    padding: 20px 32px 32px;
+    padding: 24px 40px 40px;
     flex: 1;
   }
 
@@ -745,7 +776,7 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
   .remedios-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 12px;
   }
 

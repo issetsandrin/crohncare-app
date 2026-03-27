@@ -153,6 +153,27 @@ function formatarDataHora(dataHora) {
   <main class="diario-page">
     <AppBar title="Diário" subtitle="Registre sintomas e acompanhe seu dia a dia" />
 
+    <div class="desktop-page-header">
+      <div class="dph-text">
+        <h1 class="dph-title">Diário de Saúde</h1>
+        <p class="dph-subtitle">Registre anotações, sintomas e crises ao longo do tempo</p>
+      </div>
+      <div class="dph-actions">
+        <button class="dph-action secondary" @click="abrirNovaCrise">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Registrar crise
+        </button>
+        <button class="dph-action" @click="abrirNovaEntrada">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Nova anotação
+        </button>
+      </div>
+    </div>
+
     <div class="page-content">
     <MesNavegacao v-model="mesAtual" />
 
@@ -334,6 +355,10 @@ function formatarDataHora(dataHora) {
   overflow: hidden;
 }
 
+.desktop-page-header {
+  display: none;
+}
+
 .page-content {
   padding: 0 16px;
 }
@@ -453,8 +478,7 @@ function formatarDataHora(dataHora) {
 
 @media (min-width: 769px) {
   .fab {
-    right: 24px;
-    bottom: 24px;
+    display: none;
   }
 }
 
@@ -735,18 +759,89 @@ function formatarDataHora(dataHora) {
     padding-bottom: 0;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 40px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dph-subtitle {
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto-light);
+    margin: 0;
+  }
+
+  .dph-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .dph-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--verde-salvia);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-corpo);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-smooth), transform 0.15s var(--ease-smooth);
+  }
+
+  .dph-action:hover {
+    background: var(--verde-claro);
+    transform: translateY(-1px);
+  }
+
+  .dph-action.secondary {
+    background: transparent;
+    color: var(--verde-salvia);
+    border: 1.5px solid var(--verde-salvia);
+  }
+
+  .dph-action.secondary:hover {
+    background: rgba(127, 168, 50, 0.06);
+    transform: translateY(-1px);
   }
 
   .page-content {
     flex: 1;
     overflow-y: auto;
-    padding: 0 32px 80px;
+    padding: 28px 40px 40px;
   }
 
   .entries-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
     align-items: start;
   }
 

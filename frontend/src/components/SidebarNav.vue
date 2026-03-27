@@ -28,6 +28,7 @@ function navTo(path) {
 <template>
   <aside class="sidebar-nav">
     <nav class="sidebar-items">
+      <span class="sidebar-section-label">Menu</span>
       <button
         v-for="item in items"
         :key="item.path"
@@ -105,9 +106,9 @@ function navTo(path) {
 
 <style scoped>
 .sidebar-nav {
-  width: 240px;
-  min-width: 240px;
-  height: 100vh;
+  width: 220px;
+  min-width: 220px;
+  height: 100%;
   background: #fff;
   border-right: 1px solid #e8e8e8;
   display: flex;
@@ -120,8 +121,21 @@ function navTo(path) {
 .sidebar-items {
   display: flex;
   flex-direction: column;
-  padding: 12px 0;
+  padding: 20px 12px;
   flex: 1;
+  gap: 2px;
+}
+
+.sidebar-section-label {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--texto-light);
+  padding: 0 10px;
+  margin-bottom: 6px;
+  opacity: 0.6;
 }
 
 .sidebar-item {
@@ -129,9 +143,9 @@ function navTo(path) {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  border-radius: 0;
-  transition: background 0.2s var(--ease-smooth), color 0.2s var(--ease-smooth);
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: background 0.15s var(--ease-smooth), color 0.15s var(--ease-smooth);
   color: var(--texto-light);
   background: none;
   border: none;
@@ -141,34 +155,28 @@ function navTo(path) {
 }
 
 .sidebar-item:hover {
-  background: rgba(127, 168, 50, 0.04);
+  background: rgba(127, 168, 50, 0.06);
   color: var(--texto);
 }
 
 .sidebar-item.active {
-  background: rgba(127, 168, 50, 0.08);
+  background: rgba(127, 168, 50, 0.1);
   color: var(--verde-salvia);
 }
 
 .sidebar-active-bar {
-  position: absolute;
-  left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 3px;
-  background: var(--verde-salvia);
-  border-radius: 0 3px 3px 0;
+  display: none;
 }
 
 .sidebar-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
 
 .sidebar-label {
   font-family: var(--font-corpo);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
 }
 

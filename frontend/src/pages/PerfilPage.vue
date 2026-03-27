@@ -106,6 +106,13 @@ async function handleLogout() {
   <div class="perfil-page">
     <AppBar title="Perfil" subtitle="Seu resumo pessoal" />
 
+    <div class="desktop-page-header">
+      <div class="dph-text">
+        <h1 class="dph-title">Meu Perfil</h1>
+        <p class="dph-subtitle">Configurações da conta e preferências</p>
+      </div>
+    </div>
+
     <div class="page-content">
       <LoadingDots v-if="loading" />
 
@@ -261,6 +268,10 @@ async function handleLogout() {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.desktop-page-header {
+  display: none;
 }
 
 .page-content {
@@ -656,9 +667,46 @@ async function handleLogout() {
 
 /* ── Desktop ── */
 @media (min-width: 769px) {
+  .perfil-page {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 40px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dph-subtitle {
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto-light);
+    margin: 0;
+  }
+
   .page-content {
-    padding: 0 32px 40px;
-    max-width: 680px;
+    padding: 28px 40px 40px;
+    max-width: 760px;
     margin: 0 auto;
     width: 100%;
   }

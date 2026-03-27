@@ -274,6 +274,19 @@ const tiposExame = [
   <div class="consultas-page">
     <AppBar title="Consultas e Exames" subtitle="Seus atendimentos médicos" />
 
+    <div class="desktop-page-header">
+      <div class="dph-text">
+        <h1 class="dph-title">Consultas e Exames</h1>
+        <p class="dph-subtitle">Acompanhe seus atendimentos médicos e resultados</p>
+      </div>
+      <button class="dph-action" @click="abrirNova">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        Nova Consulta
+      </button>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs">
       <button
@@ -674,6 +687,10 @@ const tiposExame = [
   flex-direction: column;
 }
 
+.desktop-page-header {
+  display: none;
+}
+
 /* Tabs */
 .tabs {
   display: flex;
@@ -934,8 +951,7 @@ const tiposExame = [
 
 @media (min-width: 769px) {
   .fab {
-    right: 24px;
-    bottom: 24px;
+    display: none;
   }
 }
 
@@ -1192,14 +1208,74 @@ const tiposExame = [
 
 /* ── Desktop ── */
 @media (min-width: 769px) {
+  .consultas-page {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 40px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dph-subtitle {
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto-light);
+    margin: 0;
+  }
+
+  .dph-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--verde-salvia);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-corpo);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-smooth), transform 0.15s var(--ease-smooth);
+  }
+
+  .dph-action:hover {
+    background: var(--verde-claro);
+    transform: translateY(-1px);
+  }
+
   .page-content {
-    padding: 0 32px 80px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 40px 40px;
   }
 
   .consultas-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
     align-items: start;
   }
 
