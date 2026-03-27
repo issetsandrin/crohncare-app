@@ -123,4 +123,36 @@ function onBackdropClick(e) {
 .modal-enter-from {
   opacity: 0;
 }
+
+/* ── Desktop: modal centrado ── */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (min-width: 769px) {
+  .modal-backdrop {
+    align-items: center;
+  }
+
+  .modal-card {
+    border-radius: 16px;
+    max-width: 560px;
+    max-height: 88vh;
+    padding: 28px 32px;
+    width: 100%;
+  }
+
+  .modal-body {
+    padding-bottom: 4px;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-enter-active .modal-card {
+    animation: modalFadeIn 0.2s var(--ease-out-smooth);
+  }
+}
 </style>
