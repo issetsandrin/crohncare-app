@@ -127,9 +127,16 @@ textarea {
 @media (min-width: 769px) {
   .app-layout-desktop {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100%;
     background: var(--verde-bg);
+  }
+
+  .app-desktop-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
   }
 
   .desktop-content {

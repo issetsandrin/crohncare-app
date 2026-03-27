@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BottomNav from './components/BottomNav.vue'
 import SidebarNav from './components/SidebarNav.vue'
+import DesktopHeader from './components/DesktopHeader.vue'
 import AppToast from './components/AppToast.vue'
 import { useBreakpoint } from './composables/useBreakpoint'
 
@@ -16,10 +17,13 @@ const showNav = computed(() => {
 
 <template>
   <div v-if="isDesktop && showNav" class="app-layout-desktop">
-    <SidebarNav />
-    <main class="desktop-content">
-      <router-view :key="route.fullPath" />
-    </main>
+    <DesktopHeader />
+    <div class="app-desktop-body">
+      <SidebarNav />
+      <main class="desktop-content">
+        <router-view :key="route.fullPath" />
+      </main>
+    </div>
   </div>
   <template v-else>
     <router-view :key="route.fullPath" />

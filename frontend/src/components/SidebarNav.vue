@@ -27,16 +27,6 @@ function navTo(path) {
 
 <template>
   <aside class="sidebar-nav">
-    <div class="sidebar-header">
-      <svg class="sidebar-logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none">
-        <path d="M12 21C12 21 3 14.5 3 8.5C3 6.01 5.01 4 7.5 4C9 4 10.35 4.75 11.25 5.9C11.63 6.39 12.37 6.39 12.75 5.9C13.65 4.75 15 4 16.5 4C18.99 4 21 6.01 21 8.5C21 14.5 12 21 12 21Z" fill="white" opacity="0.9"/>
-      </svg>
-      <div class="sidebar-brand">
-        <span class="sidebar-brand-name">ChronCare</span>
-        <span class="sidebar-brand-sub">Seu companheiro de saúde</span>
-      </div>
-    </div>
-
     <nav class="sidebar-items">
       <button
         v-for="item in items"
@@ -125,38 +115,6 @@ function navTo(path) {
   position: sticky;
   top: 0;
   overflow-y: auto;
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 20px 18px;
-  background: var(--verde-salvia);
-}
-
-.sidebar-logo-icon {
-  flex-shrink: 0;
-}
-
-.sidebar-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.sidebar-brand-name {
-  font-family: var(--font-titulo);
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-}
-
-.sidebar-brand-sub {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 400;
 }
 
 .sidebar-items {
