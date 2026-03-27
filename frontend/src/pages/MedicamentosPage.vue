@@ -657,6 +657,13 @@ onMounted(() => {
   }
 }
 
+@media (min-width: 769px) {
+  .fab {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: 48px 16px;

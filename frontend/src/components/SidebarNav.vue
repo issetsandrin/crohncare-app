@@ -1,0 +1,265 @@
+<script setup>
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const items = [
+  { path: '/', label: 'Início' },
+  { path: '/medicamentos', label: 'Remédios' },
+  { path: '/diario', label: 'Diário' },
+  { path: '/consultas', label: 'Consultas' },
+  { path: '/perfil', label: 'Perfil' }
+]
+
+const clickKeys = ref({})
+
+function navTo(path) {
+  clickKeys.value[path] = (clickKeys.value[path] || 0) + 1
+  if (route.path === path) {
+    router.replace({ path, query: { _r: Date.now() } })
+  } else {
+    router.push(path)
+  }
+}
+</script>
+
+<template>
+  <aside class="sidebar-nav">
+    <div class="sidebar-header">
+      <svg class="sidebar-logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 21C12 21 3 14.5 3 8.5C3 6.01 5.01 4 7.5 4C9 4 10.35 4.75 11.25 5.9C11.63 6.39 12.37 6.39 12.75 5.9C13.65 4.75 15 4 16.5 4C18.99 4 21 6.01 21 8.5C21 14.5 12 21 12 21Z" fill="white" opacity="0.9"/>
+      </svg>
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-name">ChronCare</span>
+        <span class="sidebar-brand-sub">Seu companheiro de saúde</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-items">
+      <button
+        v-for="item in items"
+        :key="item.path"
+        class="sidebar-item"
+        :class="{ active: route.path === item.path }"
+        @click="navTo(item.path)"
+      >
+        <div class="sidebar-active-bar" v-if="route.path === item.path" />
+
+        <!-- Início -->
+        <svg
+          v-if="item.path === '/'"
+          :key="'home-' + (clickKeys[item.path] || 0)"
+          class="sidebar-icon"
+          :class="{ 'anim-home': route.path === item.path }"
+          width="20" height="20" viewBox="0 0 24 24" fill="none"
+        >
+          <path d="M3 12l9-8 9 8M5 10v9a1 1 0 001 1h3v-5h6v5h3a1 1 0 001-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- Remédios -->
+        <svg
+          v-else-if="item.path === '/medicamentos'"
+          :key="'med-' + (clickKeys[item.path] || 0)"
+          class="sidebar-icon"
+          :class="{ 'anim-pill': route.path === item.path }"
+          width="20" height="20" viewBox="0 0 24 24" fill="none"
+        >
+          <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
+          <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+
+        <!-- Diário -->
+        <svg
+          v-else-if="item.path === '/diario'"
+          :key="'diario-' + (clickKeys[item.path] || 0)"
+          class="sidebar-icon"
+          :class="{ 'anim-diario': route.path === item.path }"
+          width="20" height="20" viewBox="0 0 24 24" fill="none"
+        >
+          <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+
+        <!-- Consultas -->
+        <svg
+          v-else-if="item.path === '/consultas'"
+          :key="'consult-' + (clickKeys[item.path] || 0)"
+          class="sidebar-icon"
+          :class="{ 'anim-consult': route.path === item.path }"
+          width="20" height="20" viewBox="0 0 24 24" fill="none"
+        >
+          <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+
+        <!-- Perfil -->
+        <svg
+          v-else
+          :key="'perfil-' + (clickKeys[item.path] || 0)"
+          class="sidebar-icon"
+          :class="{ 'anim-perfil': route.path === item.path }"
+          width="20" height="20" viewBox="0 0 24 24" fill="none"
+        >
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+
+        <span class="sidebar-label">{{ item.label }}</span>
+      </button>
+    </nav>
+  </aside>
+</template>
+
+<style scoped>
+.sidebar-nav {
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 18px;
+  background: var(--verde-salvia);
+}
+
+.sidebar-logo-icon {
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar-brand-name {
+  font-family: var(--font-titulo);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.sidebar-brand-sub {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+}
+
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  flex: 1;
+}
+
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 0;
+  transition: background 0.2s var(--ease-smooth), color 0.2s var(--ease-smooth);
+  color: var(--texto-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-item:hover {
+  background: rgba(127, 168, 50, 0.04);
+  color: var(--texto);
+}
+
+.sidebar-item.active {
+  background: rgba(127, 168, 50, 0.08);
+  color: var(--verde-salvia);
+}
+
+.sidebar-active-bar {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--verde-salvia);
+  border-radius: 0 3px 3px 0;
+}
+
+.sidebar-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-label {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Animações (idênticas ao BottomNav) ── */
+
+@keyframes bounce-home {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-5px) scale(1.12); }
+  55%  { transform: translateY(2px) scale(0.94); }
+  75%  { transform: translateY(-2px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes wiggle-pill {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(-18deg); }
+  40%  { transform: rotate(18deg); }
+  65%  { transform: rotate(-10deg); }
+  82%  { transform: rotate(6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes flip-diario {
+  0%   { transform: scaleY(1); }
+  25%  { transform: scaleY(0.6) scaleX(1.1); }
+  50%  { transform: scaleY(1.15) scaleX(0.95); }
+  75%  { transform: scaleY(0.92); }
+  100% { transform: scaleY(1) scaleX(1); }
+}
+
+@keyframes pulse-consult {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.22); }
+  45%  { transform: scale(0.88); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pop-perfil {
+  0%   { transform: scale(1) translateY(0); }
+  35%  { transform: scale(1.2) translateY(-3px); }
+  60%  { transform: scale(0.9) translateY(1px); }
+  80%  { transform: scale(1.06) translateY(-1px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.anim-home    { animation: bounce-home   0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-pill    { animation: wiggle-pill   0.5s  ease-in-out forwards; }
+.anim-diario  { animation: flip-diario   0.4s  ease-in-out forwards; }
+.anim-consult { animation: pulse-consult 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-perfil  { animation: pop-perfil    0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+</style>

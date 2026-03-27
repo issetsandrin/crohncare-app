@@ -33,17 +33,25 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
 }
 
 body {
   font-family: var(--font-corpo);
   background: var(--branco-quente);
   color: var(--texto);
-  max-width: 430px;
-  margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    overflow: hidden;
+  }
+
+  body {
+    max-width: 430px;
+    margin: 0 auto;
+  }
 }
 
 img {
@@ -111,5 +119,28 @@ textarea {
   }
   50% {
     transform: scale(1.03);
+  }
+}
+
+/* ── Layout Desktop ── */
+
+@media (min-width: 769px) {
+  .app-layout-desktop {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    background: var(--verde-bg);
+  }
+
+  .desktop-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .desktop-content > * {
+    width: 100%;
+    max-width: 860px;
   }
 }

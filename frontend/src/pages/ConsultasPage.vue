@@ -932,6 +932,13 @@ const tiposExame = [
   }
 }
 
+@media (min-width: 769px) {
+  .fab {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
 /* Form */
 .form {
   display: flex;
