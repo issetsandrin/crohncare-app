@@ -1189,4 +1189,31 @@ const tiposExame = [
 .hora-input {
   max-width: 100px;
 }
+
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  .page-content {
+    padding: 0 32px 80px;
+  }
+
+  .consultas-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .section-label {
+    grid-column: 1 / -1;
+  }
+
+  .consulta-card {
+    transition: box-shadow 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+  }
+
+  .consulta-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+}
 </style>

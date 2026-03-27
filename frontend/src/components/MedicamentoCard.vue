@@ -245,4 +245,23 @@ const estoqueLabel = computed(() => {
 
 .estoque-label.urgente { color: var(--intensidade-5); }
 .estoque-label.atencao { color: var(--ambar); }
+
+@media (min-width: 769px) {
+  .medicamento-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .medicamento-card:active {
+    transform: translateY(0);
+  }
+
+  .card-nome {
+    font-size: 1.05rem;
+  }
+
+  .card-body {
+    padding: 16px 16px 14px;
+  }
+}
 </style>

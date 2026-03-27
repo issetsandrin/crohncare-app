@@ -653,4 +653,77 @@ async function handleLogout() {
 .btn-save:active {
   transform: scale(0.98);
 }
+
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  .page-content {
+    padding: 0 32px 40px;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero {
+    padding: 24px 0 20px;
+    gap: 20px;
+  }
+
+  .avatar {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+  }
+
+  .avatar-text {
+    font-size: 1.5rem;
+  }
+
+  .hero-nome {
+    font-size: 1.4rem;
+  }
+
+  .hero-email {
+    font-size: 14px;
+  }
+
+  .hero-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .stats-card {
+    border-radius: 20px;
+    padding: 20px 0;
+    margin-bottom: 16px;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+  }
+
+  .stat-lbl {
+    font-size: 12px;
+  }
+
+  .settings-card {
+    border-radius: 20px;
+  }
+
+  .settings-row {
+    padding: 18px 20px;
+  }
+
+  .settings-icon-box {
+    width: 36px;
+    height: 36px;
+  }
+
+  .settings-label {
+    font-size: 15px;
+  }
+
+  .settings-hint {
+    font-size: 12px;
+  }
+}
 </style>

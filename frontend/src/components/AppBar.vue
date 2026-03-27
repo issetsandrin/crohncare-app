@@ -53,4 +53,23 @@ defineProps({
   align-items: center;
   gap: 8px;
 }
+
+@media (min-width: 769px) {
+  .app-bar {
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    padding: 20px 32px 18px;
+    margin-bottom: 0;
+  }
+
+  .app-bar-title {
+    color: var(--texto);
+    font-size: 1.5rem;
+  }
+
+  .app-bar-subtitle {
+    color: var(--texto-light);
+    font-size: 13px;
+  }
+}
 </style>

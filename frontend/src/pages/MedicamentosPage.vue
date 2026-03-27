@@ -1267,4 +1267,25 @@ onMounted(() => {
   padding: 3px 8px;
   border-radius: 8px;
 }
+
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  .medicamentos-page {
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 32px 80px;
+  }
+
+  .med-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
 </style>

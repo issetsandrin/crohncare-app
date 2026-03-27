@@ -728,4 +728,35 @@ function formatarDataHora(dataHora) {
   background: var(--terracota);
   color: #fff;
 }
+
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  .diario-page {
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 32px 80px;
+  }
+
+  .entries-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .entry-card {
+    transition: box-shadow 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+  }
+
+  .entry-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+}
 </style>

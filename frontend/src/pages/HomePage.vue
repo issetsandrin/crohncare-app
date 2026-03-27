@@ -673,4 +673,94 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   animation: bell-ring 3.5s ease infinite;
 }
 
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  .home-page {
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .hero {
+    padding: 28px 32px 28px;
+    flex-shrink: 0;
+  }
+
+  .hero-bg {
+    border-radius: 0 0 20px 20px;
+  }
+
+  .hero-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .hero-top {
+    flex: 1;
+  }
+
+  .hero-greeting {
+    font-size: 24px;
+  }
+
+  .hero-dica-texto {
+    font-size: 13px;
+  }
+
+  .proximo-card {
+    min-width: 300px;
+    max-width: 380px;
+    flex-shrink: 0;
+  }
+
+  .stats-row {
+    padding: 20px 32px 0;
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 20px 24px;
+    border-radius: 16px;
+  }
+
+  .stat-number {
+    font-size: 28px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .remedios-section {
+    padding: 20px 32px 32px;
+    flex: 1;
+  }
+
+  .section-title {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .remedios-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .remedio-card {
+    cursor: default;
+    transition: box-shadow 0.2s var(--ease-smooth);
+  }
+
+  .remedio-card:hover {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    transform: none;
+  }
+
+  .remedio-nome {
+    font-size: 15px;
+  }
+}
 </style>
