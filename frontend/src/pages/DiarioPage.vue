@@ -154,28 +154,33 @@ function formatarDataHora(dataHora) {
     <AppBar title="Diário" subtitle="Registre sintomas e acompanhe seu dia a dia" />
 
     <div class="desktop-page-header">
-      <div class="dph-text">
-        <h1 class="dph-title">Diário de Saúde</h1>
-        <p class="dph-subtitle">Registre anotações, sintomas e crises ao longo do tempo</p>
+      <div class="dph-left">
+        <div class="dph-text">
+          <h1 class="dph-title">Diário de Saúde</h1>
+          <p class="dph-subtitle">Registre anotações, sintomas e crises ao longo do tempo</p>
+        </div>
       </div>
-      <div class="dph-actions">
-        <button class="dph-action secondary" @click="abrirNovaCrise">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-          Registrar crise
-        </button>
-        <button class="dph-action" @click="abrirNovaEntrada">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-          Nova anotação
-        </button>
+      <div class="dph-right">
+        <MesNavegacao v-model="mesAtual" />
+        <div class="dph-actions">
+          <button class="dph-action secondary" @click="abrirNovaCrise">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            Registrar crise
+          </button>
+          <button class="dph-action" @click="abrirNovaEntrada">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            Nova anotação
+          </button>
+        </div>
       </div>
     </div>
 
     <div class="page-content">
-    <MesNavegacao v-model="mesAtual" />
+    <MesNavegacao v-model="mesAtual" class="mobile-mes-nav" />
 
     <!-- Tabs -->
     <div class="tabs">
@@ -763,14 +768,83 @@ function formatarDataHora(dataHora) {
     overflow: hidden;
   }
 
+  /* Tabs estilo website (underline) */
+  .tabs {
+    background: none;
+    border-radius: 0;
+    padding: 0 40px;
+    margin: 0;
+    border-bottom: 1.5px solid #eee;
+    gap: 0;
+  }
+
+  .tab-btn {
+    flex: none;
+    padding: 12px 20px;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto-light);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tab-btn.active {
+    background: none;
+    box-shadow: none;
+    color: var(--verde-salvia);
+    border-bottom-color: var(--verde-salvia);
+  }
+
+  .tab-count {
+    background: rgba(127, 168, 50, 0.15);
+    color: var(--verde-salvia);
+  }
+
+  .tab-count-crise {
+    background: rgba(229, 115, 115, 0.12);
+    color: var(--terracota);
+  }
+
+  .mobile-mes-nav {
+    display: none;
+  }
+
   .desktop-page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 28px 40px 20px;
+    padding: 24px 40px 20px;
     border-bottom: 1px solid #f0f0f0;
     background: #fff;
     flex-shrink: 0;
+    gap: 24px;
+  }
+
+  .dph-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dph-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  /* O MesNavegacao dentro do dph-right fica menor */
+  .dph-right :deep(.mes-navegacao) {
+    padding: 0;
+  }
+
+  .dph-right :deep(.mes-label) {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+    min-width: 130px;
+    text-align: center;
   }
 
   .dph-text {
@@ -835,7 +909,7 @@ function formatarDataHora(dataHora) {
   .page-content {
     flex: 1;
     overflow-y: auto;
-    padding: 28px 40px 40px;
+    padding: 0 40px 40px;
   }
 
   .entries-list {

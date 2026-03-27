@@ -108,7 +108,23 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
 
 <template>
   <main class="home-page">
-    <!-- Hero Header -->
+    <!-- Cabeçalho desktop (substitui o hero) -->
+    <div class="desktop-page-header">
+      <div class="dph-text">
+        <h1 class="dph-title">{{ saudacao }}, {{ firstName }}</h1>
+        <p class="dph-subtitle">Veja o resumo do seu dia e os próximos medicamentos</p>
+      </div>
+      <button class="dph-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :class="{ 'bell-ring': naoLidosCount > 0 }">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span v-if="naoLidosCount > 0" class="dph-badge">{{ naoLidosCount }}</span>
+        Avisos
+      </button>
+    </div>
+
+    <!-- Hero Header (mobile only) -->
     <header class="hero">
       <div class="hero-bg"></div>
       <div class="hero-content">
@@ -218,6 +234,10 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
   padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   height: 100dvh;
   overflow: hidden;
+}
+
+.desktop-page-header {
+  display: none;
 }
 
 /* Hero */
@@ -683,68 +703,86 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
     height: 100%;
   }
 
-  /* No desktop, a hero vira um header clean sem fundo verde */
-  .hero {
+  /* Cabeçalho desktop */
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 28px 40px 20px;
-    flex-shrink: 0;
     border-bottom: 1px solid #f0f0f0;
     background: #fff;
+    flex-shrink: 0;
   }
 
-  .hero-bg {
-    display: none;
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .hero-content {
-    flex-direction: row;
-    align-items: center;
-    gap: 32px;
-  }
-
-  .hero-top {
-    flex: 1;
-  }
-
-  .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: rgba(127, 168, 50, 0.12);
-    color: var(--verde-salvia);
-    font-size: 20px;
-  }
-
-  .hero-greeting {
-    font-size: 1.5rem;
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
     color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
   }
 
-  .hero-dica-texto {
+  .dph-subtitle {
+    font-family: var(--font-corpo);
     font-size: 13px;
     color: var(--texto-light);
+    margin: 0;
   }
 
-  .hero-alerts-btn {
+  .dph-alerts-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 10px;
     background: rgba(0, 0, 0, 0.05);
     color: var(--texto-light);
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-smooth);
   }
 
-  .hero-alerts-btn.has-alerts {
-    color: var(--terracota);
+  .dph-alerts-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .dph-alerts-btn.has-alerts {
     background: rgba(229, 115, 115, 0.1);
+    color: var(--terracota);
   }
 
-  .proximo-card {
-    min-width: 280px;
-    max-width: 360px;
-    flex-shrink: 0;
-    background: rgba(127, 168, 50, 0.08);
-    border: 1px solid rgba(127, 168, 50, 0.15);
+  .dph-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background: var(--terracota);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
   }
 
-  .proximo-icon { color: var(--verde-salvia); }
-  .proximo-label { color: var(--texto-light); }
-  .proximo-detail { color: var(--texto); }
+  /* Esconder hero (mobile only) */
+  .hero {
+    display: none;
+  }
 
   .stats-row {
     padding: 24px 40px 0;

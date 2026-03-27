@@ -1217,8 +1217,7 @@ const tiposExame = [
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 28px 40px 20px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 24px 40px 20px;
     background: #fff;
     flex-shrink: 0;
   }
@@ -1266,10 +1265,45 @@ const tiposExame = [
     transform: translateY(-1px);
   }
 
+  /* Tabs estilo website */
+  .tabs {
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1.5px solid #eee;
+    gap: 0;
+    padding: 0 40px;
+  }
+
+  .tab-btn {
+    flex: none;
+    padding: 11px 20px;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto-light);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tab-btn.active {
+    background: none;
+    box-shadow: none;
+    color: var(--verde-salvia);
+    border-bottom-color: var(--verde-salvia);
+  }
+
+  .tab-count {
+    background: rgba(127, 168, 50, 0.15);
+    color: var(--verde-salvia);
+  }
+
   .page-content {
     flex: 1;
     overflow-y: auto;
-    padding: 28px 40px 40px;
+    padding: 24px 40px 40px;
   }
 
   .consultas-list {
