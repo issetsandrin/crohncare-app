@@ -230,10 +230,18 @@ watch(activeTab, () => {
   pageExames.value = 1
 })
 
+const consultasCombinadas = computed(() => [
+  ...store.proximas.map(c => ({ ...c, _tipo: 'agendada' })),
+  ...store.passadas.map(c => ({ ...c, _tipo: 'historico' }))
+])
+
 const paginatedConsultas = computed(() => {
   const start = (pageConsultas.value - 1) * PER_PAGE
-  return store.proximas.slice(start, start + PER_PAGE)
+  return consultasCombinadas.value.slice(start, start + PER_PAGE)
 })
+
+const paginatedConsultasHasAgendadas = computed(() => paginatedConsultas.value.some(c => c._tipo === 'agendada'))
+const paginatedConsultasHasHistorico = computed(() => paginatedConsultas.value.some(c => c._tipo === 'historico'))
 
 const examesCombinados = computed(() => [
   ...examesStore.proximos.map(e => ({ ...e, _tipo: 'agendado' })),
@@ -340,45 +348,53 @@ const tiposExame = [
       <!-- Loading -->
       <LoadingDots v-if="store.loading || examesStore.loading" />
 
-      <!-- Aba Próximas: apenas consultas -->
+      <!-- Aba Consultas -->
       <template v-else-if="activeTab === 'proximas'">
-        <div v-if="store.proximas.length === 0" class="empty-state">
+        <div v-if="store.lista.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <p>Nenhuma consulta agendada</p>
+          <p>Nenhuma consulta cadastrada</p>
           <p class="empty-hint">Toque no botão + para agendar</p>
         </div>
 
         <div v-else class="consultas-list">
-          <p class="section-label">Agendados</p>
-          <div
-            v-for="(consulta, i) in paginatedConsultas"
-            :key="consulta.id"
-            class="consulta-card"
-            :style="{ animationDelay: i * 0.04 + 's' }"
-            @click="abrirDetalhes(consulta)"
-          >
-            <div class="consulta-icon-box" :class="consulta.status">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
+          <p v-if="paginatedConsultasHasAgendadas" class="section-label">Agendados</p>
+          <template v-for="(consulta, i) in paginatedConsultas" :key="consulta._tipo + consulta.id">
+            <p v-if="consulta._tipo === 'historico' && (i === 0 || paginatedConsultas[i-1]._tipo === 'agendada')" class="section-label" :style="{ marginTop: paginatedConsultasHasAgendadas ? '16px' : '0' }">Histórico</p>
+            <div
+              class="consulta-card"
+              :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhes(consulta)"
+            >
+              <div class="consulta-icon-box" :class="consulta.status">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ consulta.medico }}</span>
+                <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+                <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+                <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="consulta._tipo === 'agendada' && diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
+                <span v-else-if="consulta.status === 'realizada'" class="status-badge realizada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </span>
+              </div>
             </div>
-            <div class="consulta-info">
-              <span class="consulta-medico">{{ consulta.medico }}</span>
-              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
-            </div>
-            <div class="consulta-badge-area">
-              <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
-            </div>
-          </div>
-          <Pagination :total="store.proximas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
+          </template>
+          <Pagination :total="consultasCombinadas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
         </div>
       </template>
 
