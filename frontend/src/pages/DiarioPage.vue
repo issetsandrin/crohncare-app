@@ -296,7 +296,7 @@ function formatarDataHora(dataHora) {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <div v-if="selectedItem" class="detail-web">
+      <template v-if="selectedItem" #header>
         <div class="dw-hero">
           <div class="dw-icon-box" :class="{ vermelho: selectedType === 'crise' }">
             <svg v-if="selectedType === 'crise'" width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -320,7 +320,8 @@ function formatarDataHora(dataHora) {
             </span>
           </div>
         </div>
-
+      </template>
+      <div v-if="selectedItem" class="detail-web">
         <div class="dw-intensidade-row">
           <span class="dw-label">Intensidade</span>
           <IntensidadeDots :valor="selectedItem.intensidade" />
@@ -602,9 +603,6 @@ function formatarDataHora(dataHora) {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 .dw-icon-box {

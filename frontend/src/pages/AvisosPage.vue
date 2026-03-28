@@ -183,7 +183,7 @@ async function abrirAviso(aviso) {
 
     <!-- Modal Detalhe -->
     <ModalBase v-model="showDetail" title="">
-      <div v-if="selectedAviso" class="detail-web">
+      <template v-if="selectedAviso" #header>
         <div class="dw-hero">
           <div class="dw-icon-box">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -197,7 +197,8 @@ async function abrirAviso(aviso) {
             <span class="dw-sub">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
           </div>
         </div>
-
+      </template>
+      <div v-if="selectedAviso" class="detail-web">
         <div class="dw-obs">
           <p>{{ selectedAviso.mensagem }}</p>
         </div>
@@ -462,9 +463,6 @@ async function abrirAviso(aviso) {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 .dw-icon-box {

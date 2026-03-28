@@ -64,17 +64,19 @@ function onBackdropClick(e) {
 
 .modal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  padding-bottom: 16px;
   margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .modal-header-left {
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .modal-title {

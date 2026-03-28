@@ -305,7 +305,7 @@ onMounted(() => {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <div v-if="selectedMed" class="detail-web">
+      <template v-if="selectedMed" #header>
         <div class="dw-hero">
           <div class="dw-icon-box" :class="nivelAlerta(diasRestantes(selectedMed))">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -321,7 +321,8 @@ onMounted(() => {
             <span class="dw-sub">{{ periodicidadeTexto(selectedMed) }}</span>
           </div>
         </div>
-
+      </template>
+      <div v-if="selectedMed" class="detail-web">
         <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && (selectedMed.dose_hoje || selectedMed.dose)" class="dw-callout">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
@@ -730,9 +731,6 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 .dw-icon-box {

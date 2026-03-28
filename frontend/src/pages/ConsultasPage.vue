@@ -654,7 +654,7 @@ function confirmarOutroTipo() {
 
     <!-- Modal Detalhes Consulta -->
     <ModalBase v-model="showDetail" title="">
-      <div v-if="selected" class="detail-web">
+      <template v-if="selected" #header>
         <div class="dw-hero">
           <div class="dw-icon-box">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -670,7 +670,8 @@ function confirmarOutroTipo() {
             <span v-if="selected.especialidade" class="dw-sub">{{ selected.especialidade }}</span>
           </div>
         </div>
-
+      </template>
+      <div v-if="selected" class="detail-web">
         <div class="dw-fields">
           <div class="dw-field">
             <span class="dw-label">Data</span>
@@ -791,7 +792,7 @@ function confirmarOutroTipo() {
 
     <!-- Modal Detalhes Exame -->
     <ModalBase v-model="showExameDetail" title="">
-      <div v-if="selectedExame" class="detail-web">
+      <template v-if="selectedExame" #header>
         <div class="dw-hero">
           <div class="dw-icon-box azul">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -808,7 +809,8 @@ function confirmarOutroTipo() {
             <span v-if="selectedExame.tipo" class="dw-sub">{{ selectedExame.tipo }}</span>
           </div>
         </div>
-
+      </template>
+      <div v-if="selectedExame" class="detail-web">
         <div class="dw-fields">
           <div class="dw-field">
             <span class="dw-label">Data</span>
@@ -1138,9 +1140,6 @@ function confirmarOutroTipo() {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 .dw-icon-box {
