@@ -10,6 +10,7 @@ const items = [
   { path: '/medicamentos', label: 'Remédios' },
   { path: '/diario', label: 'Diário' },
   { path: '/consultas', label: 'Consultas' },
+  { path: '/perfil', label: 'Perfil' },
 ]
 
 const clickKeys = ref({})

@@ -76,6 +76,14 @@ onUnmounted(() => {
 
         <Transition name="dropdown">
           <div v-if="showDropdown" class="user-dropdown">
+            <button class="dropdown-item" @click="router.push('/perfil'); showDropdown = false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Meu perfil
+            </button>
+            <div class="dropdown-sep" />
             <button class="dropdown-logout" @click="handleLogout">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -245,6 +253,33 @@ onUnmounted(() => {
   overflow: hidden;
   min-width: 160px;
   z-index: 100;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto);
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.dropdown-sep {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.07);
+  margin: 2px 0;
 }
 
 .dropdown-logout {

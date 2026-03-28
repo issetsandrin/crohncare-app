@@ -3,9 +3,11 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../composables/useApi'
+import { useTour } from '../composables/useTour'
 
 const router = useRouter()
 const auth = useAuthStore()
+const { abrirTourModal } = useTour()
 
 const step = ref(0)
 const saving = ref(false)
@@ -97,6 +99,7 @@ async function finalizar() {
       // Perfil é opcional, não bloquear
     }
 
+    abrirTourModal()
     router.push('/')
   } catch (e) {
     registerError.value = 'Erro ao criar conta. Tente novamente.'

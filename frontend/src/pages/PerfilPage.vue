@@ -117,67 +117,72 @@ async function handleLogout() {
       <LoadingDots v-if="loading" />
 
       <template v-else>
-        <!-- Hero -->
-        <section class="hero">
-          <div class="avatar">
-            <span class="avatar-text">{{ initials }}</span>
-          </div>
-          <div class="hero-info">
-            <h2 class="hero-nome">{{ auth.user?.nome }}</h2>
-            <span class="hero-email">{{ auth.user?.email }}</span>
-            <div class="hero-tags">
-              <span v-if="perfil?.tipo_doenca" class="hero-tag">{{ tipoLabels[perfil.tipo_doenca] || perfil.tipo_doenca }}</span>
-              <span v-if="stats?.membro_desde" class="hero-tag membro">Desde {{ stats.membro_desde }}</span>
+        <div class="perfil-grid">
+          <!-- Coluna esquerda -->
+          <div class="perfil-col-left">
+            <section class="hero">
+              <div class="avatar">
+                <span class="avatar-text">{{ initials }}</span>
+              </div>
+              <div class="hero-info">
+                <h2 class="hero-nome">{{ auth.user?.nome }}</h2>
+                <span class="hero-email">{{ auth.user?.email }}</span>
+                <div class="hero-tags">
+                  <span v-if="perfil?.tipo_doenca" class="hero-tag">{{ tipoLabels[perfil.tipo_doenca] || perfil.tipo_doenca }}</span>
+                  <span v-if="stats?.membro_desde" class="hero-tag membro">Desde {{ stats.membro_desde }}</span>
+                </div>
+              </div>
+              <button class="btn-edit" @click="abrirEditNome" aria-label="Editar nome">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </section>
+
+            <!-- Situação atual -->
+            <div v-if="perfil?.situacao_atual" class="situacao-chip" :style="{ '--cor': situacaoColors[perfil.situacao_atual] || '#888' }">
+              <span class="situacao-dot"></span>
+              <span class="situacao-text">{{ situacaoLabels[perfil.situacao_atual] || perfil.situacao_atual }}</span>
+            </div>
+
+            <!-- Stats compactos -->
+            <div v-if="stats" class="stats-card">
+              <div class="stat-item">
+                <span class="stat-num">{{ stats.meds_ativos }}</span>
+                <span class="stat-lbl">Remédios</span>
+              </div>
+              <div class="stat-divider" />
+              <div class="stat-item">
+                <span class="stat-num">{{ stats.total_diarios }}</span>
+                <span class="stat-lbl">Registros</span>
+              </div>
+              <div class="stat-divider" />
+              <div class="stat-item" :class="{ 'stat-green': stats.dias_sem_crise !== null && stats.dias_sem_crise >= 7 }">
+                <span class="stat-num">{{ stats.dias_sem_crise !== null ? stats.dias_sem_crise : '—' }}</span>
+                <span class="stat-lbl">Sem crise</span>
+              </div>
+              <div class="stat-divider" />
+              <div class="stat-item">
+                <span class="stat-num">{{ stats.consultas_realizadas }}</span>
+                <span class="stat-lbl">Consultas</span>
+              </div>
+            </div>
+
+            <!-- Streak -->
+            <div v-if="stats?.streak_diario > 0" class="streak-row">
+              <div class="streak-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2c.5 4-3 6-3 10a5 5 0 0010 0c0-4-2-6-3-8-1 2-3 3-4 2 0-2 .5-4 0-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="streak-text"><strong>{{ stats.streak_diario }} {{ stats.streak_diario === 1 ? 'dia' : 'dias' }}</strong> seguidos no diário</span>
             </div>
           </div>
-          <button class="btn-edit" @click="abrirEditNome" aria-label="Editar nome">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </section>
 
-        <!-- Situação atual -->
-        <div v-if="perfil?.situacao_atual" class="situacao-chip" :style="{ '--cor': situacaoColors[perfil.situacao_atual] || '#888' }">
-          <span class="situacao-dot"></span>
-          <span class="situacao-text">{{ situacaoLabels[perfil.situacao_atual] || perfil.situacao_atual }}</span>
-        </div>
-
-        <!-- Stats compactos -->
-        <div v-if="stats" class="stats-card">
-          <div class="stat-item">
-            <span class="stat-num">{{ stats.meds_ativos }}</span>
-            <span class="stat-lbl">Remédios</span>
-          </div>
-          <div class="stat-divider" />
-          <div class="stat-item">
-            <span class="stat-num">{{ stats.total_diarios }}</span>
-            <span class="stat-lbl">Registros</span>
-          </div>
-          <div class="stat-divider" />
-          <div class="stat-item" :class="{ 'stat-green': stats.dias_sem_crise !== null && stats.dias_sem_crise >= 7 }">
-            <span class="stat-num">{{ stats.dias_sem_crise !== null ? stats.dias_sem_crise : '—' }}</span>
-            <span class="stat-lbl">Sem crise</span>
-          </div>
-          <div class="stat-divider" />
-          <div class="stat-item">
-            <span class="stat-num">{{ stats.consultas_realizadas }}</span>
-            <span class="stat-lbl">Consultas</span>
-          </div>
-        </div>
-
-        <!-- Streak -->
-        <div v-if="stats?.streak_diario > 0" class="streak-row">
-          <div class="streak-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2c.5 4-3 6-3 10a5 5 0 0010 0c0-4-2-6-3-8-1 2-3 3-4 2 0-2 .5-4 0-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <span class="streak-text"><strong>{{ stats.streak_diario }} {{ stats.streak_diario === 1 ? 'dia' : 'dias' }}</strong> seguidos no diário</span>
-        </div>
-
-        <!-- Configurações unificadas -->
-        <div class="settings-card">
+          <!-- Coluna direita: configurações -->
+          <div class="perfil-col-right">
+            <p class="settings-section-title">Preferências</p>
+            <div class="settings-card">
           <!-- Notificações -->
           <div class="settings-row">
             <div class="settings-row-left">
@@ -245,8 +250,9 @@ async function handleLogout() {
           </button>
         </div>
 
-        <!-- Footer -->
-        <p class="footer-version">CrohnCare · v1.0.0</p>
+            <p class="footer-version">CrohnCare · v1.0.0</p>
+          </div><!-- /perfil-col-right -->
+        </div><!-- /perfil-grid -->
       </template>
     </div>
 
@@ -278,6 +284,15 @@ async function handleLogout() {
   flex: 1;
   overflow-y: auto;
   padding: 0 16px calc(80px + env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.perfil-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-section-title {
+  display: none;
 }
 
 /* Hero */
@@ -706,9 +721,34 @@ async function handleLogout() {
 
   .page-content {
     padding: 28px 40px 40px;
-    max-width: 760px;
+    max-width: 960px;
     margin: 0 auto;
     width: 100%;
+  }
+
+  .perfil-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .perfil-col-left,
+  .perfil-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .settings-section-title {
+    font-family: var(--font-corpo);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--texto-light);
+    opacity: 0.6;
+    margin: 0 0 -4px;
   }
 
   .hero {

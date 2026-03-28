@@ -9,6 +9,7 @@ import { useCrisesStore } from '../stores/crises'
 import { useConsultasStore } from '../stores/consultas'
 import { useExamesStore } from '../stores/exames'
 import LoadingDots from '../components/LoadingDots.vue'
+import { useTour } from '../composables/useTour'
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, BarElement, LineElement,
@@ -22,6 +23,7 @@ ChartJS.register(
 )
 
 const router = useRouter()
+const { abrirTourModal } = useTour()
 const medStore = useMedicamentosStore()
 const authStore = useAuthStore()
 const notifStore = useNotificacoesStore()
@@ -299,6 +301,13 @@ function formatarProxima(dateStr) {
         <h1 class="dph-title">{{ saudacao }}, {{ firstName }}</h1>
         <p class="dph-subtitle">Resumo do seu cuidado de saúde</p>
       </div>
+      <button class="tour-help-btn" @click="abrirTourModal" title="Tour pelo sistema">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="1" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Hero (mobile only) -->
@@ -315,6 +324,13 @@ function formatarProxima(dateStr) {
               </Transition>
             </div>
           </div>
+          <button class="hero-help-btn" @click="abrirTourModal" aria-label="Tour pelo sistema">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            </svg>
+          </button>
           <button class="hero-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" :class="{ 'bell-ring': naoLidosCount > 0 }">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -522,6 +538,7 @@ function formatarProxima(dateStr) {
 }
 
 .desktop-page-header { display: none; }
+.tour-help-btn { display: none; }
 
 /* ── Hero (mobile) ── */
 .hero {
@@ -561,11 +578,19 @@ function formatarProxima(dateStr) {
 .hero-greeting { font-family: var(--font-titulo); font-size: 18px; font-weight: 700; color: #fff; }
 .hero-dica { overflow: hidden; min-height: 16px; }
 .hero-dica-texto { font-family: var(--font-corpo); font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; display: block; }
+.hero-help-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85); flex-shrink: 0; margin-left: auto;
+  transition: background 0.2s;
+}
+.hero-help-btn:hover { background: rgba(255,255,255,0.25); }
 .hero-alerts-btn {
   position: relative; width: 40px; height: 40px; border-radius: 12px;
   background: rgba(255,255,255,0.15); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.85); flex-shrink: 0; margin-left: auto;
+  color: rgba(255,255,255,0.85); flex-shrink: 0;
 }
 .hero-alerts-btn.has-alerts { color: #fff; }
 .alerts-badge {
@@ -792,6 +817,16 @@ function formatarProxima(dateStr) {
   .dph-text { display: flex; flex-direction: column; gap: 4px; }
   .dph-title { font-family: var(--font-titulo); font-size: 1.6rem; font-weight: 700; color: var(--texto); margin: 0; }
   .dph-subtitle { font-family: var(--font-corpo); font-size: 13px; color: var(--texto-light); margin: 0; }
+
+  .tour-help-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #7fa8321f; border: 1px solid rgba(127,168,50,0.2);
+    color: var(--verde-salvia); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .tour-help-btn:hover { background: rgba(127,168,50,0.15); }
 
   .hero { display: none; }
 

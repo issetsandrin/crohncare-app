@@ -225,7 +225,7 @@ const estoqueLabel = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--branco-quente);
+  background: #7fa8321f;
   color: var(--verde-salvia);
   font-family: var(--font-corpo);
   font-size: 11px;
