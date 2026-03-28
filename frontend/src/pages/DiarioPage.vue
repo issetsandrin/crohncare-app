@@ -250,7 +250,6 @@ function formatarDataHora(dataHora) {
             <p v-if="entrada.observacoes" class="entry-obs-preview">{{ entrada.observacoes }}</p>
           </div>
         </div>
-        <Pagination :total="entradasOrdenadas.length" :per-page="PER_PAGE" v-model="pageAnotacoes" />
       </template>
     </div>
 
@@ -281,8 +280,22 @@ function formatarDataHora(dataHora) {
             <p v-if="crise.observacoes" class="entry-obs-preview">{{ crise.observacoes }}</p>
           </div>
         </div>
-        <Pagination :total="crisesMes.length" :per-page="PER_PAGE" v-model="pageCrises" />
       </template>
+    </div>
+
+    <div class="pagination-footer">
+      <Pagination
+        v-if="activeTab === 'anotacoes'"
+        :total="entradasOrdenadas.length"
+        :per-page="PER_PAGE"
+        v-model="pageAnotacoes"
+      />
+      <Pagination
+        v-else
+        :total="crisesMes.length"
+        :per-page="PER_PAGE"
+        v-model="pageCrises"
+      />
     </div>
 
     <!-- FAB -->
@@ -388,9 +401,11 @@ function formatarDataHora(dataHora) {
 
 <style scoped>
 .diario-page {
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: 0;
   height: 100dvh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .desktop-page-header {
@@ -398,7 +413,23 @@ function formatarDataHora(dataHora) {
 }
 
 .page-content {
+  flex: 1;
+  overflow-y: auto;
   padding: 0 16px;
+}
+
+.pagination-footer {
+  flex-shrink: 0;
+  background: var(--verde-bg);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 8px 16px calc(8px + 64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 769px) {
+  .pagination-footer {
+    padding: 10px 40px;
+    border-top: 1px solid rgba(0,0,0,0.07);
+  }
 }
 
 .desktop-mes-nav {

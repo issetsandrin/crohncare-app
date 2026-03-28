@@ -143,7 +143,6 @@ async function abrirAviso(aviso) {
             </div>
             <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
           </div>
-          <Pagination :total="avisosNovos.length" :per-page="PER_PAGE" v-model="pageNovos" />
         </div>
       </template>
 
@@ -176,9 +175,23 @@ async function abrirAviso(aviso) {
             </div>
             <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
           </div>
-          <Pagination :total="avisosLidos.length" :per-page="PER_PAGE" v-model="pageLidos" />
         </div>
       </template>
+    </div>
+
+    <div class="pagination-footer">
+      <Pagination
+        v-if="activeTab === 'novos'"
+        :total="avisosNovos.length"
+        :per-page="PER_PAGE"
+        v-model="pageNovos"
+      />
+      <Pagination
+        v-else
+        :total="avisosLidos.length"
+        :per-page="PER_PAGE"
+        v-model="pageLidos"
+      />
     </div>
 
     <!-- Modal Detalhe -->
@@ -284,7 +297,21 @@ async function abrirAviso(aviso) {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px 40px;
+  padding: 0 16px 24px;
+}
+
+.pagination-footer {
+  flex-shrink: 0;
+  background: var(--verde-bg);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 8px 16px calc(8px + 64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 769px) {
+  .pagination-footer {
+    padding: 10px 40px;
+    border-top: 1px solid rgba(0,0,0,0.07);
+  }
 }
 
 /* Empty */

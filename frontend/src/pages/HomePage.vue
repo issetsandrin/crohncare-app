@@ -129,7 +129,7 @@ const crisesEsteMes = computed(() => {
   }).length
 })
 
-// Gráfico: intensidade média de crises por mês (últimos 8 meses)
+// Gráfico: total de crises por mês (últimos 8 meses)
 const crisesPorMes = computed(() => {
   const meses = 8
   const labels = []
@@ -145,10 +145,7 @@ const crisesPorMes = computed(() => {
       const cd = new Date(c.data_hora)
       return cd.getFullYear() === ano && cd.getMonth() === mes
     })
-    const mediaInt = crisesMes.length > 0
-      ? crisesMes.reduce((s, c) => s + (c.intensidade || 0), 0) / crisesMes.length
-      : 0
-    data.push(parseFloat(mediaInt.toFixed(1)))
+    data.push(crisesMes.length)
   }
   return { labels, data }
 })
@@ -156,10 +153,10 @@ const crisesPorMes = computed(() => {
 const chartCrisesData = computed(() => ({
   labels: crisesPorMes.value.labels,
   datasets: [{
-    label: 'Intensidade média',
+    label: 'Crises',
     data: crisesPorMes.value.data,
     backgroundColor: crisesPorMes.value.data.map(v =>
-      v >= 4 ? 'rgba(229,115,115,0.7)' : v >= 2 ? 'rgba(212,160,60,0.65)' : v > 0 ? 'rgba(127,168,50,0.55)' : 'rgba(0,0,0,0.05)'
+      v >= 5 ? 'rgba(229,115,115,0.75)' : v >= 3 ? 'rgba(212,160,60,0.7)' : v > 0 ? 'rgba(127,168,50,0.65)' : 'rgba(0,0,0,0.06)'
     ),
     borderRadius: 6,
     borderSkipped: false,
@@ -173,7 +170,7 @@ const chartCrisesOptions = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: ctx => ctx.parsed.y === 0 ? 'Sem crise' : `Intensidade média: ${ctx.parsed.y}`
+        label: ctx => ctx.parsed.y === 0 ? 'Sem crises' : `${ctx.parsed.y} crise${ctx.parsed.y > 1 ? 's' : ''}`
       }
     }
   },
@@ -183,7 +180,7 @@ const chartCrisesOptions = {
       ticks: { font: { size: 10 } }
     },
     y: {
-      min: 0, max: 5,
+      min: 0,
       grid: { color: 'rgba(0,0,0,0.04)' },
       ticks: { stepSize: 1, font: { size: 10 } }
     }
@@ -324,13 +321,6 @@ function formatarProxima(dateStr) {
               </Transition>
             </div>
           </div>
-          <button class="hero-help-btn" @click="abrirTourModal" aria-label="Tour pelo sistema">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <circle cx="12" cy="17" r="1" fill="currentColor"/>
-            </svg>
-          </button>
           <button class="hero-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" :class="{ 'bell-ring': naoLidosCount > 0 }">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -413,7 +403,7 @@ function formatarProxima(dateStr) {
         <div class="chart-card chart-large">
           <div class="chart-header">
             <div>
-              <span class="chart-title">Intensidade de crises</span>
+              <span class="chart-title">Crises por mês</span>
               <span class="chart-sub">Últimos 8 meses</span>
             </div>
             <span class="chart-badge" :class="crisesEsteMes === 0 ? 'good' : crisesEsteMes < 3 ? 'warn' : 'bad'">
@@ -424,9 +414,9 @@ function formatarProxima(dateStr) {
             <Bar :data="chartCrisesData" :options="chartCrisesOptions" />
           </div>
           <div class="chart-legend">
-            <span class="legend-dot green"></span><span>Leve (1–2)</span>
-            <span class="legend-dot amber"></span><span>Moderada (3)</span>
-            <span class="legend-dot red"></span><span>Intensa (4–5)</span>
+            <span class="legend-dot green"></span><span>1–2 crises</span>
+            <span class="legend-dot amber"></span><span>3–4 crises</span>
+            <span class="legend-dot red"></span><span>5+ crises</span>
           </div>
         </div>
 

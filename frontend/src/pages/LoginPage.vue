@@ -3,10 +3,12 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTour } from '../composables/useTour'
+import { useBreakpoint } from '../composables/useBreakpoint'
 
 const router = useRouter()
 const auth = useAuthStore()
 const { verificarTourInicial } = useTour()
+const { isDesktop } = useBreakpoint()
 
 const email = ref('')
 const password = ref('')
@@ -15,7 +17,7 @@ const showPassword = ref(false)
 async function handleLogin() {
   const success = await auth.login(email.value, password.value)
   if (success) {
-    verificarTourInicial()
+    if (isDesktop.value) verificarTourInicial()
     router.push('/')
   }
 }

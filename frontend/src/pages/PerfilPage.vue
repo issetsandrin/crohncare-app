@@ -409,7 +409,7 @@ async function handleLogout() {
 
 /* Stats compactos */
 .stats-card {
-  display: flex;
+  display: none;
   align-items: center;
   background: #fff;
   border-radius: 16px;
@@ -453,7 +453,7 @@ async function handleLogout() {
 
 /* Streak */
 .streak-row {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
@@ -780,12 +780,17 @@ async function handleLogout() {
   }
 
   .stats-card {
+    display: flex;
     border-radius: 20px;
     padding: 20px 0;
     margin-bottom: 16px;
     background: transparent;
     box-shadow: none;
     border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .streak-row {
+    display: flex;
   }
 
   .stat-num {

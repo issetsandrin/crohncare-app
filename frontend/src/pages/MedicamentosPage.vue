@@ -300,7 +300,10 @@ onMounted(() => {
         @click="abrirDetalhes"
       />
     </div>
-    <Pagination :total="store.lista.length" :per-page="PER_PAGE" v-model="pageMeds" />
+    </div>
+
+    <div class="pagination-footer">
+      <Pagination :total="store.lista.length" :per-page="PER_PAGE" v-model="pageMeds" />
     </div>
 
     <!-- Modal Detalhes -->
@@ -610,9 +613,11 @@ onMounted(() => {
 
 <style scoped>
 .medicamentos-page {
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: 0;
   height: 100dvh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .desktop-page-header {
@@ -620,7 +625,23 @@ onMounted(() => {
 }
 
 .page-content {
+  flex: 1;
+  overflow-y: auto;
   padding: 0 16px;
+}
+
+.pagination-footer {
+  flex-shrink: 0;
+  background: var(--verde-bg);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 8px 16px calc(8px + 64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 769px) {
+  .pagination-footer {
+    padding: 10px 40px;
+    border-top: 1px solid rgba(0,0,0,0.07);
+  }
 }
 
 

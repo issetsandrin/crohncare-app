@@ -426,8 +426,8 @@ function confirmarOutroTipo() {
               </svg>
             </div>
             <div class="consulta-info">
-              <span class="consulta-medico">{{ consulta.medico }}</span>
-              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-medico">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-especialidade">{{ consulta.medico }}</span>
               <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
               <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
             </div>
@@ -438,7 +438,6 @@ function confirmarOutroTipo() {
               <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
             </div>
           </div>
-          <Pagination :total="store.proximas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
         </div>
       </template>
 
@@ -470,7 +469,7 @@ function confirmarOutroTipo() {
             </div>
             <div class="consulta-info">
               <span class="consulta-medico">{{ exame.nome }}</span>
-              <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+              <span class="consulta-especialidade">{{ exame.medico ? exame.medico + (exame.tipo ? ' · ' + exame.tipo : '') : exame.tipo || 'Exame médico' }}</span>
               <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
               <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
             </div>
@@ -481,7 +480,6 @@ function confirmarOutroTipo() {
               <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
             </div>
           </div>
-          <Pagination :total="examesStore.proximos.length" :per-page="PER_PAGE" v-model="pageExames" />
         </div>
       </template>
 
@@ -519,8 +517,8 @@ function confirmarOutroTipo() {
                 </svg>
               </div>
               <div class="consulta-info">
-                <span class="consulta-medico">{{ item.medico }}</span>
-                <span class="consulta-especialidade">{{ item.especialidade || 'Consulta médica' }}</span>
+                <span class="consulta-medico">{{ item.especialidade || 'Consulta médica' }}</span>
+                <span class="consulta-especialidade">{{ item.medico }}</span>
                 <span class="consulta-data-text">{{ formatarData(item.data_hora) }} · {{ formatarHora(item.data_hora) }}</span>
                 <span v-if="item.local" class="consulta-local">{{ item.local }}</span>
               </div>
@@ -550,7 +548,7 @@ function confirmarOutroTipo() {
               </div>
               <div class="consulta-info">
                 <span class="consulta-medico">{{ item.nome }}</span>
-                <span class="consulta-especialidade">{{ item.medico || item.tipo || 'Exame médico' }}</span>
+                <span class="consulta-especialidade">{{ item.medico ? item.medico + (item.tipo ? ' · ' + item.tipo : '') : item.tipo || 'Exame médico' }}</span>
                 <span class="consulta-data-text">{{ formatarData(item.data) }} · {{ formatarHora(item.data) }}</span>
                 <span v-if="item.local" class="consulta-local">{{ item.local }}</span>
               </div>
@@ -564,9 +562,29 @@ function confirmarOutroTipo() {
               </div>
             </div>
           </template>
-          <Pagination :total="historicoCombinado.length" :per-page="PER_PAGE" v-model="pageHistorico" />
         </div>
       </template>
+    </div>
+
+    <div class="pagination-footer">
+      <Pagination
+        v-if="activeTab === 'consultas'"
+        :total="store.proximas.length"
+        :per-page="PER_PAGE"
+        v-model="pageConsultas"
+      />
+      <Pagination
+        v-else-if="activeTab === 'exames'"
+        :total="examesStore.proximos.length"
+        :per-page="PER_PAGE"
+        v-model="pageExames"
+      />
+      <Pagination
+        v-else
+        :total="historicoCombinado.length"
+        :per-page="PER_PAGE"
+        v-model="pageHistorico"
+      />
     </div>
 
     <!-- FAB -->
@@ -887,7 +905,7 @@ function confirmarOutroTipo() {
   border-radius: 10px;
   background: transparent;
   font-family: var(--font-corpo);
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--texto-light);
   cursor: pointer;
@@ -922,7 +940,21 @@ function confirmarOutroTipo() {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px 120px;
+  padding: 0 16px 24px;
+}
+
+.pagination-footer {
+  flex-shrink: 0;
+  background: var(--verde-bg);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 8px 16px calc(8px + 64px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 769px) {
+  .pagination-footer {
+    padding: 10px 40px;
+    border-top: 1px solid rgba(0,0,0,0.07);
+  }
 }
 
 /* Section label */
