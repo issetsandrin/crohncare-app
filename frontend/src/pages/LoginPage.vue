@@ -34,7 +34,7 @@ function getError(field) {
       <!-- Logo + Welcome -->
       <div class="welcome">
         <div class="logo-wrap">
-          <img src="/icons/icon-192x192.png" alt="CrohnCare" class="logo-img" />
+          <img src="/icons/logo-verde.png" alt="CrohnCare" class="logo-img" />
         </div>
         <h1 class="welcome-title">CrohnCare</h1>
         <p class="welcome-text">Seu companheiro no cuidado com a saude intestinal</p>
@@ -176,8 +176,8 @@ function getError(field) {
 }
 
 .logo-img {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: auto;
   border-radius: 0;
   object-fit: contain;
 }

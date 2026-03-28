@@ -53,7 +53,7 @@ onUnmounted(() => {
 <template>
   <header class="desktop-header">
     <div class="desktop-brand">
-      <img src="/icons/icon-192x192.png" alt="ChronCare" class="brand-icon" />
+      <img src="/icons/logo-branca.png" alt="ChronCare" class="brand-icon" />
       <span class="brand-name">ChronCare</span>
     </div>
 
@@ -111,10 +111,9 @@ onUnmounted(() => {
 }
 
 .brand-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .brand-name {
