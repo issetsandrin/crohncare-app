@@ -182,6 +182,7 @@ async function salvarExame() {
       await examesStore.update(editingExame.value.id, payload)
     } else {
       await examesStore.create(payload)
+      activeTab.value = 'exames'
     }
     showExameForm.value = false
   } catch (e) {
