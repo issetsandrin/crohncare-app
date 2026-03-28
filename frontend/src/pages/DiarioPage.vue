@@ -876,7 +876,7 @@ function formatarDataHora(dataHora) {
 
   .entries-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: 1fr;
     gap: 14px;
     align-items: start;
   }
