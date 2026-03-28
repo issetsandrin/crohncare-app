@@ -133,6 +133,7 @@ function defaultExameForm() {
   return {
     nome: '',
     tipo: '',
+    medico: '',
     data: '',
     data_input: hojeFormatado(),
     hora_input: horaAtual(),
@@ -160,6 +161,7 @@ function editarExameDoDetalhe() {
   exameForm.value = {
     nome: selectedExame.value.nome,
     tipo: selectedExame.value.tipo || '',
+    medico: selectedExame.value.medico || '',
     data: selectedExame.value.data,
     data_input: dtEx.data,
     hora_input: dtEx.hora,
@@ -211,7 +213,7 @@ onMounted(() => {
 
 // ─── FAB contextual ─────────────────────────────────────────
 function abrirNovoPorTab() {
-  if (activeTab.value === 'exames' || activeTab.value === 'historico-exames') {
+  if (activeTab.value === 'exames') {
     abrirNovoExame()
   } else {
     abrirNova()
@@ -224,15 +226,13 @@ const totalProximas = computed(() => store.proximas.length)
 // ─── Paginação ───────────────────────────────────────────────
 const PER_PAGE = 10
 const pageConsultas = ref(1)
-const pageHistoricoConsultas = ref(1)
 const pageExames = ref(1)
-const pageHistoricoExames = ref(1)
+const pageHistorico = ref(1)
 
 watch(activeTab, () => {
   pageConsultas.value = 1
-  pageHistoricoConsultas.value = 1
   pageExames.value = 1
-  pageHistoricoExames.value = 1
+  pageHistorico.value = 1
 })
 
 const paginatedConsultas = computed(() => {
@@ -240,19 +240,24 @@ const paginatedConsultas = computed(() => {
   return store.proximas.slice(start, start + PER_PAGE)
 })
 
-const paginatedHistoricoConsultas = computed(() => {
-  const start = (pageHistoricoConsultas.value - 1) * PER_PAGE
-  return store.passadas.slice(start, start + PER_PAGE)
-})
-
 const paginatedExames = computed(() => {
   const start = (pageExames.value - 1) * PER_PAGE
   return examesStore.proximos.slice(start, start + PER_PAGE)
 })
 
-const paginatedHistoricoExames = computed(() => {
-  const start = (pageHistoricoExames.value - 1) * PER_PAGE
-  return examesStore.historico.slice(start, start + PER_PAGE)
+// Histórico unificado: consultas passadas + exames passados, com _categoria
+const historicoCombinado = computed(() => [
+  ...store.passadas.map(c => ({ ...c, _categoria: 'consulta' })),
+  ...examesStore.historico.map(e => ({ ...e, _categoria: 'exame' }))
+].sort((a, b) => {
+  const dateA = a._categoria === 'consulta' ? a.data_hora : a.data
+  const dateB = b._categoria === 'consulta' ? b.data_hora : b.data
+  return (dateB || '').localeCompare(dateA || '')
+}))
+
+const paginatedHistorico = computed(() => {
+  const start = (pageHistorico.value - 1) * PER_PAGE
+  return historicoCombinado.value.slice(start, start + PER_PAGE)
 })
 
 // ─── Formatação ──────────────────────────────────────────────
@@ -350,11 +355,11 @@ function confirmarOutroTipo() {
         <h1 class="dph-title">Consultas e Exames</h1>
         <p class="dph-subtitle">Acompanhe seus atendimentos médicos e resultados</p>
       </div>
-      <button class="dph-action" @click="activeTab === 'exames' || activeTab === 'historico-exames' ? abrirNovoExame() : abrirNova()">
+      <button class="dph-action" @click="activeTab === 'exames' ? abrirNovoExame() : abrirNova()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
-        {{ activeTab === 'exames' || activeTab === 'historico-exames' ? 'Novo Exame' : 'Nova Consulta' }}
+        {{ activeTab === 'exames' ? 'Novo Exame' : 'Nova Consulta' }}
       </button>
     </div>
 
@@ -370,14 +375,6 @@ function confirmarOutroTipo() {
       </button>
       <button
         class="tab-btn"
-        :class="{ active: activeTab === 'historico-consultas' }"
-        @click="activeTab = 'historico-consultas'"
-      >
-        Hist. Consultas
-        <span v-if="store.passadas.length" class="tab-count">{{ store.passadas.length }}</span>
-      </button>
-      <button
-        class="tab-btn"
         :class="{ active: activeTab === 'exames' }"
         @click="activeTab = 'exames'"
       >
@@ -386,11 +383,11 @@ function confirmarOutroTipo() {
       </button>
       <button
         class="tab-btn"
-        :class="{ active: activeTab === 'historico-exames' }"
-        @click="activeTab = 'historico-exames'"
+        :class="{ active: activeTab === 'historico' }"
+        @click="activeTab = 'historico'"
       >
-        Hist. Exames
-        <span v-if="examesStore.historico.length" class="tab-count">{{ examesStore.historico.length }}</span>
+        Histórico
+        <span v-if="historicoCombinado.length" class="tab-count">{{ historicoCombinado.length }}</span>
       </button>
     </div>
 
@@ -438,51 +435,6 @@ function confirmarOutroTipo() {
         </div>
       </template>
 
-      <!-- Aba: Histórico de consultas -->
-      <template v-else-if="activeTab === 'historico-consultas'">
-        <div v-if="store.passadas.length === 0" class="empty-state">
-          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <p>Nenhuma consulta no histórico</p>
-        </div>
-        <div v-else class="consultas-list">
-          <div
-            v-for="(consulta, i) in paginatedHistoricoConsultas"
-            :key="consulta.id"
-            class="consulta-card"
-            :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
-            :style="{ animationDelay: i * 0.04 + 's' }"
-            @click="abrirDetalhes(consulta)"
-          >
-            <div class="consulta-icon-box" :class="consulta.status">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="consulta-info">
-              <span class="consulta-medico">{{ consulta.medico }}</span>
-              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
-            </div>
-            <div class="consulta-badge-area">
-              <span v-if="consulta.status === 'realizada'" class="status-badge realizada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-              </span>
-            </div>
-          </div>
-          <Pagination :total="store.passadas.length" :per-page="PER_PAGE" v-model="pageHistoricoConsultas" />
-        </div>
-      </template>
-
       <!-- Aba: Exames agendados -->
       <template v-else-if="activeTab === 'exames'">
         <div v-if="examesStore.proximos.length === 0" class="empty-state">
@@ -523,54 +475,92 @@ function confirmarOutroTipo() {
         </div>
       </template>
 
-      <!-- Aba: Histórico de exames -->
+      <!-- Aba: Histórico unificado -->
       <template v-else>
-        <div v-if="examesStore.historico.length === 0" class="empty-state">
+        <div v-if="historicoCombinado.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
-            <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p>Nenhum exame no histórico</p>
+          <p>Nenhum registro no histórico</p>
         </div>
         <div v-else class="consultas-list">
-          <div
-            v-for="(exame, i) in paginatedHistoricoExames"
-            :key="exame.id"
-            class="consulta-card"
-            :class="{ cancelada: exame.status === 'cancelado', realizada: exame.status === 'realizado' }"
-            :style="{ animationDelay: i * 0.04 + 's' }"
-            @click="abrirDetalhesExame(exame)"
-          >
-            <div class="consulta-icon-box" :class="exame.status === 'realizado' ? 'realizada' : exame.status === 'cancelado' ? 'cancelada' : 'exame-agendado'">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
+          <template v-for="(item, i) in paginatedHistorico" :key="item._categoria + item.id">
+            <!-- Label de seção quando muda de categoria -->
+            <p
+              v-if="i === 0 || paginatedHistorico[i-1]._categoria !== item._categoria"
+              class="section-label"
+              :style="{ marginTop: i > 0 ? '16px' : '0' }"
+            >
+              {{ item._categoria === 'consulta' ? 'Consultas' : 'Exames' }}
+            </p>
+            <!-- Card consulta -->
+            <div
+              v-if="item._categoria === 'consulta'"
+              class="consulta-card"
+              :class="{ cancelada: item.status === 'cancelada', realizada: item.status === 'realizada' }"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhes(item)"
+            >
+              <div class="consulta-icon-box" :class="item.status">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ item.medico }}</span>
+                <span class="consulta-especialidade">{{ item.especialidade || 'Consulta médica' }}</span>
+                <span class="consulta-data-text">{{ formatarData(item.data_hora) }} · {{ formatarHora(item.data_hora) }}</span>
+                <span v-if="item.local" class="consulta-local">{{ item.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="item.status === 'realizada'" class="status-badge realizada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span v-else-if="item.status === 'cancelada'" class="status-badge cancelada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </span>
+              </div>
             </div>
-            <div class="consulta-info">
-              <span class="consulta-medico">{{ exame.nome }}</span>
-              <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
-              <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
-              <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+            <!-- Card exame -->
+            <div
+              v-else
+              class="consulta-card"
+              :class="{ cancelada: item.status === 'cancelado', realizada: item.status === 'realizado' }"
+              :style="{ animationDelay: i * 0.04 + 's' }"
+              @click="abrirDetalhesExame(item)"
+            >
+              <div class="consulta-icon-box" :class="item.status === 'realizado' ? 'realizada' : item.status === 'cancelado' ? 'cancelada' : 'exame-agendado'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="consulta-info">
+                <span class="consulta-medico">{{ item.nome }}</span>
+                <span class="consulta-especialidade">{{ item.medico || item.tipo || 'Exame médico' }}</span>
+                <span class="consulta-data-text">{{ formatarData(item.data) }} · {{ formatarHora(item.data) }}</span>
+                <span v-if="item.local" class="consulta-local">{{ item.local }}</span>
+              </div>
+              <div class="consulta-badge-area">
+                <span v-if="item.status === 'realizado'" class="status-badge realizada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span v-else-if="item.status === 'cancelado'" class="status-badge cancelada">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </span>
+              </div>
             </div>
-            <div class="consulta-badge-area">
-              <span v-if="exame.status === 'realizado'" class="status-badge realizada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <span v-else-if="exame.status === 'cancelado'" class="status-badge cancelada">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-              </span>
-            </div>
-          </div>
-          <Pagination :total="examesStore.historico.length" :per-page="PER_PAGE" v-model="pageHistoricoExames" />
+          </template>
+          <Pagination :total="historicoCombinado.length" :per-page="PER_PAGE" v-model="pageHistorico" />
         </div>
       </template>
     </div>
 
     <!-- FAB -->
-    <button class="fab" @click="abrirNovoPorTab" :aria-label="activeTab === 'exames' || activeTab === 'historico-exames' ? 'Registrar exame' : 'Agendar consulta'">
+    <button class="fab" @click="abrirNovoPorTab" :aria-label="activeTab === 'exames' ? 'Registrar exame' : 'Agendar consulta'">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
@@ -710,6 +700,11 @@ function confirmarOutroTipo() {
         <div class="form-group">
           <label class="form-label">Nome do exame</label>
           <input v-model="exameForm.nome" type="text" class="form-input" placeholder="Ex: Colonoscopia, Calprotectina..." required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Médico solicitante (opcional)</label>
+          <input v-model="exameForm.medico" type="text" class="form-input" placeholder="Dr(a). ..." />
         </div>
 
         <div class="form-group">

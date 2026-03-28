@@ -16,6 +16,7 @@ class ExameRequest extends FormRequest
         return [
             'nome'        => 'required|string|max:255',
             'tipo'        => 'nullable|string|max:255',
+            'medico'      => 'nullable|string|max:255',
             'data'        => 'required|date',
             'local'       => 'nullable|string|max:255',
             'observacoes' => 'nullable|string',

@@ -13,6 +13,7 @@ class ExameResource extends JsonResource
             'id'          => $this->id,
             'nome'        => $this->nome,
             'tipo'        => $this->tipo,
+            'medico'      => $this->medico,
             'data'        => $this->data?->format('Y-m-d\TH:i'),
             'local'       => $this->local,
             'observacoes' => $this->observacoes,
