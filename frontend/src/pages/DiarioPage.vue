@@ -154,29 +154,19 @@ function formatarDataHora(dataHora) {
     <AppBar title="Diário" subtitle="Registre sintomas e acompanhe seu dia a dia" />
 
     <div class="desktop-page-header">
-      <div class="dph-left">
-        <div class="dph-text">
-          <h1 class="dph-title">Diário de Saúde</h1>
-          <p class="dph-subtitle">Registre anotações, sintomas e crises ao longo do tempo</p>
-        </div>
+      <div class="dph-text">
+        <h1 class="dph-title">Diário de Saúde</h1>
+        <p class="dph-subtitle">Registre anotações, sintomas e crises ao longo do tempo</p>
       </div>
-      <div class="dph-right">
-        <MesNavegacao v-model="mesAtual" />
-        <div class="dph-actions">
-          <button class="dph-action secondary" @click="abrirNovaCrise">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-            Registrar crise
-          </button>
-          <button class="dph-action" @click="abrirNovaEntrada">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-            Nova anotação
-          </button>
-        </div>
-      </div>
+      <button
+        class="dph-action"
+        @click="activeTab === 'anotacoes' ? abrirNovaEntrada() : abrirNovaCrise()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        {{ activeTab === 'anotacoes' ? 'Nova anotação' : 'Registrar crise' }}
+      </button>
     </div>
 
     <div class="page-content">
@@ -201,6 +191,8 @@ function formatarDataHora(dataHora) {
         <span v-if="crisesMes.length > 0" class="tab-count tab-count-crise">{{ crisesMes.length }}</span>
       </button>
     </div>
+
+    <MesNavegacao v-model="mesAtual" class="desktop-mes-nav" />
 
     <LoadingDots v-if="diarioStore.loading" />
 
@@ -366,6 +358,10 @@ function formatarDataHora(dataHora) {
 
 .page-content {
   padding: 0 16px;
+}
+
+.desktop-mes-nav {
+  display: none;
 }
 
 /* Tabs */
@@ -768,11 +764,65 @@ function formatarDataHora(dataHora) {
     overflow: hidden;
   }
 
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 40px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    background: transparent;
+    flex-shrink: 0;
+    gap: 24px;
+  }
+
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dph-subtitle {
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto-light);
+    margin: 0;
+  }
+
+  .dph-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--verde-salvia);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-corpo);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-smooth), transform 0.15s var(--ease-smooth);
+  }
+
+  .dph-action:hover {
+    background: var(--verde-claro);
+    transform: translateY(-1px);
+  }
+
   /* Tabs estilo website (underline) */
   .tabs {
     background: none;
     border-radius: 0;
-    padding: 0 40px;
+    padding: 0;
     margin: 0;
     border-bottom: 1.5px solid #eee;
     gap: 0;
@@ -811,99 +861,11 @@ function formatarDataHora(dataHora) {
     display: none;
   }
 
-  .desktop-page-header {
+  .desktop-mes-nav {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px 40px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-    background: transparent;
-    flex-shrink: 0;
-    gap: 24px;
-  }
-
-  .dph-left {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .dph-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-shrink: 0;
-  }
-
-  /* O MesNavegacao dentro do dph-right fica menor */
-  .dph-right :deep(.mes-navegacao) {
-    padding: 0;
-  }
-
-  .dph-right :deep(.mes-label) {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--texto);
-    min-width: 130px;
-    text-align: center;
-  }
-
-  .dph-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .dph-title {
-    font-family: var(--font-titulo);
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--texto);
-    margin: 0;
-    line-height: 1.2;
-  }
-
-  .dph-subtitle {
-    font-family: var(--font-corpo);
-    font-size: 13px;
-    color: var(--texto-light);
-    margin: 0;
-  }
-
-  .dph-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  .dph-action {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: var(--verde-salvia);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-family: var(--font-corpo);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s var(--ease-smooth), transform 0.15s var(--ease-smooth);
-  }
-
-  .dph-action:hover {
-    background: var(--verde-claro);
-    transform: translateY(-1px);
-  }
-
-  .dph-action.secondary {
-    background: transparent;
-    color: var(--verde-salvia);
-    border: 1.5px solid var(--verde-salvia);
-  }
-
-  .dph-action.secondary:hover {
-    background: rgba(127, 168, 50, 0.06);
-    transform: translateY(-1px);
+    padding: 12px 0 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 16px;
   }
 
   .page-content {
