@@ -654,35 +654,41 @@ function confirmarOutroTipo() {
 
     <!-- Modal Detalhes Consulta -->
     <ModalBase v-model="showDetail" title="">
-      <template v-if="selected" #header>
-        <div class="detail-icon-wrap">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="detail-header-text">
-          <span class="detail-status" :class="selected.status">{{ selected.status === 'agendada' ? 'Agendada' : selected.status === 'realizada' ? 'Realizada' : 'Cancelada' }}</span>
-          <span class="detail-data">{{ formatarDataCompleta(selected.data_hora) }}</span>
-        </div>
-      </template>
-
-      <div v-if="selected" class="detail">
-        <h3 class="detail-medico">{{ selected.medico }}</h3>
-        <span v-if="selected.especialidade" class="detail-especialidade">{{ selected.especialidade }}</span>
-
-        <div v-if="selected.local" class="detail-row">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-          <span>{{ selected.local }}</span>
+      <div v-if="selected" class="detail-web">
+        <div class="dw-hero">
+          <div class="dw-icon-box">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="dw-hero-body">
+            <span class="dw-badge" :class="selected.status">
+              {{ selected.status === 'agendada' ? 'Agendada' : selected.status === 'realizada' ? 'Realizada' : 'Cancelada' }}
+            </span>
+            <h3 class="dw-title">{{ selected.medico }}</h3>
+            <span v-if="selected.especialidade" class="dw-sub">{{ selected.especialidade }}</span>
+          </div>
         </div>
 
-        <div v-if="selected.observacoes" class="detail-obs">
+        <div class="dw-fields">
+          <div class="dw-field">
+            <span class="dw-label">Data</span>
+            <span class="dw-value">{{ formatarDataCompleta(selected.data_hora) }}</span>
+          </div>
+          <div v-if="selected.local" class="dw-field">
+            <span class="dw-label">Local</span>
+            <span class="dw-value">{{ selected.local }}</span>
+          </div>
+        </div>
+
+        <div v-if="selected.observacoes" class="dw-obs">
           <p>{{ selected.observacoes }}</p>
         </div>
 
-        <div class="detail-actions">
-          <button class="btn-detail edit" @click="editarDoDetalhe">Editar</button>
-          <button class="btn-detail delete" @click="excluirDoDetalhe">Excluir</button>
+        <div class="dw-actions">
+          <button class="dw-btn-edit" @click="editarDoDetalhe">Editar</button>
+          <button class="dw-btn-delete" @click="excluirDoDetalhe">Excluir</button>
         </div>
       </div>
     </ModalBase>
@@ -785,44 +791,50 @@ function confirmarOutroTipo() {
 
     <!-- Modal Detalhes Exame -->
     <ModalBase v-model="showExameDetail" title="">
-      <template v-if="selectedExame" #header>
-        <div class="detail-icon-wrap exame-icon-wrap">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="detail-header-text">
-          <span class="detail-status" :class="selectedExame.status === 'cancelado' ? 'cancelada' : selectedExame.status === 'realizado' ? 'realizada' : 'agendada'">
-            {{ selectedExame.status === 'agendado' ? 'Agendado' : selectedExame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
-          </span>
-          <span class="detail-data">{{ formatarDataCompleta(selectedExame.data) }}</span>
-        </div>
-      </template>
-
-      <div v-if="selectedExame" class="detail">
-        <h3 class="detail-medico">{{ selectedExame.nome }}</h3>
-        <span v-if="selectedExame.tipo" class="detail-especialidade">{{ selectedExame.tipo }}</span>
-
-        <div v-if="selectedExame.local" class="detail-row">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-          <span>{{ selectedExame.local }}</span>
+      <div v-if="selectedExame" class="detail-web">
+        <div class="dw-hero">
+          <div class="dw-icon-box azul">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="dw-hero-body">
+            <span class="dw-badge" :class="selectedExame.status === 'cancelado' ? 'cancelado' : selectedExame.status === 'realizado' ? 'realizado' : 'agendada'">
+              {{ selectedExame.status === 'agendado' ? 'Agendado' : selectedExame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
+            </span>
+            <h3 class="dw-title">{{ selectedExame.nome }}</h3>
+            <span v-if="selectedExame.tipo" class="dw-sub">{{ selectedExame.tipo }}</span>
+          </div>
         </div>
 
-        <div v-if="selectedExame.observacoes" class="detail-obs">
+        <div class="dw-fields">
+          <div class="dw-field">
+            <span class="dw-label">Data</span>
+            <span class="dw-value">{{ formatarDataCompleta(selectedExame.data) }}</span>
+          </div>
+          <div v-if="selectedExame.medico" class="dw-field">
+            <span class="dw-label">Solicitante</span>
+            <span class="dw-value">{{ selectedExame.medico }}</span>
+          </div>
+          <div v-if="selectedExame.local" class="dw-field">
+            <span class="dw-label">Local</span>
+            <span class="dw-value">{{ selectedExame.local }}</span>
+          </div>
+        </div>
+
+        <div v-if="selectedExame.observacoes" class="dw-obs">
           <p>{{ selectedExame.observacoes }}</p>
         </div>
 
-        <div class="detail-actions">
-          <button class="btn-detail edit" @click="editarExameDoDetalhe">Editar</button>
+        <div class="dw-actions">
+          <button class="dw-btn-edit" @click="editarExameDoDetalhe">Editar</button>
           <button
             v-if="selectedExame.status === 'agendado'"
-            class="btn-detail delete"
+            class="dw-btn-delete"
             @click="cancelarExameDoDetalhe"
-          >
-            Cancelar exame
-          </button>
+          >Cancelar exame</button>
         </div>
       </div>
     </ModalBase>
@@ -1114,6 +1126,181 @@ function confirmarOutroTipo() {
   .fab {
     display: none;
   }
+}
+
+/* ─── Detail Web ─── */
+.detail-web {
+  display: flex;
+  flex-direction: column;
+}
+
+.dw-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.dw-icon-box {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 16px;
+  background: rgba(127, 168, 50, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde-salvia);
+  flex-shrink: 0;
+}
+
+.dw-icon-box.azul {
+  background: rgba(74, 144, 196, 0.12);
+  color: #4a90c4;
+}
+
+.dw-icon-box.vermelho {
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--terracota);
+}
+
+.dw-hero-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: var(--font-corpo);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  width: fit-content;
+  background: rgba(127, 168, 50, 0.12);
+  color: var(--verde-salvia);
+}
+
+.dw-badge.cancelada,
+.dw-badge.cancelado {
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--terracota);
+}
+
+.dw-badge.realizada,
+.dw-badge.realizado {
+  background: rgba(74, 144, 196, 0.12);
+  color: #4a90c4;
+}
+
+.dw-title {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dw-sub {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto-light);
+}
+
+.dw-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.dw-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.025);
+  border-radius: 10px;
+}
+
+.dw-label {
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dw-value {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto);
+  text-align: right;
+  font-weight: 500;
+}
+
+.dw-obs {
+  background: var(--fundo, #FAF8F5);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--verde-salvia);
+  margin-bottom: 16px;
+}
+
+.dw-obs p {
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  color: var(--texto);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.dw-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.dw-btn-edit {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  background: transparent;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dw-btn-delete {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(196, 120, 74, 0.25);
+  background: rgba(196, 120, 74, 0.05);
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--terracota);
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
 /* Form */

@@ -305,59 +305,56 @@ onMounted(() => {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <template v-if="selectedMed" #header>
-        <div class="detail-icon-wrap" :class="nivelAlerta(diasRestantes(selectedMed))">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
-            <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
+      <div v-if="selectedMed" class="detail-web">
+        <div class="dw-hero">
+          <div class="dw-icon-box" :class="nivelAlerta(diasRestantes(selectedMed))">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
+              <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+          </div>
+          <div class="dw-hero-body">
+            <span class="dw-badge" :class="nivelAlerta(diasRestantes(selectedMed))">
+              {{ nivelAlerta(diasRestantes(selectedMed)) === 'urgente' ? 'Estoque crítico' : nivelAlerta(diasRestantes(selectedMed)) === 'atencao' ? 'Estoque baixo' : 'Em dia' }}
+            </span>
+            <h3 class="dw-title">{{ selectedMed.nome }}</h3>
+            <span class="dw-sub">{{ periodicidadeTexto(selectedMed) }}</span>
+          </div>
         </div>
-        <div class="detail-header-text">
-          <span class="detail-status" :class="nivelAlerta(diasRestantes(selectedMed))">
-            {{ nivelAlerta(diasRestantes(selectedMed)) === 'urgente' ? 'Estoque crítico' : nivelAlerta(diasRestantes(selectedMed)) === 'atencao' ? 'Estoque baixo' : 'Em dia' }}
-          </span>
-          <span class="detail-data">{{ periodicidadeTexto(selectedMed) }}</span>
-        </div>
-      </template>
 
-      <div v-if="selectedMed" class="detail">
-        <h3 class="detail-medico">{{ selectedMed.nome }}</h3>
-
-        <!-- Callout de dosagem -->
-        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && (selectedMed.dose_hoje || selectedMed.dose)" class="detail-tomar">
+        <div v-if="selectedMed.periodicidade_tipo !== 'sob_demanda' && (selectedMed.dose_hoje || selectedMed.dose)" class="dw-callout">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <rect x="6" y="2" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.8"/>
             <line x1="6" y1="12" x2="18" y2="12" stroke="currentColor" stroke-width="1.8"/>
           </svg>
-          <div class="detail-tomar-text">
-            <span class="detail-tomar-principal">Tomar {{ selectedMed.dose_hoje || selectedMed.dose }}</span>
-            <span v-if="selectedMed.horarios?.length" class="detail-tomar-sub">
+          <div class="dw-callout-text">
+            <span class="dw-callout-main">Tomar {{ selectedMed.dose_hoje || selectedMed.dose }}</span>
+            <span v-if="selectedMed.horarios?.length" class="dw-callout-sub">
               {{ selectedMed.horarios.length === 1 ? '1x hoje' : `${selectedMed.horarios.length}x hoje` }}
               · às {{ selectedMed.horarios.map(h => h.substring(0, 5)).join(', ') }}
             </span>
           </div>
         </div>
 
-        <div class="detail-row">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M5 8h14M5 12h9M5 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
-          <span>{{ selectedMed.estoque?.quantidade_atual ?? 0 }} unidades restantes</span>
+        <div class="dw-fields">
+          <div class="dw-field">
+            <span class="dw-label">Estoque</span>
+            <span class="dw-value">{{ selectedMed.estoque?.quantidade_atual ?? 0 }} unidades</span>
+          </div>
         </div>
 
-        <div v-if="selectedMed.instrucoes" class="detail-obs">
+        <div v-if="selectedMed.instrucoes" class="dw-obs">
           <p>{{ selectedMed.instrucoes }}</p>
         </div>
 
-        <div class="detail-actions">
-          <button class="btn-detail edit" @click="editarDoDetalhe">Editar</button>
+        <div class="dw-actions">
+          <button class="dw-btn-edit" @click="editarDoDetalhe">Editar</button>
           <button
             v-if="nivelAlerta(diasRestantes(selectedMed)) !== 'ok'"
-            class="btn-detail restock"
+            class="dw-btn-primary"
             @click="reabastecerDoDetalhe"
           >Reabastecer</button>
-          <button class="btn-detail delete" @click="excluirDoDetalhe">Excluir</button>
+          <button class="dw-btn-delete" @click="excluirDoDetalhe">Excluir</button>
         </div>
       </div>
     </ModalBase>
@@ -723,18 +720,27 @@ onMounted(() => {
   gap: 12px;
 }
 
-/* Detail modal */
-.detail {
+/* ─── Detail Web ─── */
+.detail-web {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-.detail-icon-wrap {
-  width: 48px;
-  height: 48px;
+.dw-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.dw-icon-box {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
+  background: rgba(127, 168, 50, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -742,158 +748,194 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-.detail-icon-wrap.atencao {
-  background: linear-gradient(135deg, rgba(212, 160, 60, 0.15), rgba(212, 160, 60, 0.08));
+.dw-icon-box.atencao {
+  background: rgba(212, 160, 60, 0.12);
   color: var(--ambar);
 }
 
-.detail-icon-wrap.urgente {
-  background: linear-gradient(135deg, rgba(229, 115, 115, 0.15), rgba(229, 115, 115, 0.08));
+.dw-icon-box.urgente {
+  background: rgba(229, 115, 115, 0.12);
   color: var(--intensidade-5);
 }
 
-.detail-header-text {
+.dw-hero-body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-left: 12px;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
 }
 
-.detail-status {
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
   font-family: var(--font-corpo);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  width: fit-content;
+  background: rgba(127, 168, 50, 0.12);
   color: var(--verde-salvia);
 }
 
-.detail-status.atencao { color: var(--ambar); }
-.detail-status.urgente { color: var(--intensidade-5); }
+.dw-badge.atencao {
+  background: rgba(212, 160, 60, 0.12);
+  color: var(--ambar);
+}
 
-.detail-data {
+.dw-badge.urgente {
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--intensidade-5);
+}
+
+.dw-title {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dw-sub {
   font-family: var(--font-corpo);
   font-size: 13px;
   color: var(--texto-light);
 }
 
-.detail-medico {
-  font-family: var(--font-titulo);
-  font-size: 1.25rem;
-  color: var(--texto);
-  margin: 0;
-}
-
-.detail-tomar {
+.dw-callout {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   background: rgba(127, 168, 50, 0.08);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 14px 16px;
   border-left: 3px solid var(--verde-salvia);
   color: var(--verde-salvia);
+  margin-bottom: 16px;
 }
 
-.detail-tomar-text {
+.dw-callout-text {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.detail-tomar-principal {
+.dw-callout-main {
   font-family: var(--font-corpo);
   font-size: 15px;
   font-weight: 700;
   color: var(--verde-salvia);
 }
 
-.detail-tomar-sub {
+.dw-callout-sub {
   font-family: var(--font-corpo);
   font-size: 12px;
   color: var(--texto-light);
 }
 
-.detail-row {
+.dw-fields {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  color: var(--texto);
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
 }
 
-.detail-row svg {
+.dw-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.025);
+  border-radius: 10px;
+}
+
+.dw-label {
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  font-weight: 600;
   color: var(--texto-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.detail-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.detail-tag {
-  padding: 4px 10px;
-  background: rgba(127, 168, 50, 0.12);
-  color: var(--verde-salvia);
-  border-radius: 20px;
+.dw-value {
   font-family: var(--font-corpo);
   font-size: 13px;
-  font-weight: 600;
+  color: var(--texto);
+  text-align: right;
+  font-weight: 500;
 }
 
-.detail-obs {
+.dw-obs {
   background: var(--fundo, #FAF8F5);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 14px 16px;
   border-left: 3px solid var(--verde-salvia);
+  margin-bottom: 16px;
 }
 
-.detail-obs p {
+.dw-obs p {
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
-  line-height: 1.6;
+  line-height: 1.65;
   margin: 0;
 }
 
-.detail-actions {
+.dw-actions {
   display: flex;
   gap: 8px;
-  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.06);
 }
 
-.btn-detail {
+.dw-btn-edit {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  background: transparent;
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dw-btn-delete {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(196, 120, 74, 0.25);
+  background: rgba(196, 120, 74, 0.05);
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--terracota);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dw-btn-primary {
   flex: 1;
   padding: 12px;
   border-radius: 10px;
   border: none;
+  background: var(--verde-salvia);
   font-family: var(--font-corpo);
   font-size: 14px;
   font-weight: 600;
+  color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-detail:active {
-  transform: scale(0.97);
-}
-
-.btn-detail.edit {
-  background: rgba(127, 168, 50, 0.1);
-  color: var(--verde-salvia);
-}
-
-.btn-detail.restock {
-  background: rgba(212, 160, 60, 0.1);
-  color: var(--ambar);
-}
-
-.btn-detail.delete {
-  background: rgba(196, 120, 74, 0.1);
-  color: var(--terracota);
+  transition: all 0.15s;
 }
 
 /* Periodicidade */

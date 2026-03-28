@@ -296,48 +296,59 @@ function formatarDataHora(dataHora) {
 
     <!-- Modal Detalhes -->
     <ModalBase v-model="showDetailModal" title="">
-      <template v-if="selectedItem" #header>
-        <div class="detail-icon-wrap" :class="{ 'crise-icon-wrap': selectedType === 'crise' }">
-          <svg v-if="selectedType === 'crise'" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zM3 8h18M8 4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M7 13h4M7 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
+      <div v-if="selectedItem" class="detail-web">
+        <div class="dw-hero">
+          <div class="dw-icon-box" :class="{ vermelho: selectedType === 'crise' }">
+            <svg v-if="selectedType === 'crise'" width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <svg v-else width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="dw-hero-body">
+            <span class="dw-badge" :class="selectedType">
+              {{ selectedType === 'crise' ? 'Crise' : 'Anotação' }}
+            </span>
+            <h3 class="dw-title">
+              {{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}
+            </h3>
+            <span class="dw-sub">
+              {{ selectedType === 'crise' ? 'Registro de crise' : 'Entrada no diário' }}
+            </span>
+          </div>
         </div>
-        <div class="detail-header-text">
-          <span class="detail-tipo" :class="selectedType">{{ selectedType === 'crise' ? 'Crise' : 'Anotação' }}</span>
-          <span class="detail-data-text">{{ selectedType === 'crise' ? formatarDataHora(selectedItem.data_hora) : formatarData(selectedItem.data) }}</span>
-        </div>
-      </template>
 
-      <div v-if="selectedItem" class="detail">
-        <div class="detail-intensidade-row">
-          <span class="detail-row-label">Intensidade</span>
+        <div class="dw-intensidade-row">
+          <span class="dw-label">Intensidade</span>
           <IntensidadeDots :valor="selectedItem.intensidade" />
         </div>
 
-        <div v-if="selectedItem.sintomas" class="detail-tags">
-          <span v-for="tag in selectedItem.sintomas.split(',')" :key="tag" class="detail-tag" :class="selectedType">{{ tag.trim() }}</span>
+        <div v-if="selectedItem.sintomas" class="dw-tags">
+          <span
+            v-for="tag in selectedItem.sintomas.split(',')"
+            :key="tag"
+            class="dw-tag"
+            :class="selectedType"
+          >{{ tag.trim() }}</span>
         </div>
 
-        <div v-if="selectedType === 'crise' && selectedItem.duracao_estimada" class="detail-row">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <span>{{ selectedItem.duracao_estimada }}</span>
+        <div v-if="selectedType === 'crise' && selectedItem.duracao_estimada" class="dw-fields">
+          <div class="dw-field">
+            <span class="dw-label">Duração</span>
+            <span class="dw-value">{{ selectedItem.duracao_estimada }}</span>
+          </div>
         </div>
 
-        <div v-if="selectedItem.observacoes" class="detail-obs" :class="{ 'detail-obs-crise': selectedType === 'crise' }">
+        <div v-if="selectedItem.observacoes" class="dw-obs" :class="{ crise: selectedType === 'crise' }">
           <p>{{ selectedItem.observacoes }}</p>
         </div>
 
-        <div class="detail-actions">
-          <button class="btn-detail edit" @click="editarDoDetalhe">Editar</button>
-          <button class="btn-detail delete" @click="excluirDoDetalhe">Excluir</button>
+        <div class="dw-actions">
+          <button class="dw-btn-edit" @click="editarDoDetalhe">Editar</button>
+          <button class="dw-btn-delete" @click="excluirDoDetalhe">Excluir</button>
         </div>
       </div>
     </ModalBase>
@@ -581,157 +592,209 @@ function formatarDataHora(dataHora) {
   overflow: hidden;
 }
 
-/* Detail modal */
-.detail {
+/* ─── Detail Web ─── */
+.detail-web {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-.detail-header {
+.dw-hero {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
-.detail-icon-wrap {
-  width: 48px;
-  height: 48px;
+.dw-icon-box {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
-  color: var(--verde-salvia);
+  background: rgba(127, 168, 50, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--verde-salvia);
   flex-shrink: 0;
 }
 
-.crise-icon-wrap {
-  background: linear-gradient(135deg, rgba(229, 115, 115, 0.15), rgba(229, 115, 115, 0.08));
+.dw-icon-box.vermelho {
+  background: rgba(229, 115, 115, 0.12);
   color: var(--terracota);
 }
 
-.detail-header-text {
+.dw-hero-body {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-left: 12px;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
 }
 
-.detail-tipo {
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
   font-family: var(--font-corpo);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  width: fit-content;
+  background: rgba(127, 168, 50, 0.12);
   color: var(--verde-salvia);
 }
 
-.detail-tipo.crise {
+.dw-badge.anotacoes {
+  background: rgba(127, 168, 50, 0.12);
+  color: var(--verde-salvia);
+}
+
+.dw-badge.crise {
+  background: rgba(229, 115, 115, 0.12);
   color: var(--terracota);
 }
 
-.detail-data-text {
+.dw-title {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dw-sub {
   font-family: var(--font-corpo);
   font-size: 13px;
   color: var(--texto-light);
 }
 
-.detail-intensidade-row {
+.dw-intensidade-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.025);
+  border-radius: 10px;
+  margin-bottom: 6px;
 }
 
-.detail-row-label {
+.dw-label {
   font-family: var(--font-corpo);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--texto-light);
-}
-
-.detail-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.detail-tag {
-  padding: 5px 10px;
-  background: rgba(127, 168, 50, 0.1);
-  color: var(--verde-salvia);
-  border-radius: 6px;
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.detail-tag.crise {
-  background: rgba(229, 115, 115, 0.1);
-  color: var(--terracota);
-}
-
-.detail-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-corpo);
-  font-size: 14px;
-  color: var(--texto);
-}
-
-.detail-row svg {
-  color: var(--texto-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.detail-obs {
-  background: var(--fundo, #FAF8F5);
-  border-radius: 14px;
-  padding: 16px;
-  border-left: 3px solid var(--verde-salvia);
+.dw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  margin-top: 6px;
 }
 
-.detail-obs.detail-obs-crise {
+.dw-tag {
+  padding: 5px 12px;
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
+  border-radius: 20px;
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dw-tag.crise {
+  background: rgba(229, 115, 115, 0.1);
+  color: var(--terracota);
+}
+
+.dw-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.dw-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.025);
+  border-radius: 10px;
+}
+
+.dw-value {
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto);
+  text-align: right;
+  font-weight: 500;
+}
+
+.dw-obs {
+  background: var(--fundo, #FAF8F5);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--verde-salvia);
+  margin-bottom: 16px;
+}
+
+.dw-obs.crise {
   border-left-color: var(--terracota);
 }
 
-.detail-obs p {
+.dw-obs p {
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
-  line-height: 1.6;
+  line-height: 1.65;
   margin: 0;
 }
 
-.detail-actions {
+.dw-actions {
   display: flex;
   gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.06);
 }
 
-.btn-detail {
+.dw-btn-edit {
   flex: 1;
   padding: 12px;
   border-radius: 10px;
-  border: none;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  background: transparent;
   font-family: var(--font-corpo);
   font-size: 14px;
   font-weight: 600;
+  color: var(--texto);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s;
 }
 
-.btn-detail:active {
-  transform: scale(0.97);
-}
-
-.btn-detail.edit {
-  background: rgba(127, 168, 50, 0.1);
-  color: var(--verde-salvia);
-}
-
-.btn-detail.delete {
-  background: rgba(229, 115, 115, 0.1);
+.dw-btn-delete {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(196, 120, 74, 0.25);
+  background: rgba(196, 120, 74, 0.05);
+  font-family: var(--font-corpo);
+  font-size: 14px;
+  font-weight: 600;
   color: var(--terracota);
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
 /* Confirm modal */

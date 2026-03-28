@@ -75,6 +75,13 @@ async function abrirAviso(aviso) {
       </button>
     </AppBar>
 
+    <div class="desktop-page-header">
+      <div class="dph-text">
+        <h1 class="dph-title">Avisos</h1>
+        <p class="dph-subtitle">Notificações e lembretes do sistema</p>
+      </div>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
@@ -176,23 +183,23 @@ async function abrirAviso(aviso) {
 
     <!-- Modal Detalhe -->
     <ModalBase v-model="showDetail" title="">
-      <template v-if="selectedAviso" #header>
-        <div class="detail-icon-wrap">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div v-if="selectedAviso" class="detail-web">
+        <div class="dw-hero">
+          <div class="dw-icon-box">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="dw-hero-body">
+            <span class="dw-badge">Lido</span>
+            <h3 class="dw-title">{{ selectedAviso.titulo }}</h3>
+            <span class="dw-sub">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
+          </div>
         </div>
-        <div class="detail-header-text">
-          <span class="detail-status-badge lido">Lido</span>
-          <span class="detail-data">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
-        </div>
-      </template>
 
-      <div v-if="selectedAviso" class="detail">
-        <h3 class="detail-titulo">{{ selectedAviso.titulo }}</h3>
-        <div class="detail-mensagem-card">
-          <p class="detail-mensagem">{{ selectedAviso.mensagem }}</p>
+        <div class="dw-obs">
+          <p>{{ selectedAviso.mensagem }}</p>
         </div>
       </div>
     </ModalBase>
@@ -440,12 +447,32 @@ async function abrirAviso(aviso) {
   color: var(--texto-light);
 }
 
-/* Detail modal */
-.detail-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
+/* ─── Desktop Header ─── */
+.desktop-page-header {
+  display: none;
+}
+
+/* ─── Detail Web ─── */
+.detail-web {
+  display: flex;
+  flex-direction: column;
+}
+
+.dw-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.dw-icon-box {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 16px;
+  background: rgba(127, 168, 50, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -453,50 +480,52 @@ async function abrirAviso(aviso) {
   flex-shrink: 0;
 }
 
-.detail-header-text {
+.dw-hero-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
 }
 
-.detail-status-badge {
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
   font-family: var(--font-corpo);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+  width: fit-content;
+  background: rgba(127, 168, 50, 0.12);
   color: var(--verde-salvia);
 }
 
-.detail-data {
+.dw-title {
+  font-family: var(--font-titulo);
+  font-size: 1.25rem;
+  color: var(--texto);
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.dw-sub {
   font-family: var(--font-corpo);
   font-size: 13px;
   color: var(--texto-light);
-  line-height: 1.4;
 }
 
-.detail {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.detail-titulo {
-  font-family: var(--font-titulo);
-  font-size: 1.2rem;
-  color: var(--texto);
-  margin: 0;
-  line-height: 1.3;
-}
-
-.detail-mensagem-card {
+.dw-obs {
   background: var(--fundo, #FAF8F5);
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px 16px;
   border-left: 3px solid var(--verde-salvia);
 }
 
-.detail-mensagem {
+.dw-obs p {
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
@@ -507,5 +536,38 @@ async function abrirAviso(aviso) {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (min-width: 769px) {
+  .desktop-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 40px 20px;
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .dph-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dph-title {
+    font-family: var(--font-titulo);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .dph-subtitle {
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto-light);
+    margin: 0;
+  }
 }
 </style>
