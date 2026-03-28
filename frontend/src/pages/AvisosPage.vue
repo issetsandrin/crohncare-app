@@ -75,32 +75,32 @@ async function abrirAviso(aviso) {
       </button>
     </AppBar>
 
-    <div class="page-content">
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Novos
-          <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
-        </button>
-        <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Lidos
-          <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
-        </button>
-      </div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Novos
+        <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
+      </button>
+      <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Lidos
+        <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
+      </button>
+    </div>
 
+    <div class="page-content">
       <!-- Loading -->
       <LoadingDots v-if="store.loading" />
 
       <!-- Aba: Novos -->
-      <div v-else-if="activeTab === 'novos'">
+      <template v-else-if="activeTab === 'novos'">
         <div v-if="avisosNovos.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -111,22 +111,26 @@ async function abrirAviso(aviso) {
         </div>
         <div v-else class="avisos-list">
           <button class="mark-all-btn" @click="store.marcarTodosLidos">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             Marcar tudo como lido
           </button>
           <div
-            v-for="aviso in paginatedNovos"
+            v-for="(aviso, i) in paginatedNovos"
             :key="aviso.id"
             class="aviso-card nao-lido"
+            :style="{ animationDelay: i * 0.04 + 's' }"
             @click="abrirAviso(aviso)"
           >
-            <div class="aviso-indicator"></div>
-            <div class="aviso-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <div class="aviso-dot"></div>
+            <div class="aviso-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <div class="aviso-body">
+            <div class="aviso-info">
               <span class="aviso-titulo">{{ aviso.titulo }}</span>
               <span class="aviso-mensagem">{{ aviso.mensagem }}</span>
             </div>
@@ -134,10 +138,10 @@ async function abrirAviso(aviso) {
           </div>
           <Pagination :total="avisosNovos.length" :per-page="PER_PAGE" v-model="pageNovos" />
         </div>
-      </div>
+      </template>
 
       <!-- Aba: Lidos -->
-      <div v-else-if="activeTab === 'lidos'">
+      <template v-else-if="activeTab === 'lidos'">
         <div v-if="avisosLidos.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -147,18 +151,19 @@ async function abrirAviso(aviso) {
         </div>
         <div v-else class="avisos-list">
           <div
-            v-for="aviso in paginatedLidos"
+            v-for="(aviso, i) in paginatedLidos"
             :key="aviso.id"
             class="aviso-card lido"
+            :style="{ animationDelay: i * 0.04 + 's' }"
             @click="abrirAviso(aviso)"
           >
-            <div class="aviso-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <div class="aviso-icon-box lido-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <div class="aviso-body">
+            <div class="aviso-info">
               <span class="aviso-titulo">{{ aviso.titulo }}</span>
               <span class="aviso-mensagem">{{ aviso.mensagem }}</span>
             </div>
@@ -166,33 +171,28 @@ async function abrirAviso(aviso) {
           </div>
           <Pagination :total="avisosLidos.length" :per-page="PER_PAGE" v-model="pageLidos" />
         </div>
-      </div>
+      </template>
     </div>
 
     <!-- Modal Detalhe -->
     <ModalBase v-model="showDetail" title="">
-      <div v-if="selectedAviso" class="detail-content">
-        <div class="detail-header">
-          <div class="detail-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <span class="detail-tempo">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
+      <template v-if="selectedAviso" #header>
+        <div class="detail-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
+        <div class="detail-header-text">
+          <span class="detail-status-badge lido">Lido</span>
+          <span class="detail-data">{{ formatarDataCompleta(selectedAviso.created_at) }}</span>
+        </div>
+      </template>
 
+      <div v-if="selectedAviso" class="detail">
         <h3 class="detail-titulo">{{ selectedAviso.titulo }}</h3>
-
         <div class="detail-mensagem-card">
           <p class="detail-mensagem">{{ selectedAviso.mensagem }}</p>
-        </div>
-
-        <div class="detail-status">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Lido</span>
         </div>
       </div>
     </ModalBase>
@@ -226,7 +226,7 @@ async function abrirAviso(aviso) {
   background: rgba(76, 175, 80, 0.1);
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 16px;
+  margin: 0 16px 12px;
 }
 
 .tab-btn {
@@ -272,56 +272,11 @@ async function abrirAviso(aviso) {
   opacity: 0.6;
 }
 
-.mark-all-btn {
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--verde-salvia);
-  background: rgba(127, 168, 50, 0.1);
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.3s var(--ease-smooth);
-}
-
-.mark-all-btn:active {
-  background: rgba(127, 168, 50, 0.2);
-}
-
+/* Content */
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
-}
-
-/* Loading */
-.loading-state {
-  display: flex;
-  justify-content: center;
-  padding: 48px 0;
-}
-
-.loading-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.loading-dots span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--verde-salvia);
-  animation: loadingBounce 1s ease infinite;
-}
-
-.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes loadingBounce {
-  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
+  padding: 0 16px 40px;
 }
 
 /* Empty */
@@ -353,13 +308,39 @@ async function abrirAviso(aviso) {
   margin-top: 4px;
 }
 
+/* Mark all btn */
+.mark-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--verde-salvia);
+  background: rgba(127, 168, 50, 0.08);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 168, 50, 0.15);
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+  margin-bottom: 4px;
+}
+
+.mark-all-btn:active {
+  background: rgba(127, 168, 50, 0.16);
+}
+
 /* List */
 .avisos-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-top: 8px;
 }
 
+/* Card */
 .aviso-card {
   display: flex;
   align-items: center;
@@ -367,12 +348,11 @@ async function abrirAviso(aviso) {
   background: #fff;
   border-radius: 14px;
   padding: 14px;
-  padding-left: 18px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: relative;
   cursor: pointer;
-  transition: all 0.3s var(--ease-smooth);
+  transition: all 0.2s ease;
   animation: fadeInUp 0.4s var(--ease-out-smooth) both;
+  position: relative;
 }
 
 .aviso-card:active {
@@ -380,36 +360,19 @@ async function abrirAviso(aviso) {
 }
 
 .aviso-card.nao-lido {
-  background: rgba(127, 168, 50, 0.06);
-  border: 1px solid rgba(127, 168, 50, 0.15);
+  border: 1px solid rgba(127, 168, 50, 0.18);
+  background: rgba(127, 168, 50, 0.03);
 }
 
 .aviso-card.lido {
   opacity: 0.55;
 }
 
-.aviso-card.lido .aviso-icon {
-  background: #f0f0f0;
-  color: #bbb;
-}
-
-.aviso-card.lido .aviso-titulo {
-  color: #999;
-  font-weight: 500;
-}
-
-.aviso-card.lido .aviso-mensagem {
-  color: #bbb;
-}
-
-.aviso-card.lido .aviso-tempo {
-  color: #ccc;
-}
-
-.aviso-indicator {
+/* Ponto indicador de não lido */
+.aviso-dot {
   position: absolute;
   top: 50%;
-  left: 7px;
+  left: 6px;
   transform: translateY(-50%);
   width: 5px;
   height: 5px;
@@ -417,27 +380,31 @@ async function abrirAviso(aviso) {
   background: var(--verde-salvia);
 }
 
-.aviso-icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+/* Ícone do card */
+.aviso-icon-box {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   border-radius: 12px;
-  background: rgba(127, 168, 50, 0.1);
+  background: rgba(127, 168, 50, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--verde-salvia);
+  flex-shrink: 0;
 }
 
-.nao-lido .aviso-icon {
-  background: rgba(127, 168, 50, 0.18);
+.aviso-icon-box.lido-icon {
+  background: rgba(0, 0, 0, 0.04);
+  color: #bbb;
 }
 
-.aviso-body {
+/* Info */
+.aviso-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -463,28 +430,21 @@ async function abrirAviso(aviso) {
 .aviso-tempo {
   font-family: var(--font-corpo);
   font-size: 11px;
-  color: var(--texto-light);
+  font-weight: 500;
+  color: var(--verde-salvia);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
+.aviso-card.lido .aviso-tempo {
+  color: var(--texto-light);
+}
+
 /* Detail modal */
-.detail-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.detail-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .detail-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   background: linear-gradient(135deg, rgba(127, 168, 50, 0.15), rgba(127, 168, 50, 0.08));
   display: flex;
   align-items: center;
@@ -493,16 +453,37 @@ async function abrirAviso(aviso) {
   flex-shrink: 0;
 }
 
-.detail-tempo {
+.detail-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-status-badge {
+  font-family: var(--font-corpo);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--verde-salvia);
+}
+
+.detail-data {
   font-family: var(--font-corpo);
   font-size: 13px;
   color: var(--texto-light);
   line-height: 1.4;
 }
 
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .detail-titulo {
   font-family: var(--font-titulo);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: var(--texto);
   margin: 0;
   line-height: 1.3;
@@ -510,7 +491,7 @@ async function abrirAviso(aviso) {
 
 .detail-mensagem-card {
   background: var(--fundo, #FAF8F5);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 16px;
   border-left: 3px solid var(--verde-salvia);
 }
@@ -519,18 +500,12 @@ async function abrirAviso(aviso) {
   font-family: var(--font-corpo);
   font-size: 14px;
   color: var(--texto);
-  line-height: 1.6;
+  line-height: 1.65;
   margin: 0;
 }
 
-.detail-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-corpo);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--verde-salvia);
-  opacity: 0.7;
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
