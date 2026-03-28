@@ -291,56 +291,47 @@ function diasAte(dt) {
   return `Em ${diff} dias`
 }
 
-const ESPECIALIDADES_BASE = ['Gastroenterologista','Coloproctologista','Clínico Geral','Nutricionista','Psicólogo','Dermatologista','Reumatologista']
-const TIPOS_EXAME_BASE = ['Laboratorial','Imagem','Endoscopia','Patologia']
+const ESPECIALIDADES_BASE = [
+  'Gastroenterologista','Coloproctologista','Clínico Geral','Nutricionista',
+  'Psicólogo','Dermatologista','Reumatologista',
+  'Laboratorial','Imagem','Endoscopia','Patologia'
+]
 
 const customEspecialidades = ref(JSON.parse(localStorage.getItem('cc_custom_especialidades') || '[]'))
-const customTiposExame = ref(JSON.parse(localStorage.getItem('cc_custom_tipos_exame') || '[]'))
-
 const especialidades = computed(() => [...ESPECIALIDADES_BASE, ...customEspecialidades.value, 'Outro'])
-const tiposExame = computed(() => [...TIPOS_EXAME_BASE, ...customTiposExame.value, 'Outro'])
 
 const outroEspInput = ref('')
 const outroTipoInput = ref('')
 
-function selecionarEspecialidade(esp) {
-  if (esp === 'Outro') {
-    form.value.especialidade = 'Outro'
-    outroEspInput.value = ''
-  } else {
-    form.value.especialidade = form.value.especialidade === esp ? '' : esp
-    outroEspInput.value = ''
+function adicionarCustom(val) {
+  if (!customEspecialidades.value.includes(val)) {
+    customEspecialidades.value.push(val)
+    localStorage.setItem('cc_custom_especialidades', JSON.stringify(customEspecialidades.value))
   }
+}
+
+function selecionarEspecialidade(esp) {
+  form.value.especialidade = esp === 'Outro' || form.value.especialidade !== esp ? esp : ''
+  outroEspInput.value = ''
 }
 
 function confirmarOutroEsp() {
   const val = outroEspInput.value.trim()
   if (!val) return
-  if (!customEspecialidades.value.includes(val)) {
-    customEspecialidades.value.push(val)
-    localStorage.setItem('cc_custom_especialidades', JSON.stringify(customEspecialidades.value))
-  }
+  adicionarCustom(val)
   form.value.especialidade = val
   outroEspInput.value = ''
 }
 
 function selecionarTipoExame(tipo) {
-  if (tipo === 'Outro') {
-    exameForm.value.tipo = 'Outro'
-    outroTipoInput.value = ''
-  } else {
-    exameForm.value.tipo = exameForm.value.tipo === tipo ? '' : tipo
-    outroTipoInput.value = ''
-  }
+  exameForm.value.tipo = tipo === 'Outro' || exameForm.value.tipo !== tipo ? tipo : ''
+  outroTipoInput.value = ''
 }
 
 function confirmarOutroTipo() {
   const val = outroTipoInput.value.trim()
   if (!val) return
-  if (!customTiposExame.value.includes(val)) {
-    customTiposExame.value.push(val)
-    localStorage.setItem('cc_custom_tipos_exame', JSON.stringify(customTiposExame.value))
-  }
+  adicionarCustom(val)
   exameForm.value.tipo = val
   outroTipoInput.value = ''
 }
@@ -711,7 +702,7 @@ function confirmarOutroTipo() {
           <label class="form-label">Tipo</label>
           <div class="chips-row">
             <button
-              v-for="tipo in tiposExame"
+              v-for="tipo in especialidades"
               :key="tipo"
               type="button"
               class="chip"
