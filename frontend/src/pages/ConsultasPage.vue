@@ -980,7 +980,6 @@ function confirmarOutroTipo() {
   background: #fff;
   border-radius: 14px;
   padding: 14px;
-  padding-top: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
