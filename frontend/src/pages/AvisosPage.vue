@@ -12,6 +12,7 @@ const store = useAvisosStore()
 const selectedAviso = ref(null)
 const showDetail = ref(false)
 const activeTab = ref('novos')
+const searchQuery = ref('')
 
 const avisosNovos = computed(() => store.avisos.filter(a => !a.lido))
 const avisosLidos = computed(() => store.avisos.filter(a => a.lido))
@@ -82,24 +83,43 @@ async function abrirAviso(aviso) {
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Tabs + Search -->
+    <div class="tabs-row">
+      <div class="tabs">
+        <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Novos
+          <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
+        </button>
+        <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Lidos
+          <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
+        </button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        Novos
-        <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
-      </button>
-      <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Lidos
-        <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
-      </button>
+        <input
+          v-model="searchQuery"
+          class="search-input"
+          type="text"
+          placeholder="Buscar..."
+        />
+        <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="page-content">
@@ -228,13 +248,16 @@ async function abrirAviso(aviso) {
 }
 
 /* Tabs */
+.tabs-row {
+  margin: 0 16px 12px;
+}
+
 .tabs {
   display: flex;
   gap: 4px;
   background: rgba(76, 175, 80, 0.1);
   border-radius: 12px;
   padding: 4px;
-  margin: 0 16px 12px;
 }
 
 .tab-btn {
@@ -529,6 +552,77 @@ async function abrirAviso(aviso) {
   color: var(--texto);
   line-height: 1.65;
   margin: 0;
+}
+
+/* ── Search ── */
+.tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* herdar padding/margin do .tabs original */
+}
+
+.tabs-row .tabs {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 0 10px;
+  height: 38px;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.search-wrap:focus-within {
+  border-color: var(--verde-salvia);
+}
+
+.search-icon {
+  color: var(--texto-light);
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.search-wrap:focus-within .search-icon {
+  opacity: 1;
+  color: var(--verde-salvia);
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  color: var(--texto);
+  outline: none;
+  width: 140px;
+}
+
+.search-input::placeholder {
+  color: #bbb;
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--texto-light);
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+}
+
+.search-clear:hover {
+  opacity: 1;
 }
 
 @keyframes fadeInUp {
