@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAvisosStore } from '../stores/avisos'
 import AppBar from '../components/AppBar.vue'
@@ -10,6 +10,10 @@ const router = useRouter()
 const store = useAvisosStore()
 const selectedAviso = ref(null)
 const showDetail = ref(false)
+const activeTab = ref('novos')
+
+const avisosNovos = computed(() => store.avisos.filter(a => !a.lido))
+const avisosLidos = computed(() => store.avisos.filter(a => a.lido))
 
 onMounted(() => {
   store.fetchAll()
@@ -60,43 +64,85 @@ async function abrirAviso(aviso) {
     </AppBar>
 
     <div class="page-content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
+          Novos
+          <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
+        </button>
+        <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
+          Lidos
+          <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
+        </button>
+      </div>
+
       <!-- Loading -->
       <LoadingDots v-if="store.loading" />
 
-      <!-- Empty -->
-      <div v-else-if="store.avisos.length === 0" class="empty-state">
-        <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p>Nenhum aviso ainda</p>
-        <p class="empty-hint">Os lembretes de medicamentos aparecerão aqui</p>
+      <!-- Aba: Novos -->
+      <div v-else-if="activeTab === 'novos'">
+        <div v-if="avisosNovos.length === 0" class="empty-state">
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Nenhum aviso novo</p>
+          <p class="empty-hint">Você está em dia!</p>
+        </div>
+        <div v-else class="avisos-list">
+          <button class="mark-all-btn" @click="store.marcarTodosLidos">
+            Marcar tudo como lido
+          </button>
+          <div
+            v-for="aviso in avisosNovos"
+            :key="aviso.id"
+            class="aviso-card nao-lido"
+            @click="abrirAviso(aviso)"
+          >
+            <div class="aviso-indicator"></div>
+            <div class="aviso-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="aviso-body">
+              <span class="aviso-titulo">{{ aviso.titulo }}</span>
+              <span class="aviso-mensagem">{{ aviso.mensagem }}</span>
+            </div>
+            <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- List -->
-      <div v-else class="avisos-list">
-        <button v-if="store.naoLidos > 0" class="mark-all-btn" @click="store.marcarTodosLidos">
-          Marcar tudo como lido
-        </button>
-        <div
-          v-for="aviso in store.avisos"
-          :key="aviso.id"
-          class="aviso-card"
-          :class="{ 'nao-lido': !aviso.lido, 'lido': aviso.lido }"
-          @click="abrirAviso(aviso)"
-        >
-          <div class="aviso-indicator" v-if="!aviso.lido"></div>
-          <div class="aviso-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+      <!-- Aba: Lidos -->
+      <div v-else-if="activeTab === 'lidos'">
+        <div v-if="avisosLidos.length === 0" class="empty-state">
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Nenhum aviso lido</p>
+          <p class="empty-hint">Os avisos lidos aparecerão aqui</p>
+        </div>
+        <div v-else class="avisos-list">
+          <div
+            v-for="aviso in avisosLidos"
+            :key="aviso.id"
+            class="aviso-card lido"
+            @click="abrirAviso(aviso)"
+          >
+            <div class="aviso-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="aviso-body">
+              <span class="aviso-titulo">{{ aviso.titulo }}</span>
+              <span class="aviso-mensagem">{{ aviso.mensagem }}</span>
+            </div>
+            <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
           </div>
-          <div class="aviso-body">
-            <span class="aviso-titulo">{{ aviso.titulo }}</span>
-            <span class="aviso-mensagem">{{ aviso.mensagem }}</span>
-          </div>
-          <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
         </div>
       </div>
     </div>
@@ -149,6 +195,59 @@ async function abrirAviso(aviso) {
   justify-content: center;
   color: #fff;
   order: -1;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-family: var(--font-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-light);
+  cursor: pointer;
+  transition: all 0.35s var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab-btn.active {
+  background: #fff;
+  color: var(--verde-salvia);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tab-count {
+  background: var(--verde-salvia);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.tab-count-lido {
+  background: var(--texto-light);
+  opacity: 0.6;
 }
 
 .mark-all-btn {
