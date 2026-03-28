@@ -361,6 +361,10 @@ function confirmarOutroTipo() {
         :class="{ active: activeTab === 'consultas' }"
         @click="activeTab = 'consultas'"
       >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
         Consultas
         <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
       </button>
@@ -369,6 +373,11 @@ function confirmarOutroTipo() {
         :class="{ active: activeTab === 'exames' }"
         @click="activeTab = 'exames'"
       >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
         Exames
         <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
       </button>
@@ -377,6 +386,10 @@ function confirmarOutroTipo() {
         :class="{ active: activeTab === 'historico' }"
         @click="activeTab = 'historico'"
       >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         Histórico
         <span v-if="historicoCombinado.length" class="tab-count">{{ historicoCombinado.length }}</span>
       </button>

@@ -79,10 +79,18 @@ async function abrirAviso(aviso) {
       <!-- Tabs -->
       <div class="tabs">
         <button class="tab-btn" :class="{ active: activeTab === 'novos' }" @click="activeTab = 'novos'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
           Novos
           <span v-if="avisosNovos.length > 0" class="tab-count">{{ avisosNovos.length }}</span>
         </button>
         <button class="tab-btn" :class="{ active: activeTab === 'lidos' }" @click="activeTab = 'lidos'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 4L12 14.01l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           Lidos
           <span v-if="avisosLidos.length > 0" class="tab-count tab-count-lido">{{ avisosLidos.length }}</span>
         </button>
