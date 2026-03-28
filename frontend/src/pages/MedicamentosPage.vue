@@ -1355,8 +1355,20 @@ onMounted(() => {
 
   .med-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  :deep(.medicamento-card) {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth);
+  }
+
+  :deep(.medicamento-card:hover) {
+    border-color: var(--verde-salvia);
+    transform: translateY(-1px);
   }
 }
 </style>

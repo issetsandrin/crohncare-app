@@ -769,7 +769,6 @@ function formatarDataHora(dataHora) {
     align-items: center;
     justify-content: space-between;
     padding: 24px 40px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
     background: transparent;
     flex-shrink: 0;
     gap: 24px;
