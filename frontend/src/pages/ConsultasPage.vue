@@ -980,10 +980,12 @@ function confirmarOutroTipo() {
   background: #fff;
   border-radius: 14px;
   padding: 14px;
+  padding-top: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
   animation: fadeInUp 0.4s var(--ease-out-smooth) both;
+  position: relative;
 }
 
 .consulta-card:active {
@@ -1067,10 +1069,12 @@ function confirmarOutroTipo() {
 }
 
 .consulta-badge-area {
-  flex-shrink: 0;
+  position: absolute;
+  top: 10px;
+  right: 12px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
   gap: 5px;
 }
 
