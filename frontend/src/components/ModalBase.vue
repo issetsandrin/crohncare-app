@@ -137,7 +137,7 @@ function onBackdropClick(e) {
 
   .modal-card {
     border-radius: 16px;
-    max-width: 560px;
+    max-width: 680px;
     max-height: 88vh;
     padding: 28px 32px;
     width: 100%;
