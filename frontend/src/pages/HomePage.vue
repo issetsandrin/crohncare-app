@@ -114,14 +114,6 @@ const remediosTomados = computed(() => medStore.proximosHorarios.filter(h => h.p
         <h1 class="dph-title">{{ saudacao }}, {{ firstName }}</h1>
         <p class="dph-subtitle">Veja o resumo do seu dia e os próximos medicamentos</p>
       </div>
-      <button class="dph-alerts-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :class="{ 'bell-ring': naoLidosCount > 0 }">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span v-if="naoLidosCount > 0" class="dph-badge">{{ naoLidosCount }}</span>
-        Avisos
-      </button>
     </div>
 
     <!-- Hero Header (mobile only) -->

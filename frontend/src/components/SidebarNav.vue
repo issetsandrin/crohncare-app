@@ -188,6 +188,7 @@ function navTo(path) {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
 }
 
