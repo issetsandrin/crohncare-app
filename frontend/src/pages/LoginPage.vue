@@ -176,11 +176,10 @@ function getError(field) {
 }
 
 .logo-img {
-  width: 125px;
-  height: 50px;
-  border-radius: 12px;
-  object-fit: cover;
-  object-position: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 0;
+  object-fit: contain;
 }
 
 .welcome-title {
