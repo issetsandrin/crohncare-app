@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import Pagination from '../components/Pagination.vue'
 import { useRouter } from 'vue-router'
 import { useAvisosStore } from '../stores/avisos'
 import AppBar from '../components/AppBar.vue'
@@ -14,6 +15,17 @@ const activeTab = ref('novos')
 
 const avisosNovos = computed(() => store.avisos.filter(a => !a.lido))
 const avisosLidos = computed(() => store.avisos.filter(a => a.lido))
+
+const PER_PAGE = 10
+const pageNovos = ref(1)
+const pageLidos = ref(1)
+const paginatedNovos = computed(() => avisosNovos.value.slice((pageNovos.value - 1) * PER_PAGE, pageNovos.value * PER_PAGE))
+const paginatedLidos = computed(() => avisosLidos.value.slice((pageLidos.value - 1) * PER_PAGE, pageLidos.value * PER_PAGE))
+
+watch(activeTab, () => {
+  pageNovos.value = 1
+  pageLidos.value = 1
+})
 
 onMounted(() => {
   store.fetchAll()
@@ -94,7 +106,7 @@ async function abrirAviso(aviso) {
             Marcar tudo como lido
           </button>
           <div
-            v-for="aviso in avisosNovos"
+            v-for="aviso in paginatedNovos"
             :key="aviso.id"
             class="aviso-card nao-lido"
             @click="abrirAviso(aviso)"
@@ -112,6 +124,7 @@ async function abrirAviso(aviso) {
             </div>
             <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
           </div>
+          <Pagination :total="avisosNovos.length" :per-page="PER_PAGE" v-model="pageNovos" />
         </div>
       </div>
 
@@ -126,7 +139,7 @@ async function abrirAviso(aviso) {
         </div>
         <div v-else class="avisos-list">
           <div
-            v-for="aviso in avisosLidos"
+            v-for="aviso in paginatedLidos"
             :key="aviso.id"
             class="aviso-card lido"
             @click="abrirAviso(aviso)"
@@ -143,6 +156,7 @@ async function abrirAviso(aviso) {
             </div>
             <span class="aviso-tempo">{{ formatarData(aviso.created_at) }}</span>
           </div>
+          <Pagination :total="avisosLidos.length" :per-page="PER_PAGE" v-model="pageLidos" />
         </div>
       </div>
     </div>

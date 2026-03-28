@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import Pagination from '../components/Pagination.vue'
 import { useConsultasStore } from '../stores/consultas'
 import { useExamesStore } from '../stores/exames'
 import AppBar from '../components/AppBar.vue'
@@ -219,6 +220,34 @@ function abrirNovoPorTab() {
 
 const totalProximas = computed(() => store.proximas.length)
 
+// ─── Paginação ───────────────────────────────────────────────
+const PER_PAGE = 10
+const pageConsultas = ref(1)
+const pageExames = ref(1)
+
+watch(activeTab, () => {
+  pageConsultas.value = 1
+  pageExames.value = 1
+})
+
+const paginatedConsultas = computed(() => {
+  const start = (pageConsultas.value - 1) * PER_PAGE
+  return store.proximas.slice(start, start + PER_PAGE)
+})
+
+const examesCombinados = computed(() => [
+  ...examesStore.proximos.map(e => ({ ...e, _tipo: 'agendado' })),
+  ...examesStore.historico.map(e => ({ ...e, _tipo: 'historico' }))
+])
+
+const paginatedExames = computed(() => {
+  const start = (pageExames.value - 1) * PER_PAGE
+  return examesCombinados.value.slice(start, start + PER_PAGE)
+})
+
+const paginatedExamesHasAgendados = computed(() => paginatedExames.value.some(e => e._tipo === 'agendado'))
+const paginatedExamesHasHistorico = computed(() => paginatedExames.value.some(e => e._tipo === 'historico'))
+
 // ─── Formatação ──────────────────────────────────────────────
 function formatarData(dt) {
   if (!dt) return ''
@@ -326,7 +355,7 @@ const tiposExame = [
         <div v-else class="consultas-list">
           <p class="section-label">Agendados</p>
           <div
-            v-for="(consulta, i) in store.proximas"
+            v-for="(consulta, i) in paginatedConsultas"
             :key="consulta.id"
             class="consulta-card"
             :style="{ animationDelay: i * 0.04 + 's' }"
@@ -349,6 +378,7 @@ const tiposExame = [
               <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
             </div>
           </div>
+          <Pagination :total="store.proximas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
         </div>
       </template>
 
@@ -366,41 +396,10 @@ const tiposExame = [
         </div>
 
         <div v-else class="consultas-list">
-          <!-- Próximos -->
-          <template v-if="examesStore.proximos.length > 0">
-            <p class="section-label">Agendados</p>
+          <p v-if="paginatedExamesHasAgendados" class="section-label">Agendados</p>
+          <template v-for="(exame, i) in paginatedExames" :key="exame._tipo + exame.id">
+            <p v-if="exame._tipo === 'historico' && (i === 0 || paginatedExames[i-1]._tipo === 'agendado')" class="section-label" :style="{ marginTop: paginatedExamesHasAgendados ? '16px' : '0' }">Histórico</p>
             <div
-              v-for="(exame, i) in examesStore.proximos"
-              :key="'p' + exame.id"
-              class="consulta-card"
-              :style="{ animationDelay: i * 0.04 + 's' }"
-              @click="abrirDetalhesExame(exame)"
-            >
-              <div class="consulta-icon-box exame-agendado">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="consulta-info">
-                <span class="consulta-medico">{{ exame.nome }}</span>
-                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
-                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
-                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
-              </div>
-              <div class="consulta-badge-area">
-                <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
-              </div>
-            </div>
-          </template>
-
-          <!-- Histórico de exames -->
-          <template v-if="examesStore.historico.length > 0">
-            <p class="section-label" :style="{ marginTop: examesStore.proximos.length ? '16px' : '0' }">Histórico</p>
-            <div
-              v-for="(exame, i) in examesStore.historico"
-              :key="'h' + exame.id"
               class="consulta-card"
               :class="{ cancelada: exame.status === 'cancelado', realizada: exame.status === 'realizado' }"
               :style="{ animationDelay: i * 0.04 + 's' }"
@@ -429,6 +428,7 @@ const tiposExame = [
               </div>
             </div>
           </template>
+          <Pagination :total="examesCombinados.length" :per-page="PER_PAGE" v-model="pageExames" />
         </div>
       </template>
     </div>

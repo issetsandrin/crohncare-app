@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import Pagination from '../components/Pagination.vue'
 import { useDiarioStore } from '../stores/diario'
 import { useCrisesStore } from '../stores/crises'
 import MesNavegacao from '../components/MesNavegacao.vue'
@@ -34,6 +35,24 @@ onMounted(async () => {
 
 watch(mesAtual, (novoMes) => {
   diarioStore.fetchMes(novoMes)
+  pageAnotacoes.value = 1
+  pageCrises.value = 1
+})
+watch(activeTab, () => {
+  pageAnotacoes.value = 1
+  pageCrises.value = 1
+})
+
+const PER_PAGE = 10
+const pageAnotacoes = ref(1)
+const pageCrises = ref(1)
+const paginatedEntradas = computed(() => {
+  const start = (pageAnotacoes.value - 1) * PER_PAGE
+  return entradasOrdenadas.value.slice(start, start + PER_PAGE)
+})
+const paginatedCrises = computed(() => {
+  const start = (pageCrises.value - 1) * PER_PAGE
+  return crisesMes.value.slice(start, start + PER_PAGE)
 })
 
 const entradasOrdenadas = computed(() => {
@@ -209,7 +228,7 @@ function formatarDataHora(dataHora) {
       <template v-else>
         <div class="entries-list">
           <div
-            v-for="(entrada, i) in entradasOrdenadas"
+            v-for="(entrada, i) in paginatedEntradas"
             :key="entrada.id"
             class="entry-card clickable"
             :style="{ animationDelay: i * 0.04 + 's' }"
@@ -223,6 +242,7 @@ function formatarDataHora(dataHora) {
             <p v-if="entrada.observacoes" class="entry-obs-preview">{{ entrada.observacoes }}</p>
           </div>
         </div>
+        <Pagination :total="entradasOrdenadas.length" :per-page="PER_PAGE" v-model="pageAnotacoes" />
       </template>
     </div>
 
@@ -239,7 +259,7 @@ function formatarDataHora(dataHora) {
       <template v-else>
         <div class="entries-list">
           <div
-            v-for="(crise, i) in crisesMes"
+            v-for="(crise, i) in paginatedCrises"
             :key="crise.id"
             class="entry-card crise-card clickable"
             :style="{ animationDelay: i * 0.04 + 's' }"
@@ -253,6 +273,7 @@ function formatarDataHora(dataHora) {
             <p v-if="crise.observacoes" class="entry-obs-preview">{{ crise.observacoes }}</p>
           </div>
         </div>
+        <Pagination :total="crisesMes.length" :per-page="PER_PAGE" v-model="pageCrises" />
       </template>
     </div>
 

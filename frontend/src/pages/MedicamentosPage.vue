@@ -8,10 +8,18 @@ import ModalBase from '../components/ModalBase.vue'
 import AppBar from '../components/AppBar.vue'
 import { useEstoque } from '../composables/useEstoque'
 import LoadingDots from '../components/LoadingDots.vue'
+import Pagination from '../components/Pagination.vue'
 
 const store = useMedicamentosStore()
 const registrosUsoStore = useRegistrosUsoStore()
 const { nivelAlerta } = useEstoque()
+
+const PER_PAGE = 10
+const pageMeds = ref(1)
+const paginatedMeds = computed(() => {
+  const start = (pageMeds.value - 1) * PER_PAGE
+  return store.lista.slice(start, start + PER_PAGE)
+})
 
 // Modal de comprovação de tomada
 const fotoTomada = ref(null)
@@ -285,13 +293,14 @@ onMounted(() => {
 
     <div v-else class="med-list">
       <MedicamentoCard
-        v-for="(med, i) in store.lista"
+        v-for="(med, i) in paginatedMeds"
         :key="med.id"
         :medicamento="med"
         :style="{ animationDelay: i * 0.04 + 's' }"
         @click="abrirDetalhes"
       />
     </div>
+    <Pagination :total="store.lista.length" :per-page="PER_PAGE" v-model="pageMeds" />
     </div>
 
     <!-- Modal Detalhes -->
