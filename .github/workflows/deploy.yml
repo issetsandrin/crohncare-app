@@ -1,0 +1,25 @@
+name: Deploy CrohnCare
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy para VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: crohncare.online
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/chroncare
+            git checkout -- .
+            git clean -fd
+            git pull origin main
+            bash deploy.sh
