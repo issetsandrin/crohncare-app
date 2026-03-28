@@ -353,7 +353,7 @@ function formatarProxima(dateStr) {
             </svg>
           </div>
           <span class="stat-number">{{ remediosTomados }}/{{ totalRemediosHoje }}</span>
-          <span class="stat-label">Doses hoje</span>
+          <span class="stat-label">Remédios de hoje</span>
         </div>
 
         <div class="stat-card" :class="{ 'stat-alert': alertasEstoque.length > 0 }">
