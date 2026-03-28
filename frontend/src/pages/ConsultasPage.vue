@@ -286,24 +286,59 @@ function diasAte(dt) {
   return `Em ${diff} dias`
 }
 
-const especialidades = [
-  'Gastroenterologista',
-  'Coloproctologista',
-  'Clínico Geral',
-  'Nutricionista',
-  'Psicólogo',
-  'Dermatologista',
-  'Reumatologista',
-  'Outro'
-]
+const ESPECIALIDADES_BASE = ['Gastroenterologista','Coloproctologista','Clínico Geral','Nutricionista','Psicólogo','Dermatologista','Reumatologista']
+const TIPOS_EXAME_BASE = ['Laboratorial','Imagem','Endoscopia','Patologia']
 
-const tiposExame = [
-  'Laboratorial',
-  'Imagem',
-  'Endoscopia',
-  'Patologia',
-  'Outro'
-]
+const customEspecialidades = ref(JSON.parse(localStorage.getItem('cc_custom_especialidades') || '[]'))
+const customTiposExame = ref(JSON.parse(localStorage.getItem('cc_custom_tipos_exame') || '[]'))
+
+const especialidades = computed(() => [...ESPECIALIDADES_BASE, ...customEspecialidades.value, 'Outro'])
+const tiposExame = computed(() => [...TIPOS_EXAME_BASE, ...customTiposExame.value, 'Outro'])
+
+const outroEspInput = ref('')
+const outroTipoInput = ref('')
+
+function selecionarEspecialidade(esp) {
+  if (esp === 'Outro') {
+    form.value.especialidade = 'Outro'
+    outroEspInput.value = ''
+  } else {
+    form.value.especialidade = form.value.especialidade === esp ? '' : esp
+    outroEspInput.value = ''
+  }
+}
+
+function confirmarOutroEsp() {
+  const val = outroEspInput.value.trim()
+  if (!val) return
+  if (!customEspecialidades.value.includes(val)) {
+    customEspecialidades.value.push(val)
+    localStorage.setItem('cc_custom_especialidades', JSON.stringify(customEspecialidades.value))
+  }
+  form.value.especialidade = val
+  outroEspInput.value = ''
+}
+
+function selecionarTipoExame(tipo) {
+  if (tipo === 'Outro') {
+    exameForm.value.tipo = 'Outro'
+    outroTipoInput.value = ''
+  } else {
+    exameForm.value.tipo = exameForm.value.tipo === tipo ? '' : tipo
+    outroTipoInput.value = ''
+  }
+}
+
+function confirmarOutroTipo() {
+  const val = outroTipoInput.value.trim()
+  if (!val) return
+  if (!customTiposExame.value.includes(val)) {
+    customTiposExame.value.push(val)
+    localStorage.setItem('cc_custom_tipos_exame', JSON.stringify(customTiposExame.value))
+  }
+  exameForm.value.tipo = val
+  outroTipoInput.value = ''
+}
 </script>
 
 <template>
@@ -559,10 +594,22 @@ const tiposExame = [
               :key="esp"
               type="button"
               class="chip"
-              :class="{ selected: form.especialidade === esp }"
-              @click="form.especialidade = form.especialidade === esp ? '' : esp"
+              :class="{ selected: form.especialidade === esp || (esp === 'Outro' && form.especialidade === 'Outro') }"
+              @click="selecionarEspecialidade(esp)"
             >
               {{ esp }}
+            </button>
+          </div>
+          <div v-if="form.especialidade === 'Outro'" class="outro-input-row">
+            <input
+              v-model="outroEspInput"
+              type="text"
+              class="form-input"
+              placeholder="Digite a especialidade..."
+              @keydown.enter.prevent="confirmarOutroEsp"
+            />
+            <button type="button" class="btn-outro-confirmar" @click="confirmarOutroEsp">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
         </div>
@@ -673,10 +720,22 @@ const tiposExame = [
               :key="tipo"
               type="button"
               class="chip"
-              :class="{ selected: exameForm.tipo === tipo }"
-              @click="exameForm.tipo = exameForm.tipo === tipo ? '' : tipo"
+              :class="{ selected: exameForm.tipo === tipo || (tipo === 'Outro' && exameForm.tipo === 'Outro') }"
+              @click="selecionarTipoExame(tipo)"
             >
               {{ tipo }}
+            </button>
+          </div>
+          <div v-if="exameForm.tipo === 'Outro'" class="outro-input-row">
+            <input
+              v-model="outroTipoInput"
+              type="text"
+              class="form-input"
+              placeholder="Digite o tipo de exame..."
+              @keydown.enter.prevent="confirmarOutroTipo"
+            />
+            <button type="button" class="btn-outro-confirmar" @click="confirmarOutroTipo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
         </div>
@@ -1106,6 +1165,35 @@ const tiposExame = [
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.outro-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.outro-input-row .form-input {
+  flex: 1;
+}
+
+.btn-outro-confirmar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: var(--verde-salvia);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-outro-confirmar:hover {
+  background: var(--verde-escuro, #5a8a1f);
 }
 
 .chip {
