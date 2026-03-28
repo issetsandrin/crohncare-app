@@ -15,7 +15,6 @@ const diarioStore = useDiarioStore()
 const crisesStore = useCrisesStore()
 
 const activeTab = ref('anotacoes')
-const searchQuery = ref('')
 const mesAtual = ref(diarioStore.mesAtual)
 const showFormModal = ref(false)
 const showCriseFormModal = ref(false)
@@ -192,51 +191,32 @@ function formatarDataHora(dataHora) {
     <div class="page-content">
     <MesNavegacao v-model="mesAtual" class="mobile-mes-nav" />
 
-    <!-- Tabs + Search -->
-    <div class="tabs-row">
-      <div class="tabs">
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'anotacoes' }"
-          @click="activeTab = 'anotacoes'"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Anotações
-          <span v-if="entradasOrdenadas.length > 0" class="tab-count">{{ entradasOrdenadas.length }}</span>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'crises' }"
-          @click="activeTab = 'crises'"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Crises
-          <span v-if="crisesMes.length > 0" class="tab-count tab-count-crise">{{ crisesMes.length }}</span>
-        </button>
-      </div>
-      <div class="search-wrap">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'anotacoes' }"
+        @click="activeTab = 'anotacoes'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <input
-          v-model="searchQuery"
-          class="search-input"
-          type="text"
-          placeholder="Buscar..."
-        />
-        <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
+        Anotações
+        <span v-if="entradasOrdenadas.length > 0" class="tab-count">{{ entradasOrdenadas.length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'crises' }"
+        @click="activeTab = 'crises'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Crises
+        <span v-if="crisesMes.length > 0" class="tab-count tab-count-crise">{{ crisesMes.length }}</span>
+      </button>
     </div>
 
     <MesNavegacao v-model="mesAtual" class="desktop-mes-nav" />
@@ -426,16 +406,13 @@ function formatarDataHora(dataHora) {
 }
 
 /* Tabs */
-.tabs-row {
-  margin: 12px 0 16px;
-}
-
 .tabs {
   display: flex;
   gap: 4px;
   background: rgba(76, 175, 80, 0.1);
   border-radius: 12px;
   padding: 4px;
+  margin: 12px 0 16px;
 }
 
 .tab-btn {
@@ -1006,76 +983,5 @@ function formatarDataHora(dataHora) {
     border-color: var(--verde-salvia);
     transform: translateY(-1px);
   }
-}
-
-/* ── Search ── */
-.tabs-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  /* herdar padding/margin do .tabs original */
-}
-
-.tabs-row .tabs {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-}
-
-.search-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 1.5px solid rgba(0,0,0,0.1);
-  border-radius: 10px;
-  padding: 0 10px;
-  height: 38px;
-  flex-shrink: 0;
-  transition: border-color 0.15s;
-}
-
-.search-wrap:focus-within {
-  border-color: var(--verde-salvia);
-}
-
-.search-icon {
-  color: var(--texto-light);
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-
-.search-wrap:focus-within .search-icon {
-  opacity: 1;
-  color: var(--verde-salvia);
-}
-
-.search-input {
-  border: none;
-  background: transparent;
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  color: var(--texto);
-  outline: none;
-  width: 140px;
-}
-
-.search-input::placeholder {
-  color: #bbb;
-}
-
-.search-clear {
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  color: var(--texto-light);
-  display: flex;
-  align-items: center;
-  opacity: 0.5;
-}
-
-.search-clear:hover {
-  opacity: 1;
 }
 </style>

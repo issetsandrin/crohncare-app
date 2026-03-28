@@ -205,7 +205,6 @@ async function confirmarCancelamentoExame() {
 
 // ─── Tabs ────────────────────────────────────────────────────
 const activeTab = ref('consultas')
-const searchQuery = ref('')
 
 onMounted(() => {
   store.fetchAll()
@@ -355,64 +354,45 @@ function confirmarOutroTipo() {
       </button>
     </div>
 
-    <!-- Tabs + Search -->
-    <div class="tabs-row">
-      <div class="tabs">
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'consultas' }"
-          @click="activeTab = 'consultas'"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
-          Consultas
-          <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'exames' }"
-          @click="activeTab = 'exames'"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Exames
-          <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
-        </button>
-        <button
-          class="tab-btn"
-          :class="{ active: activeTab === 'historico' }"
-          @click="activeTab = 'historico'"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Histórico
-          <span v-if="historicoCombinado.length" class="tab-count">{{ historicoCombinado.length }}</span>
-        </button>
-      </div>
-      <div class="search-wrap">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'consultas' }"
+        @click="activeTab = 'consultas'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
         </svg>
-        <input
-          v-model="searchQuery"
-          class="search-input"
-          type="text"
-          placeholder="Buscar..."
-        />
-        <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
+        Consultas
+        <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'exames' }"
+        @click="activeTab = 'exames'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Exames
+        <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'historico' }"
+        @click="activeTab = 'historico'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Histórico
+        <span v-if="historicoCombinado.length" class="tab-count">{{ historicoCombinado.length }}</span>
+      </button>
     </div>
 
     <div class="page-content">
@@ -891,16 +871,13 @@ function confirmarOutroTipo() {
 }
 
 /* Tabs */
-.tabs-row {
-  margin: 0 16px 12px;
-}
-
 .tabs {
   display: flex;
   gap: 4px;
   background: rgba(76, 175, 80, 0.1);
   border-radius: 12px;
   padding: 4px;
+  margin: 0 16px 12px;
 }
 
 .tab-btn {
@@ -1751,76 +1728,5 @@ function confirmarOutroTipo() {
     border-color: var(--verde-salvia);
     transform: translateY(-1px);
   }
-}
-
-/* ── Search ── */
-.tabs-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  /* herdar padding/margin do .tabs original */
-}
-
-.tabs-row .tabs {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-}
-
-.search-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 1.5px solid rgba(0,0,0,0.1);
-  border-radius: 10px;
-  padding: 0 10px;
-  height: 38px;
-  flex-shrink: 0;
-  transition: border-color 0.15s;
-}
-
-.search-wrap:focus-within {
-  border-color: var(--verde-salvia);
-}
-
-.search-icon {
-  color: var(--texto-light);
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-
-.search-wrap:focus-within .search-icon {
-  opacity: 1;
-  color: var(--verde-salvia);
-}
-
-.search-input {
-  border: none;
-  background: transparent;
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  color: var(--texto);
-  outline: none;
-  width: 140px;
-}
-
-.search-input::placeholder {
-  color: #bbb;
-}
-
-.search-clear {
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  color: var(--texto-light);
-  display: flex;
-  align-items: center;
-  opacity: 0.5;
-}
-
-.search-clear:hover {
-  opacity: 1;
 }
 </style>

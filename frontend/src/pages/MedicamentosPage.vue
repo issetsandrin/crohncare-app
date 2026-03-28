@@ -52,7 +52,6 @@ const editingMed = ref(null)
 const deletingMed = ref(null)
 const selectedMed = ref(null)
 const reabastecerQtd = ref(0)
-const searchQuery = ref('')
 
 const diasSemana = [
   { value: 0, label: 'Dom', short: 'D' },
@@ -281,25 +280,6 @@ onMounted(() => {
     </div>
 
     <div class="page-content">
-    <div class="search-row">
-      <div class="search-wrap">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <input
-          v-model="searchQuery"
-          class="search-input"
-          type="text"
-          placeholder="Buscar medicamento..."
-        />
-        <button v-if="searchQuery" class="search-clear" @click="searchQuery = ''">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-    </div>
     <LoadingDots v-if="store.loading && store.lista.length === 0" />
 
     <div v-else-if="store.lista.length === 0" class="empty-state">
@@ -1441,84 +1421,5 @@ onMounted(() => {
     border-color: var(--verde-salvia);
     transform: translateY(-1px);
   }
-}
-
-/* ── Search ── */
-.search-row {
-  margin-bottom: 16px;
-}
-
-.search-row .search-wrap {
-  max-width: 320px;
-}
-
-.tabs-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  /* herdar padding/margin do .tabs original */
-}
-
-.tabs-row .tabs {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-}
-
-.search-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 1.5px solid rgba(0,0,0,0.1);
-  border-radius: 10px;
-  padding: 0 10px;
-  height: 38px;
-  flex-shrink: 0;
-  transition: border-color 0.15s;
-}
-
-.search-wrap:focus-within {
-  border-color: var(--verde-salvia);
-}
-
-.search-icon {
-  color: var(--texto-light);
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-
-.search-wrap:focus-within .search-icon {
-  opacity: 1;
-  color: var(--verde-salvia);
-}
-
-.search-input {
-  border: none;
-  background: transparent;
-  font-family: var(--font-corpo);
-  font-size: 13px;
-  color: var(--texto);
-  outline: none;
-  width: 140px;
-}
-
-.search-input::placeholder {
-  color: #bbb;
-}
-
-.search-clear {
-  background: none;
-  border: none;
-  padding: 2px;
-  cursor: pointer;
-  color: var(--texto-light);
-  display: flex;
-  align-items: center;
-  opacity: 0.5;
-}
-
-.search-clear:hover {
-  opacity: 1;
 }
 </style>
