@@ -432,6 +432,9 @@ function confirmarOutroTipo() {
               <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
             </div>
             <div class="consulta-badge-area">
+              <span class="status-badge" :class="consulta.status">
+                {{ consulta.status === 'agendada' ? 'Agendada' : consulta.status === 'realizada' ? 'Realizada' : 'Cancelada' }}
+              </span>
               <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
             </div>
           </div>
@@ -472,6 +475,9 @@ function confirmarOutroTipo() {
               <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
             </div>
             <div class="consulta-badge-area">
+              <span class="status-badge" :class="exame.status === 'cancelado' ? 'cancelada' : exame.status === 'realizado' ? 'realizada' : 'agendada'">
+                {{ exame.status === 'agendado' ? 'Agendado' : exame.status === 'realizado' ? 'Realizado' : 'Cancelado' }}
+              </span>
               <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
             </div>
           </div>
@@ -1062,6 +1068,10 @@ function confirmarOutroTipo() {
 
 .consulta-badge-area {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
 }
 
 .dias-badge {
@@ -1076,17 +1086,28 @@ function confirmarOutroTipo() {
 }
 
 .status-badge {
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
 }
 
-.status-badge.realizada {
-  color: var(--verde-salvia);
+.status-badge.realizada,
+.status-badge.realizado {
+  background: rgba(74, 144, 196, 0.12);
+  color: #4a90c4;
+}
+
+.status-badge.agendada,
+.status-badge.agendado {
   background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
 }
 
 .status-badge.cancelada {
