@@ -320,10 +320,12 @@ async function abrirAviso(aviso) {
 .empty-state {
   text-align: center;
   padding: 48px 16px;
+  min-height: 50vh;
   color: var(--texto-light);
   font-family: var(--font-corpo);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 8px;
 }

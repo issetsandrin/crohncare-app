@@ -761,9 +761,11 @@ const tiposExame = [
 .empty-state {
   text-align: center;
   padding: 48px 16px;
+  min-height: 50vh;
   color: var(--texto-light);
   font-family: var(--font-corpo);
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: 8px;
