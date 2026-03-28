@@ -100,6 +100,10 @@ function navTo(path) {
         <span class="sidebar-label">{{ item.label }}</span>
       </button>
     </nav>
+    <div class="sidebar-footer">
+      <span class="sidebar-footer-text">Desenvolvido por</span>
+      <span class="sidebar-footer-author">Vitor Sandrin</span>
+    </div>
   </aside>
 </template>
 
@@ -177,6 +181,31 @@ function navTo(path) {
   font-family: var(--font-corpo);
   font-size: 13.5px;
   font-weight: 500;
+}
+
+.sidebar-footer {
+  padding: 16px 12px 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-footer-text {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  color: var(--texto-light);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-footer-author {
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-light);
+  opacity: 0.6;
 }
 
 /* ── Animações (idênticas ao BottomNav) ── */
