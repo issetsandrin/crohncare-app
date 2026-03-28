@@ -127,32 +127,37 @@ const crisesEsteMes = computed(() => {
   }).length
 })
 
-// Gráfico: intensidade de crises nos últimos 14 dias
-const crisesMapeadas = computed(() => {
-  const dias = 14
+// Gráfico: intensidade média de crises por mês (últimos 8 meses)
+const crisesPorMes = computed(() => {
+  const meses = 8
   const labels = []
   const data = []
   const hoje = new Date()
-  for (let i = dias - 1; i >= 0; i--) {
-    const d = new Date(hoje)
-    d.setDate(d.getDate() - i)
-    const label = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-    labels.push(label)
-    const chave = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-    const criseDia = crisesStore.lista.filter(c => c.data_hora?.startsWith(chave))
-    const maxIntensidade = criseDia.length > 0 ? Math.max(...criseDia.map(c => c.intensidade || 0)) : 0
-    data.push(maxIntensidade)
+  for (let i = meses - 1; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+    const label = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
+    labels.push(label.replace('.', ''))
+    const ano = d.getFullYear()
+    const mes = d.getMonth()
+    const crisesMes = crisesStore.lista.filter(c => {
+      const cd = new Date(c.data_hora)
+      return cd.getFullYear() === ano && cd.getMonth() === mes
+    })
+    const mediaInt = crisesMes.length > 0
+      ? crisesMes.reduce((s, c) => s + (c.intensidade || 0), 0) / crisesMes.length
+      : 0
+    data.push(parseFloat(mediaInt.toFixed(1)))
   }
   return { labels, data }
 })
 
 const chartCrisesData = computed(() => ({
-  labels: crisesMapeadas.value.labels,
+  labels: crisesPorMes.value.labels,
   datasets: [{
-    label: 'Intensidade',
-    data: crisesMapeadas.value.data,
-    backgroundColor: crisesMapeadas.value.data.map(v =>
-      v >= 4 ? 'rgba(229,115,115,0.7)' : v >= 2 ? 'rgba(212,160,60,0.65)' : 'rgba(127,168,50,0.55)'
+    label: 'Intensidade média',
+    data: crisesPorMes.value.data,
+    backgroundColor: crisesPorMes.value.data.map(v =>
+      v >= 4 ? 'rgba(229,115,115,0.7)' : v >= 2 ? 'rgba(212,160,60,0.65)' : v > 0 ? 'rgba(127,168,50,0.55)' : 'rgba(0,0,0,0.05)'
     ),
     borderRadius: 6,
     borderSkipped: false,
@@ -166,14 +171,14 @@ const chartCrisesOptions = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: ctx => ctx.parsed.y === 0 ? 'Sem crise' : `Intensidade ${ctx.parsed.y}`
+        label: ctx => ctx.parsed.y === 0 ? 'Sem crise' : `Intensidade média: ${ctx.parsed.y}`
       }
     }
   },
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 10 }, maxTicksLimit: 7 }
+      ticks: { font: { size: 10 } }
     },
     y: {
       min: 0, max: 5,
@@ -393,10 +398,10 @@ function formatarProxima(dateStr) {
           <div class="chart-header">
             <div>
               <span class="chart-title">Intensidade de crises</span>
-              <span class="chart-sub">Últimos 14 dias</span>
+              <span class="chart-sub">Últimos 8 meses</span>
             </div>
             <span class="chart-badge" :class="crisesEsteMes === 0 ? 'good' : crisesEsteMes < 3 ? 'warn' : 'bad'">
-              {{ crises30dias.length }} registros
+              {{ crisesEsteMes }} este mês
             </span>
           </div>
           <div class="chart-wrap">
