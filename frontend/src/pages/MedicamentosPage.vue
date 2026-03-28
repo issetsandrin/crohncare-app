@@ -14,7 +14,7 @@ const store = useMedicamentosStore()
 const registrosUsoStore = useRegistrosUsoStore()
 const { nivelAlerta } = useEstoque()
 
-const PER_PAGE = 10
+const PER_PAGE = 5
 const pageMeds = ref(1)
 const paginatedMeds = computed(() => {
   const start = (pageMeds.value - 1) * PER_PAGE

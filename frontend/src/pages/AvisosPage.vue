@@ -16,7 +16,7 @@ const activeTab = ref('novos')
 const avisosNovos = computed(() => store.avisos.filter(a => !a.lido))
 const avisosLidos = computed(() => store.avisos.filter(a => a.lido))
 
-const PER_PAGE = 10
+const PER_PAGE = 5
 const pageNovos = ref(1)
 const pageLidos = ref(1)
 const paginatedNovos = computed(() => avisosNovos.value.slice((pageNovos.value - 1) * PER_PAGE, pageNovos.value * PER_PAGE))

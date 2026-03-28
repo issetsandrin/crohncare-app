@@ -224,7 +224,7 @@ function abrirNovoPorTab() {
 const totalProximas = computed(() => store.proximas.length)
 
 // ─── Paginação ───────────────────────────────────────────────
-const PER_PAGE = 10
+const PER_PAGE = 5
 const pageConsultas = ref(1)
 const pageExames = ref(1)
 const pageHistorico = ref(1)

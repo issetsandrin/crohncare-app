@@ -43,7 +43,7 @@ watch(activeTab, () => {
   pageCrises.value = 1
 })
 
-const PER_PAGE = 10
+const PER_PAGE = 5
 const pageAnotacoes = ref(1)
 const pageCrises = ref(1)
 const paginatedEntradas = computed(() => {
