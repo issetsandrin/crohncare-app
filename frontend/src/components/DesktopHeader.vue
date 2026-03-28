@@ -111,7 +111,7 @@ onUnmounted(() => {
 }
 
 .brand-icon {
-  width: 52px;
+  width: 36px;
   height: auto;
   object-fit: contain;
 }
