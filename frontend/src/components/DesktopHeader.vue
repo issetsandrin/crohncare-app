@@ -53,8 +53,8 @@ onUnmounted(() => {
 <template>
   <header class="desktop-header">
     <div class="desktop-brand">
-      <img src="/icons/logo-branca.png" alt="ChronCare" class="brand-icon" />
-      <span class="brand-name">ChronCare</span>
+      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
+      <span class="brand-name">CrohnCare</span>
     </div>
 
     <div class="header-right">
