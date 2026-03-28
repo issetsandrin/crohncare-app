@@ -355,7 +355,7 @@ function confirmarOutroTipo() {
     </div>
 
     <!-- Tabs -->
-    <div class="tabs">
+    <div class="tabs" data-tour="consultas-tabs">
       <button
         class="tab-btn"
         :class="{ active: activeTab === 'consultas' }"

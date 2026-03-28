@@ -192,7 +192,7 @@ function formatarDataHora(dataHora) {
     <MesNavegacao v-model="mesAtual" class="mobile-mes-nav" />
 
     <!-- Tabs -->
-    <div class="tabs">
+    <div class="tabs" data-tour="diario-tabs">
       <button
         class="tab-btn"
         :class="{ active: activeTab === 'anotacoes' }"

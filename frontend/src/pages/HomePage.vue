@@ -360,7 +360,7 @@ function formatarProxima(dateStr) {
 
     <template v-else>
       <!-- Stats Row -->
-      <div class="stats-row">
+      <div class="stats-row" data-tour="stats">
         <div class="stat-card">
           <div class="stat-icon green">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -408,7 +408,7 @@ function formatarProxima(dateStr) {
       </div>
 
       <!-- Charts Row -->
-      <div class="charts-row">
+      <div class="charts-row" data-tour="charts">
         <!-- Gráfico crises 14 dias -->
         <div class="chart-card chart-large">
           <div class="chart-header">

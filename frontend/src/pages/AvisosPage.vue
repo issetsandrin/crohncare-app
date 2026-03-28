@@ -116,7 +116,7 @@ async function abrirAviso(aviso) {
           <p>Nenhum aviso novo</p>
           <p class="empty-hint">Você está em dia!</p>
         </div>
-        <div v-else class="avisos-list">
+        <div v-else class="avisos-list" data-tour="avisos-list">
           <button class="mark-all-btn" @click="store.marcarTodosLidos">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>

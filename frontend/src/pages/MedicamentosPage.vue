@@ -291,7 +291,7 @@ onMounted(() => {
       <p class="empty-hint">Toque no botão + para começar</p>
     </div>
 
-    <div v-else class="med-list">
+    <div v-else class="med-list" data-tour="med-list">
       <MedicamentoCard
         v-for="(med, i) in paginatedMeds"
         :key="med.id"
@@ -528,7 +528,7 @@ onMounted(() => {
     </ModalBase>
 
     <!-- FAB -->
-    <button class="fab" @click="abrirAdicionar" aria-label="Adicionar medicamento">
+    <button class="fab" data-tour="add-med" @click="abrirAdicionar" aria-label="Adicionar medicamento">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
