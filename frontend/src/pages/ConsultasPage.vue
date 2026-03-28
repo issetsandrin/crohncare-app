@@ -201,7 +201,7 @@ async function confirmarCancelamentoExame() {
 }
 
 // ─── Tabs ────────────────────────────────────────────────────
-const activeTab = ref('proximas')
+const activeTab = ref('consultas')
 
 onMounted(() => {
   store.fetchAll()
@@ -210,7 +210,7 @@ onMounted(() => {
 
 // ─── FAB contextual ─────────────────────────────────────────
 function abrirNovoPorTab() {
-  if (activeTab.value === 'exames') {
+  if (activeTab.value === 'exames' || activeTab.value === 'historico-exames') {
     abrirNovoExame()
   } else {
     abrirNova()
@@ -223,38 +223,36 @@ const totalProximas = computed(() => store.proximas.length)
 // ─── Paginação ───────────────────────────────────────────────
 const PER_PAGE = 10
 const pageConsultas = ref(1)
+const pageHistoricoConsultas = ref(1)
 const pageExames = ref(1)
+const pageHistoricoExames = ref(1)
 
 watch(activeTab, () => {
   pageConsultas.value = 1
+  pageHistoricoConsultas.value = 1
   pageExames.value = 1
+  pageHistoricoExames.value = 1
 })
-
-const consultasCombinadas = computed(() => [
-  ...store.proximas.map(c => ({ ...c, _tipo: 'agendada' })),
-  ...store.passadas.map(c => ({ ...c, _tipo: 'historico' }))
-])
 
 const paginatedConsultas = computed(() => {
   const start = (pageConsultas.value - 1) * PER_PAGE
-  return consultasCombinadas.value.slice(start, start + PER_PAGE)
+  return store.proximas.slice(start, start + PER_PAGE)
 })
 
-const paginatedConsultasHasAgendadas = computed(() => paginatedConsultas.value.some(c => c._tipo === 'agendada'))
-const paginatedConsultasHasHistorico = computed(() => paginatedConsultas.value.some(c => c._tipo === 'historico'))
-
-const examesCombinados = computed(() => [
-  ...examesStore.proximos.map(e => ({ ...e, _tipo: 'agendado' })),
-  ...examesStore.historico.map(e => ({ ...e, _tipo: 'historico' }))
-])
+const paginatedHistoricoConsultas = computed(() => {
+  const start = (pageHistoricoConsultas.value - 1) * PER_PAGE
+  return store.passadas.slice(start, start + PER_PAGE)
+})
 
 const paginatedExames = computed(() => {
   const start = (pageExames.value - 1) * PER_PAGE
-  return examesCombinados.value.slice(start, start + PER_PAGE)
+  return examesStore.proximos.slice(start, start + PER_PAGE)
 })
 
-const paginatedExamesHasAgendados = computed(() => paginatedExames.value.some(e => e._tipo === 'agendado'))
-const paginatedExamesHasHistorico = computed(() => paginatedExames.value.some(e => e._tipo === 'historico'))
+const paginatedHistoricoExames = computed(() => {
+  const start = (pageHistoricoExames.value - 1) * PER_PAGE
+  return examesStore.historico.slice(start, start + PER_PAGE)
+})
 
 // ─── Formatação ──────────────────────────────────────────────
 function formatarData(dt) {
@@ -316,11 +314,11 @@ const tiposExame = [
         <h1 class="dph-title">Consultas e Exames</h1>
         <p class="dph-subtitle">Acompanhe seus atendimentos médicos e resultados</p>
       </div>
-      <button class="dph-action" @click="abrirNova">
+      <button class="dph-action" @click="activeTab === 'exames' || activeTab === 'historico-exames' ? abrirNovoExame() : abrirNova()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
-        Nova Consulta
+        {{ activeTab === 'exames' || activeTab === 'historico-exames' ? 'Novo Exame' : 'Nova Consulta' }}
       </button>
     </div>
 
@@ -328,11 +326,19 @@ const tiposExame = [
     <div class="tabs">
       <button
         class="tab-btn"
-        :class="{ active: activeTab === 'proximas' }"
-        @click="activeTab = 'proximas'"
+        :class="{ active: activeTab === 'consultas' }"
+        @click="activeTab = 'consultas'"
       >
         Consultas
         <span v-if="totalProximas > 0" class="tab-count">{{ totalProximas }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'historico-consultas' }"
+        @click="activeTab = 'historico-consultas'"
+      >
+        Hist. Consultas
+        <span v-if="store.passadas.length" class="tab-count">{{ store.passadas.length }}</span>
       </button>
       <button
         class="tab-btn"
@@ -342,115 +348,193 @@ const tiposExame = [
         Exames
         <span v-if="examesStore.proximos.length" class="tab-count">{{ examesStore.proximos.length }}</span>
       </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'historico-exames' }"
+        @click="activeTab = 'historico-exames'"
+      >
+        Hist. Exames
+        <span v-if="examesStore.historico.length" class="tab-count">{{ examesStore.historico.length }}</span>
+      </button>
     </div>
 
     <div class="page-content">
       <!-- Loading -->
       <LoadingDots v-if="store.loading || examesStore.loading" />
 
-      <!-- Aba Consultas -->
-      <template v-else-if="activeTab === 'proximas'">
-        <div v-if="store.lista.length === 0" class="empty-state">
+      <!-- Aba: Consultas agendadas -->
+      <template v-else-if="activeTab === 'consultas'">
+        <div v-if="store.proximas.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <p>Nenhuma consulta cadastrada</p>
+          <p>Nenhuma consulta agendada</p>
           <p class="empty-hint">Toque no botão + para agendar</p>
         </div>
-
         <div v-else class="consultas-list">
-          <p v-if="paginatedConsultasHasAgendadas" class="section-label">Agendados</p>
-          <template v-for="(consulta, i) in paginatedConsultas" :key="consulta._tipo + consulta.id">
-            <p v-if="consulta._tipo === 'historico' && (i === 0 || paginatedConsultas[i-1]._tipo === 'agendada')" class="section-label" :style="{ marginTop: paginatedConsultasHasAgendadas ? '16px' : '0' }">Histórico</p>
-            <div
-              class="consulta-card"
-              :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
-              :style="{ animationDelay: i * 0.04 + 's' }"
-              @click="abrirDetalhes(consulta)"
-            >
-              <div class="consulta-icon-box" :class="consulta.status">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="consulta-info">
-                <span class="consulta-medico">{{ consulta.medico }}</span>
-                <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
-                <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
-                <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
-              </div>
-              <div class="consulta-badge-area">
-                <span v-if="consulta._tipo === 'agendada' && diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
-                <span v-else-if="consulta.status === 'realizada'" class="status-badge realizada">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-                </span>
-              </div>
+          <div
+            v-for="(consulta, i) in paginatedConsultas"
+            :key="consulta.id"
+            class="consulta-card"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhes(consulta)"
+          >
+            <div class="consulta-icon-box agendada">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </div>
-          </template>
-          <Pagination :total="consultasCombinadas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ consulta.medico }}</span>
+              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+            </div>
+            <div class="consulta-badge-area">
+              <span v-if="diasAte(consulta.data_hora)" class="dias-badge">{{ diasAte(consulta.data_hora) }}</span>
+            </div>
+          </div>
+          <Pagination :total="store.proximas.length" :per-page="PER_PAGE" v-model="pageConsultas" />
         </div>
       </template>
 
-      <!-- Aba Exames -->
-      <template v-else>
-        <!-- Lista de próximos -->
-        <div v-if="examesStore.proximos.length === 0 && examesStore.historico.length === 0" class="empty-state">
+      <!-- Aba: Histórico de consultas -->
+      <template v-else-if="activeTab === 'historico-consultas'">
+        <div v-if="store.passadas.length === 0" class="empty-state">
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>Nenhuma consulta no histórico</p>
+        </div>
+        <div v-else class="consultas-list">
+          <div
+            v-for="(consulta, i) in paginatedHistoricoConsultas"
+            :key="consulta.id"
+            class="consulta-card"
+            :class="{ cancelada: consulta.status === 'cancelada', realizada: consulta.status === 'realizada' }"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhes(consulta)"
+          >
+            <div class="consulta-icon-box" :class="consulta.status">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ consulta.medico }}</span>
+              <span class="consulta-especialidade">{{ consulta.especialidade || 'Consulta médica' }}</span>
+              <span class="consulta-data-text">{{ formatarData(consulta.data_hora) }} · {{ formatarHora(consulta.data_hora) }}</span>
+              <span v-if="consulta.local" class="consulta-local">{{ consulta.local }}</span>
+            </div>
+            <div class="consulta-badge-area">
+              <span v-if="consulta.status === 'realizada'" class="status-badge realizada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span v-else-if="consulta.status === 'cancelada'" class="status-badge cancelada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <Pagination :total="store.passadas.length" :per-page="PER_PAGE" v-model="pageHistoricoConsultas" />
+        </div>
+      </template>
+
+      <!-- Aba: Exames agendados -->
+      <template v-else-if="activeTab === 'exames'">
+        <div v-if="examesStore.proximos.length === 0" class="empty-state">
           <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
             <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
             <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p>Nenhum exame cadastrado</p>
+          <p>Nenhum exame agendado</p>
           <p class="empty-hint">Toque no botão + para registrar</p>
         </div>
-
         <div v-else class="consultas-list">
-          <p v-if="paginatedExamesHasAgendados" class="section-label">Agendados</p>
-          <template v-for="(exame, i) in paginatedExames" :key="exame._tipo + exame.id">
-            <p v-if="exame._tipo === 'historico' && (i === 0 || paginatedExames[i-1]._tipo === 'agendado')" class="section-label" :style="{ marginTop: paginatedExamesHasAgendados ? '16px' : '0' }">Histórico</p>
-            <div
-              class="consulta-card"
-              :class="{ cancelada: exame.status === 'cancelado', realizada: exame.status === 'realizado' }"
-              :style="{ animationDelay: i * 0.04 + 's' }"
-              @click="abrirDetalhesExame(exame)"
-            >
-              <div class="consulta-icon-box" :class="exame.status === 'realizado' ? 'realizada' : exame.status === 'cancelado' ? 'cancelada' : 'exame-agendado'">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="consulta-info">
-                <span class="consulta-medico">{{ exame.nome }}</span>
-                <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
-                <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
-                <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
-              </div>
-              <div class="consulta-badge-area">
-                <span v-if="exame.status === 'realizado'" class="status-badge realizada">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <span v-else-if="exame.status === 'cancelado'" class="status-badge cancelada">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-                </span>
-              </div>
+          <div
+            v-for="(exame, i) in paginatedExames"
+            :key="exame.id"
+            class="consulta-card"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhesExame(exame)"
+          >
+            <div class="consulta-icon-box exame-agendado">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </div>
-          </template>
-          <Pagination :total="examesCombinados.length" :per-page="PER_PAGE" v-model="pageExames" />
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ exame.nome }}</span>
+              <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+              <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
+              <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+            </div>
+            <div class="consulta-badge-area">
+              <span v-if="diasAte(exame.data)" class="dias-badge">{{ diasAte(exame.data) }}</span>
+            </div>
+          </div>
+          <Pagination :total="examesStore.proximos.length" :per-page="PER_PAGE" v-model="pageExames" />
+        </div>
+      </template>
+
+      <!-- Aba: Histórico de exames -->
+      <template v-else>
+        <div v-if="examesStore.historico.length === 0" class="empty-state">
+          <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>Nenhum exame no histórico</p>
+        </div>
+        <div v-else class="consultas-list">
+          <div
+            v-for="(exame, i) in paginatedHistoricoExames"
+            :key="exame.id"
+            class="consulta-card"
+            :class="{ cancelada: exame.status === 'cancelado', realizada: exame.status === 'realizado' }"
+            :style="{ animationDelay: i * 0.04 + 's' }"
+            @click="abrirDetalhesExame(exame)"
+          >
+            <div class="consulta-icon-box" :class="exame.status === 'realizado' ? 'realizada' : exame.status === 'cancelado' ? 'cancelada' : 'exame-agendado'">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M9 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2h-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="9" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="consulta-info">
+              <span class="consulta-medico">{{ exame.nome }}</span>
+              <span class="consulta-especialidade">{{ exame.tipo || 'Exame médico' }}</span>
+              <span class="consulta-data-text">{{ formatarData(exame.data) }} · {{ formatarHora(exame.data) }}</span>
+              <span v-if="exame.local" class="consulta-local">{{ exame.local }}</span>
+            </div>
+            <div class="consulta-badge-area">
+              <span v-if="exame.status === 'realizado'" class="status-badge realizada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span v-else-if="exame.status === 'cancelado'" class="status-badge cancelada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <Pagination :total="examesStore.historico.length" :per-page="PER_PAGE" v-model="pageHistoricoExames" />
         </div>
       </template>
     </div>
 
     <!-- FAB -->
-    <button class="fab" @click="abrirNovoPorTab" :aria-label="activeTab === 'exames' ? 'Registrar exame' : 'Agendar consulta'">
+    <button class="fab" @click="abrirNovoPorTab" :aria-label="activeTab === 'exames' || activeTab === 'historico-exames' ? 'Registrar exame' : 'Agendar consulta'">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
