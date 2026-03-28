@@ -109,8 +109,8 @@ function navTo(path) {
 
 <style scoped>
 .sidebar-nav {
-  width: 220px;
-  min-width: 220px;
+  width: 260px;
+  min-width: 260px;
   height: 100%;
   background: var(--verde-bg);
   border-right: 1px solid rgba(0, 0, 0, 0.07);
