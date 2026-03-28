@@ -104,6 +104,7 @@ function navTo(path) {
     <div class="sidebar-footer">
       <span class="sidebar-footer-text">Desenvolvido por</span>
       <span class="sidebar-footer-author">Vitor Sandrin</span>
+      <span class="sidebar-footer-version">CrohnCare v1.0.0</span>
     </div>
   </aside>
 </template>
@@ -208,6 +209,14 @@ function navTo(path) {
   font-weight: 600;
   color: var(--texto-light);
   opacity: 0.6;
+}
+
+.sidebar-footer-version {
+  font-family: var(--font-corpo);
+  font-size: 10px;
+  color: var(--texto-light);
+  opacity: 0.35;
+  margin-top: 2px;
 }
 
 /* ── Animações (idênticas ao BottomNav) ── */
