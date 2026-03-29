@@ -191,35 +191,46 @@ function formatarDataHora(dataHora) {
     <div class="page-content">
     <MesNavegacao v-model="mesAtual" class="mobile-mes-nav" />
 
-    <!-- Tabs -->
-    <div class="tabs" data-tour="diario-tabs">
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'anotacoes' }"
-        @click="activeTab = 'anotacoes'"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Anotações
-        <span v-if="entradasOrdenadas.length > 0" class="tab-count">{{ entradasOrdenadas.length }}</span>
-      </button>
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'crises' }"
-        @click="activeTab = 'crises'"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        Crises
-        <span v-if="crisesMes.length > 0" class="tab-count tab-count-crise">{{ crisesMes.length }}</span>
-      </button>
-    </div>
+    <!-- Tabs + filtro de mês (desktop) -->
+    <div class="tab-row" data-tour="diario-tabs">
+      <div class="tabs">
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'anotacoes' }"
+          @click="activeTab = 'anotacoes'"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Anotações
+          <span v-if="entradasOrdenadas.length > 0" class="tab-count">{{ entradasOrdenadas.length }}</span>
+        </button>
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'crises' }"
+          @click="activeTab = 'crises'"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Crises
+          <span v-if="crisesMes.length > 0" class="tab-count tab-count-crise">{{ crisesMes.length }}</span>
+        </button>
+      </div>
 
-    <MesNavegacao v-model="mesAtual" class="desktop-mes-nav" />
+      <!-- Filtro de mês (desktop only) -->
+      <div class="desktop-mes-controls">
+        <MesNavegacao v-model="mesAtual" />
+        <input
+          type="month"
+          class="month-picker"
+          :value="mesAtual"
+          @change="mesAtual = $event.target.value"
+        />
+      </div>
+    </div>
 
     <LoadingDots v-if="diarioStore.loading" />
 
@@ -941,12 +952,20 @@ function formatarDataHora(dataHora) {
   }
 
   /* Tabs estilo website (underline) */
+  .tab-row {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    border-bottom: 1.5px solid #eee;
+    flex-shrink: 0;
+  }
+
   .tabs {
     background: none;
     border-radius: 0;
     padding: 0;
     margin: 0;
-    border-bottom: 1.5px solid #eee;
+    border-bottom: none;
     gap: 0;
   }
 
@@ -984,10 +1003,33 @@ function formatarDataHora(dataHora) {
   }
 
   .desktop-mes-nav {
+    display: none;
+  }
+
+  .desktop-mes-controls {
     display: flex;
-    padding: 12px 0 4px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    margin-bottom: 16px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0 0 16px;
+  }
+
+  .month-picker {
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    font-family: var(--font-corpo);
+    font-size: 13px;
+    color: var(--texto);
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .month-picker:hover,
+  .month-picker:focus {
+    border-color: var(--verde-salvia);
   }
 
   .page-content {
