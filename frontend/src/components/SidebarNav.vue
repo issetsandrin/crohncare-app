@@ -6,7 +6,7 @@ import { useSidebar } from '../composables/useSidebar'
 
 const route = useRoute()
 const router = useRouter()
-const { collapsed, toggle } = useSidebar()
+const { collapsed } = useSidebar()
 
 const items = [
   { path: '/', label: 'Início' },
@@ -30,17 +30,6 @@ function navTo(path) {
 
 <template>
   <aside class="sidebar-nav" :class="{ collapsed }">
-
-    <!-- Brand / Topo -->
-    <div class="sidebar-brand">
-      <button class="sidebar-hamburger" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-logo" />
-      <span class="brand-name">CrohnCare</span>
-    </div>
 
     <nav class="sidebar-items">
       <span class="sidebar-section-label">Menu</span>
@@ -132,9 +121,8 @@ function navTo(path) {
 .sidebar-nav {
   width: 220px;
   min-width: 220px;
-  height: 100vh;
-  background: var(--verde-salvia);
-  border-right: none;
+  background: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -145,62 +133,6 @@ function navTo(path) {
 .sidebar-nav.collapsed {
   width: 60px;
   min-width: 60px;
-}
-
-/* Brand */
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 12px;
-  height: 58px;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  overflow: hidden;
-}
-
-.sidebar-hamburger {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.sidebar-hamburger:hover {
-  background: rgba(255,255,255,0.22);
-}
-
-.brand-logo {
-  width: 36px;
-  height: auto;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.brand-name {
-  font-family: var(--font-titulo);
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 140px;
-  opacity: 1;
-  transition: max-width 0.25s ease, opacity 0.2s ease;
-}
-
-.sidebar-nav.collapsed .brand-name {
-  max-width: 0;
-  opacity: 0;
 }
 
 .sidebar-items {
@@ -217,7 +149,8 @@ function navTo(path) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: rgba(255,255,255,0.5);
+  color: var(--texto-light);
+  opacity: 0.5;
   padding: 0 10px;
   margin-bottom: 6px;
   white-space: nowrap;
@@ -237,7 +170,7 @@ function navTo(path) {
   padding: 10px 10px;
   border-radius: 10px;
   transition: background 0.15s var(--ease-smooth), color 0.15s var(--ease-smooth);
-  color: rgba(255,255,255,0.7);
+  color: var(--texto-light);
   background: none;
   border: none;
   cursor: pointer;
@@ -248,13 +181,13 @@ function navTo(path) {
 }
 
 .sidebar-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  background: rgba(127, 168, 50, 0.08);
+  color: var(--verde-salvia);
 }
 
 .sidebar-item.active {
-  background: rgba(255,255,255,0.18);
-  color: #fff;
+  background: rgba(127, 168, 50, 0.1);
+  color: var(--verde-salvia);
 }
 
 .sidebar-active-bar {
@@ -283,7 +216,7 @@ function navTo(path) {
 /* Footer */
 .sidebar-footer {
   padding: 12px 8px 16px;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -308,7 +241,8 @@ function navTo(path) {
 .sidebar-footer-text {
   font-family: var(--font-corpo);
   font-size: 10px;
-  color: rgba(255,255,255,0.4);
+  color: var(--texto-light);
+  opacity: 0.5;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -318,14 +252,15 @@ function navTo(path) {
   font-family: var(--font-corpo);
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.55);
+  color: var(--texto-light);
   white-space: nowrap;
 }
 
 .sidebar-footer-version {
   font-family: var(--font-corpo);
   font-size: 10px;
-  color: rgba(255,255,255,0.3);
+  color: var(--texto-light);
+  opacity: 0.4;
   margin-top: 2px;
   white-space: nowrap;
 }

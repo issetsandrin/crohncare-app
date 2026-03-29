@@ -3,11 +3,12 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useAvisosStore } from '../stores/avisos'
-
+import { useSidebar } from '../composables/useSidebar'
 const router = useRouter()
 const authStore = useAuthStore()
 const avisosStore = useAvisosStore()
 
+const { collapsed, toggle } = useSidebar()
 const showDropdown = ref(false)
 let pollingInterval = null
 
@@ -52,8 +53,19 @@ onUnmounted(() => {
 
 <template>
   <header class="desktop-header">
+    <!-- Seção brand — mesma largura e transição da sidebar -->
+    <div class="desktop-brand" :class="{ collapsed }">
+      <button class="menu-toggle" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
+      <span class="brand-name" :class="{ hidden: collapsed }">CrohnCare</span>
+    </div>
+
+    <!-- Direita: bell + usuário -->
     <div class="header-right">
-      <!-- Bell de avisos -->
       <button class="bell-btn" :class="{ 'has-alerts': naoLidosCount > 0 }" @click="abrirAvisos">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" :class="{ 'bell-ring': naoLidosCount > 0 }">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -99,18 +111,85 @@ onUnmounted(() => {
   background: var(--verde-salvia);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 28px;
+  justify-content: space-between;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 20;
   position: relative;
 }
 
+/* Seção brand — sincronizada com a sidebar */
+.desktop-brand {
+  width: 220px;
+  min-width: 220px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.desktop-brand.collapsed {
+  width: 60px;
+  min-width: 60px;
+}
+
+.menu-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.brand-icon {
+  width: 36px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 140px;
+  opacity: 1;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.brand-name.hidden {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* Direita */
 .header-right {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 0 28px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 /* Bell */
