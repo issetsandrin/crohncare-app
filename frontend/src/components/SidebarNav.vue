@@ -142,9 +142,11 @@ function navTo(path) {
 
 
 .sidebar-nav.collapsed .sidebar-item {
+  margin: 0;
   justify-content: center;
   padding: 10px 0;
   gap: 0;
+  width: 100%;
 }
 
 .sidebar-nav.collapsed .sidebar-label {
