@@ -1,5 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+
+const datePickerRef = ref(null)
+function abrirCalendario() {
+  datePickerRef.value?.showPicker?.() ?? datePickerRef.value?.click()
+}
+function onDateChange(e) {
+  const val = e.target.value
+  if (val) mesAtual.value = val.slice(0, 7)
+}
 import Pagination from '../components/Pagination.vue'
 import { useDiarioStore } from '../stores/diario'
 import { useCrisesStore } from '../stores/crises'
@@ -222,13 +231,23 @@ function formatarDataHora(dataHora) {
 
       <!-- Filtro de mês (desktop only) -->
       <div class="desktop-mes-controls">
-        <MesNavegacao v-model="mesAtual" />
-        <input
-          type="month"
-          class="month-picker"
-          :value="mesAtual"
-          @change="mesAtual = $event.target.value"
-        />
+        <MesNavegacao v-model="mesAtual" class="desktop-mes-nav-inline" />
+        <div class="cal-picker-wrap">
+          <button class="cal-icon-btn" @click="abrirCalendario" title="Escolher mês">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <input
+            ref="datePickerRef"
+            type="date"
+            class="date-picker-hidden"
+            :value="mesAtual + '-01'"
+            @change="onDateChange"
+          />
+        </div>
       </div>
     </div>
 
@@ -1009,27 +1028,66 @@ function formatarDataHora(dataHora) {
   .desktop-mes-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     padding: 0 0 0 16px;
   }
 
-  .month-picker {
-    height: 34px;
-    padding: 0 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    font-family: var(--font-corpo);
-    font-size: 13px;
-    color: var(--texto);
-    background: #fff;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.15s;
+  /* MesNavegacao menor para caber na tab-row */
+  .desktop-mes-nav-inline :deep(.mes-navegacao) {
+    padding: 0;
+    gap: 2px;
   }
 
-  .month-picker:hover,
-  .month-picker:focus {
+  .desktop-mes-nav-inline :deep(.mes-label) {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto-light);
+    min-width: 110px;
+    text-align: center;
+  }
+
+  .desktop-mes-nav-inline :deep(.nav-arrow) {
+    padding: 4px;
+    border-radius: 6px;
+  }
+
+  .desktop-mes-nav-inline :deep(.nav-arrow svg) {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Ícone calendário */
+  .cal-picker-wrap {
+    position: relative;
+  }
+
+  .cal-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    color: var(--texto-light);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .cal-icon-btn:hover {
     border-color: var(--verde-salvia);
+    color: var(--verde-salvia);
+  }
+
+  .date-picker-hidden {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+    top: 100%;
+    left: 0;
   }
 
   .page-content {
