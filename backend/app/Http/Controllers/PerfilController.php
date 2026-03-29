@@ -31,7 +31,7 @@ class PerfilController extends Controller
         // Dias desde a última crise
         $ultimaCrise = $user->crises()->orderBy('data_hora', 'desc')->first();
         $diasSemCrise = $ultimaCrise
-            ? $hoje->diffInDays(Carbon::parse($ultimaCrise->data_hora))
+            ? (int) $hoje->diffInDays(Carbon::parse($ultimaCrise->data_hora)->startOfDay(), true)
             : null;
 
         // Próxima consulta
