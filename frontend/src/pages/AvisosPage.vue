@@ -642,6 +642,7 @@ async function abrirAviso(aviso) {
 
   .avisos-list {
     max-width: 720px;
+    margin: 0 auto;
   }
 
   .aviso-card {
