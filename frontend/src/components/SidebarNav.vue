@@ -119,8 +119,8 @@ function navTo(path) {
 
 <style scoped>
 .sidebar-nav {
-  width: 220px;
-  min-width: 220px;
+  width: 230px;
+  min-width: 230px;
   background: #fff;
   border-right: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
@@ -131,8 +131,8 @@ function navTo(path) {
 }
 
 .sidebar-nav.collapsed {
-  width: 60px;
-  min-width: 60px;
+  width: 70px;
+  min-width: 70px;
 }
 
 .sidebar-items {
