@@ -31,11 +31,6 @@ function navTo(path) {
 <template>
   <aside class="sidebar-nav" :class="{ collapsed }">
 
-    <!-- Logo no topo -->
-    <div class="sidebar-brand">
-      <img src="/icons/logo-verde.png" alt="CrohnCare" class="sidebar-logo" />
-    </div>
-
     <nav class="sidebar-items">
       <span class="sidebar-section-label">Menu</span>
       <button
@@ -140,31 +135,11 @@ function navTo(path) {
   min-width: 70px;
 }
 
-.sidebar-nav.collapsed .sidebar-brand {
-  justify-content: center;
-  padding: 0;
-}
 
 .sidebar-nav.collapsed .sidebar-items {
   padding: 16px 0;
 }
 
-/* Logo topo */
-.sidebar-brand {
-  height: 58px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.sidebar-logo {
-  width: 34px;
-  height: auto;
-  object-fit: contain;
-  flex-shrink: 0;
-}
 
 .sidebar-nav.collapsed .sidebar-item {
   justify-content: center;
