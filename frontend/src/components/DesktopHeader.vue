@@ -175,6 +175,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   margin-left: auto;
+  padding-right: 24px;
 }
 
 /* Bell */
