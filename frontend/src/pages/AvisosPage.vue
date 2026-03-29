@@ -564,6 +564,11 @@ async function abrirAviso(aviso) {
 }
 
 @media (min-width: 769px) {
+  .avisos-page {
+    height: 100%;
+    overflow: hidden;
+  }
+
   .desktop-page-header {
     display: flex;
     align-items: center;
@@ -593,6 +598,67 @@ async function abrirAviso(aviso) {
     font-size: 13px;
     color: var(--texto-light);
     margin: 0;
+  }
+
+  /* Tabs estilo website */
+  .tabs {
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1.5px solid #eee;
+    gap: 0;
+    padding: 0 40px;
+  }
+
+  .tab-btn {
+    flex: none;
+    padding: 11px 20px;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto-light);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.15s, border-color 0.15s;
+    justify-content: flex-start;
+  }
+
+  .tab-btn.active {
+    background: none;
+    box-shadow: none;
+    color: var(--verde-salvia);
+    border-bottom-color: var(--verde-salvia);
+  }
+
+  .tab-count {
+    background: rgba(127, 168, 50, 0.15);
+    color: var(--verde-salvia);
+  }
+
+  .page-content {
+    padding: 24px 40px 40px;
+  }
+
+  .avisos-list {
+    max-width: 720px;
+  }
+
+  .aviso-card {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s var(--ease-smooth);
+  }
+
+  .aviso-card:hover {
+    border-color: var(--verde-salvia);
+    transform: translateY(-1px);
+  }
+
+  .aviso-card.nao-lido {
+    border: 1px solid rgba(127, 168, 50, 0.2);
+    background: rgba(127, 168, 50, 0.02);
   }
 }
 </style>
