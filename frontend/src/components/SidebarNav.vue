@@ -212,6 +212,7 @@ function navTo(path) {
   align-items: center;
   gap: 12px;
   padding: 10px 10px;
+  margin: 0 6px;
   border-radius: 10px;
   transition: background 0.15s var(--ease-smooth), color 0.15s var(--ease-smooth);
   color: var(--texto-light);
