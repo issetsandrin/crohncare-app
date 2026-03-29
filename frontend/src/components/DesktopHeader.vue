@@ -54,7 +54,7 @@ onUnmounted(() => {
 <template>
   <header class="desktop-header">
     <!-- Brand clicável: ativa/desativa collapse -->
-    <button class="desktop-brand" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+    <button class="desktop-brand" :class="{ collapsed }" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
       <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
       <span class="brand-name" :class="{ hidden: collapsed }">CrohnCare</span>
     </button>
@@ -106,32 +106,42 @@ onUnmounted(() => {
   background: var(--verde-salvia);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 20;
   position: relative;
 }
 
-/* Brand clicável */
+/* Brand clicável — largura sincronizada com a sidebar */
 .desktop-brand {
+  width: 230px;
+  min-width: 230px;
+  height: 100%;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 6px 10px;
-  border-radius: 10px;
+  padding: 0 16px;
   background: none;
   border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   color: #fff;
   flex-shrink: 0;
-  transition: background 0.15s;
   overflow: hidden;
+  transition: width 0.25s ease, min-width 0.25s ease, justify-content 0s;
+}
+
+.desktop-brand.collapsed {
+  width: 70px;
+  min-width: 70px;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
 }
 
 .desktop-brand:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .brand-icon {
