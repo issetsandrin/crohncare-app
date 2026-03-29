@@ -13,6 +13,13 @@ const items = [
   { path: '/perfil', label: 'Perfil' },
 ]
 
+const collapsed = ref(localStorage.getItem('sidebar_collapsed') !== 'false')
+
+function toggleCollapsed() {
+  collapsed.value = !collapsed.value
+  localStorage.setItem('sidebar_collapsed', collapsed.value)
+}
+
 const clickKeys = ref({})
 
 function navTo(path) {
@@ -26,7 +33,7 @@ function navTo(path) {
 </script>
 
 <template>
-  <aside class="sidebar-nav">
+  <aside class="sidebar-nav" :class="{ collapsed }">
     <nav class="sidebar-items">
       <span class="sidebar-section-label">Menu</span>
       <button
@@ -34,6 +41,7 @@ function navTo(path) {
         :key="item.path"
         class="sidebar-item"
         :class="{ active: route.path === item.path }"
+        :title="collapsed ? item.label : ''"
         @click="navTo(item.path)"
       >
         <div class="sidebar-active-bar" v-if="route.path === item.path" />
@@ -101,18 +109,26 @@ function navTo(path) {
         <span class="sidebar-label">{{ item.label }}</span>
       </button>
     </nav>
+
     <div class="sidebar-footer">
-      <span class="sidebar-footer-text">Desenvolvido por</span>
-      <span class="sidebar-footer-author">Vitor Sandrin</span>
-      <span class="sidebar-footer-version">CrohnCare v1.0.0</span>
+      <button class="toggle-btn" @click="toggleCollapsed" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="toggle-icon" :class="{ rotated: !collapsed }">
+          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sidebar-footer-info">
+        <span class="sidebar-footer-text">Desenvolvido por</span>
+        <span class="sidebar-footer-author">Vitor Sandrin</span>
+        <span class="sidebar-footer-version">CrohnCare v1.0.0</span>
+      </div>
     </div>
   </aside>
 </template>
 
 <style scoped>
 .sidebar-nav {
-  width: 260px;
-  min-width: 260px;
+  width: 220px;
+  min-width: 220px;
   height: 100%;
   background: var(--verde-bg);
   border-right: 1px solid rgba(0, 0, 0, 0.07);
@@ -120,13 +136,19 @@ function navTo(path) {
   flex-direction: column;
   position: sticky;
   top: 0;
-  overflow-y: auto;
+  overflow: hidden;
+  transition: width 0.25s ease, min-width 0.25s ease;
+}
+
+.sidebar-nav.collapsed {
+  width: 56px;
+  min-width: 56px;
 }
 
 .sidebar-items {
   display: flex;
   flex-direction: column;
-  padding: 20px 12px;
+  padding: 20px 8px;
   flex: 1;
   gap: 2px;
 }
@@ -141,6 +163,13 @@ function navTo(path) {
   padding: 0 10px;
   margin-bottom: 6px;
   opacity: 0.6;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-nav.collapsed .sidebar-section-label {
+  opacity: 0;
 }
 
 .sidebar-item {
@@ -148,7 +177,7 @@ function navTo(path) {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 10px 10px;
   border-radius: 10px;
   transition: background 0.15s var(--ease-smooth), color 0.15s var(--ease-smooth);
   color: var(--texto-light);
@@ -157,6 +186,8 @@ function navTo(path) {
   cursor: pointer;
   width: 100%;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .sidebar-item:hover {
@@ -174,8 +205,8 @@ function navTo(path) {
 }
 
 .sidebar-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -183,15 +214,66 @@ function navTo(path) {
   font-family: var(--font-corpo);
   font-size: 13.5px;
   font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.15s ease;
 }
 
+.sidebar-nav.collapsed .sidebar-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Footer */
 .sidebar-footer {
-  padding: 16px 12px 20px;
+  padding: 12px 8px 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 8px;
+}
+
+.toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-light);
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.toggle-btn:hover {
+  background: rgba(127, 168, 50, 0.08);
+  color: var(--verde-salvia);
+}
+
+.toggle-icon {
+  transition: transform 0.25s ease;
+}
+
+.toggle-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.sidebar-footer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2px;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-nav.collapsed .sidebar-footer-info {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sidebar-footer-text {
@@ -201,6 +283,7 @@ function navTo(path) {
   opacity: 0.5;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .sidebar-footer-author {
@@ -209,6 +292,7 @@ function navTo(path) {
   font-weight: 600;
   color: var(--texto-light);
   opacity: 0.6;
+  white-space: nowrap;
 }
 
 .sidebar-footer-version {
@@ -217,10 +301,10 @@ function navTo(path) {
   color: var(--texto-light);
   opacity: 0.35;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
-/* ── Animações (idênticas ao BottomNav) ── */
-
+/* ── Animações ── */
 @keyframes bounce-home {
   0%   { transform: translateY(0) scale(1); }
   30%  { transform: translateY(-5px) scale(1.12); }
