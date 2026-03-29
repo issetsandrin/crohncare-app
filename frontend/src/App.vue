@@ -19,9 +19,9 @@ const showNav = computed(() => {
 
 <template>
   <div v-if="isDesktop && showNav" class="app-layout-desktop">
-    <DesktopHeader />
-    <div class="app-desktop-body">
-      <SidebarNav />
+    <SidebarNav />
+    <div class="app-desktop-right">
+      <DesktopHeader />
       <main class="desktop-content">
         <router-view :key="route.fullPath" />
       </main>

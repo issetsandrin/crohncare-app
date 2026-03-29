@@ -3,9 +3,10 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSidebar } from '../composables/useSidebar'
 
+
 const route = useRoute()
 const router = useRouter()
-const { collapsed } = useSidebar()
+const { collapsed, toggle } = useSidebar()
 
 const items = [
   { path: '/', label: 'Início' },
@@ -29,6 +30,18 @@ function navTo(path) {
 
 <template>
   <aside class="sidebar-nav" :class="{ collapsed }">
+
+    <!-- Brand / Topo -->
+    <div class="sidebar-brand">
+      <button class="sidebar-hamburger" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-logo" />
+      <span class="brand-name">CrohnCare</span>
+    </div>
+
     <nav class="sidebar-items">
       <span class="sidebar-section-label">Menu</span>
       <button
@@ -119,26 +132,81 @@ function navTo(path) {
 .sidebar-nav {
   width: 220px;
   min-width: 220px;
-  height: 100%;
-  background: var(--verde-bg);
-  border-right: 1px solid rgba(0, 0, 0, 0.07);
+  height: 100vh;
+  background: var(--verde-salvia);
+  border-right: none;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
   overflow: hidden;
   transition: width 0.25s ease, min-width 0.25s ease;
+  flex-shrink: 0;
 }
 
 .sidebar-nav.collapsed {
-  width: 56px;
-  min-width: 56px;
+  width: 60px;
+  min-width: 60px;
+}
+
+/* Brand */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  height: 58px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+
+.sidebar-hamburger {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.sidebar-hamburger:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.brand-logo {
+  width: 36px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 140px;
+  opacity: 1;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.sidebar-nav.collapsed .brand-name {
+  max-width: 0;
+  opacity: 0;
 }
 
 .sidebar-items {
   display: flex;
   flex-direction: column;
-  padding: 20px 8px;
+  padding: 16px 8px;
   flex: 1;
   gap: 2px;
 }
@@ -149,10 +217,9 @@ function navTo(path) {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: var(--texto-light);
+  color: rgba(255,255,255,0.5);
   padding: 0 10px;
   margin-bottom: 6px;
-  opacity: 0.6;
   white-space: nowrap;
   overflow: hidden;
   transition: opacity 0.15s ease;
@@ -170,7 +237,7 @@ function navTo(path) {
   padding: 10px 10px;
   border-radius: 10px;
   transition: background 0.15s var(--ease-smooth), color 0.15s var(--ease-smooth);
-  color: var(--texto-light);
+  color: rgba(255,255,255,0.7);
   background: none;
   border: none;
   cursor: pointer;
@@ -181,13 +248,13 @@ function navTo(path) {
 }
 
 .sidebar-item:hover {
-  background: rgba(127, 168, 50, 0.06);
-  color: var(--texto);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
 }
 
 .sidebar-item.active {
-  background: rgba(127, 168, 50, 0.1);
-  color: var(--verde-salvia);
+  background: rgba(255,255,255,0.18);
+  color: #fff;
 }
 
 .sidebar-active-bar {
@@ -216,7 +283,7 @@ function navTo(path) {
 /* Footer */
 .sidebar-footer {
   padding: 12px 8px 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(255,255,255,0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -241,8 +308,7 @@ function navTo(path) {
 .sidebar-footer-text {
   font-family: var(--font-corpo);
   font-size: 10px;
-  color: var(--texto-light);
-  opacity: 0.5;
+  color: rgba(255,255,255,0.4);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -252,16 +318,14 @@ function navTo(path) {
   font-family: var(--font-corpo);
   font-size: 12px;
   font-weight: 600;
-  color: var(--texto-light);
-  opacity: 0.6;
+  color: rgba(255,255,255,0.55);
   white-space: nowrap;
 }
 
 .sidebar-footer-version {
   font-family: var(--font-corpo);
   font-size: 10px;
-  color: var(--texto-light);
-  opacity: 0.35;
+  color: rgba(255,255,255,0.3);
   margin-top: 2px;
   white-space: nowrap;
 }
