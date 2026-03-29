@@ -3,11 +3,13 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useAvisosStore } from '../stores/avisos'
+import { useSidebar } from '../composables/useSidebar'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const avisosStore = useAvisosStore()
 
+const { collapsed, toggle } = useSidebar()
 const showDropdown = ref(false)
 let pollingInterval = null
 
@@ -53,8 +55,13 @@ onUnmounted(() => {
 <template>
   <header class="desktop-header">
     <div class="desktop-brand">
+      <button class="menu-toggle" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
       <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
-      <span class="brand-name">CrohnCare</span>
+      <span class="brand-name" :class="{ hidden: collapsed }">CrohnCare</span>
     </div>
 
     <div class="header-right">
@@ -118,10 +125,30 @@ onUnmounted(() => {
   gap: 10px;
 }
 
+.menu-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
 .brand-icon {
-  width: 36px;
+  width: 30px;
   height: auto;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-name {
@@ -130,6 +157,16 @@ onUnmounted(() => {
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 140px;
+  opacity: 1;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.brand-name.hidden {
+  max-width: 0;
+  opacity: 0;
 }
 
 .header-right {

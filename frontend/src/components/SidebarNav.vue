@@ -1,9 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useSidebar } from '../composables/useSidebar'
 
 const route = useRoute()
 const router = useRouter()
+const { collapsed } = useSidebar()
 
 const items = [
   { path: '/', label: 'Início' },
@@ -12,13 +14,6 @@ const items = [
   { path: '/consultas', label: 'Consultas' },
   { path: '/perfil', label: 'Perfil' },
 ]
-
-const collapsed = ref(localStorage.getItem('sidebar_collapsed') !== 'false')
-
-function toggleCollapsed() {
-  collapsed.value = !collapsed.value
-  localStorage.setItem('sidebar_collapsed', collapsed.value)
-}
 
 const clickKeys = ref({})
 
@@ -111,11 +106,6 @@ function navTo(path) {
     </nav>
 
     <div class="sidebar-footer">
-      <button class="toggle-btn" @click="toggleCollapsed" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="toggle-icon" :class="{ rotated: !collapsed }">
-          <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
       <div class="sidebar-footer-info">
         <span class="sidebar-footer-text">Desenvolvido por</span>
         <span class="sidebar-footer-author">Vitor Sandrin</span>
@@ -231,34 +221,6 @@ function navTo(path) {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-}
-
-.toggle-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--texto-light);
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-}
-
-.toggle-btn:hover {
-  background: rgba(127, 168, 50, 0.08);
-  color: var(--verde-salvia);
-}
-
-.toggle-icon {
-  transition: transform 0.25s ease;
-}
-
-.toggle-icon.rotated {
-  transform: rotate(180deg);
 }
 
 .sidebar-footer-info {
