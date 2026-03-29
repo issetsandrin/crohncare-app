@@ -135,9 +135,20 @@ function navTo(path) {
   min-width: 70px;
 }
 
+.sidebar-nav.collapsed .sidebar-items {
+  padding: 16px 0;
+}
+
 .sidebar-nav.collapsed .sidebar-item {
   justify-content: center;
   padding: 10px 0;
+  gap: 0;
+}
+
+.sidebar-nav.collapsed .sidebar-label {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sidebar-items {
