@@ -135,6 +135,11 @@ function navTo(path) {
   min-width: 70px;
 }
 
+.sidebar-nav.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+
 .sidebar-items {
   display: flex;
   flex-direction: column;
