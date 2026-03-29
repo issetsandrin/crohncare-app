@@ -53,16 +53,15 @@ onUnmounted(() => {
 
 <template>
   <header class="desktop-header">
-    <!-- Seção brand — mesma largura e transição da sidebar -->
-    <div class="desktop-brand" :class="{ collapsed }">
-      <button class="menu-toggle" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
-      <span class="brand-name" :class="{ hidden: collapsed }">CrohnCare</span>
-    </div>
+    <!-- Botão collapse -->
+    <button class="menu-toggle" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Logo -->
+    <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
 
     <!-- Direita: bell + usuário -->
     <div class="header-right">
@@ -111,31 +110,12 @@ onUnmounted(() => {
   background: var(--verde-salvia);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 20;
   position: relative;
-}
-
-/* Seção brand — sincronizada com a sidebar */
-.desktop-brand {
-  width: 220px;
-  min-width: 220px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 12px;
-  overflow: hidden;
-  flex-shrink: 0;
-  transition: width 0.25s ease, min-width 0.25s ease;
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.desktop-brand.collapsed {
-  width: 60px;
-  min-width: 60px;
 }
 
 .menu-toggle {
@@ -164,32 +144,13 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.brand-name {
-  font-family: var(--font-titulo);
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 140px;
-  opacity: 1;
-  transition: max-width 0.25s ease, opacity 0.2s ease;
-}
-
-.brand-name.hidden {
-  max-width: 0;
-  opacity: 0;
-}
 
 /* Direita */
 .header-right {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 28px;
-  flex: 1;
-  justify-content: flex-end;
+  margin-left: auto;
 }
 
 /* Bell */
