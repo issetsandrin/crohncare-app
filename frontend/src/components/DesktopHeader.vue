@@ -53,15 +53,11 @@ onUnmounted(() => {
 
 <template>
   <header class="desktop-header">
-    <!-- Botão collapse -->
-    <button class="menu-toggle" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+    <!-- Brand clicável: ativa/desativa collapse -->
+    <button class="desktop-brand" @click="toggle" :title="collapsed ? 'Expandir menu' : 'Recolher menu'">
+      <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
+      <span class="brand-name" :class="{ hidden: collapsed }">CrohnCare</span>
     </button>
-
-    <!-- Logo -->
-    <img src="/icons/logo-branca.png" alt="CrohnCare" class="brand-icon" />
 
     <!-- Direita: bell + usuário -->
     <div class="header-right">
@@ -118,23 +114,24 @@ onUnmounted(() => {
   position: relative;
 }
 
-.menu-toggle {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+/* Brand clicável */
+.desktop-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: none;
+  border: none;
   cursor: pointer;
+  color: #fff;
   flex-shrink: 0;
   transition: background 0.15s;
+  overflow: hidden;
 }
 
-.menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.22);
+.desktop-brand:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .brand-icon {
@@ -144,6 +141,23 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.brand-name {
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 140px;
+  opacity: 1;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.brand-name.hidden {
+  max-width: 0;
+  opacity: 0;
+}
 
 /* Direita */
 .header-right {
