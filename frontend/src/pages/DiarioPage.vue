@@ -1068,16 +1068,16 @@ function formatarDataHora(dataHora) {
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: #fff;
-    color: var(--texto-light);
+    border: 1px solid rgba(127, 168, 50, 0.4);
+    background: rgba(127, 168, 50, 0.08);
+    color: var(--verde-salvia);
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition: background 0.15s, border-color 0.15s;
   }
 
   .cal-icon-btn:hover {
+    background: rgba(127, 168, 50, 0.15);
     border-color: var(--verde-salvia);
-    color: var(--verde-salvia);
   }
 
   .date-picker-hidden {
