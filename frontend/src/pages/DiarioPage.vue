@@ -1,18 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-
-const datePickerRef = ref(null)
-function abrirCalendario() {
-  datePickerRef.value?.showPicker?.() ?? datePickerRef.value?.click()
-}
-function onDateChange(e) {
-  const val = e.target.value
-  if (val) mesAtual.value = val.slice(0, 7)
-}
 import Pagination from '../components/Pagination.vue'
 import { useDiarioStore } from '../stores/diario'
 import { useCrisesStore } from '../stores/crises'
 import MesNavegacao from '../components/MesNavegacao.vue'
+import MonthPicker from '../components/MonthPicker.vue'
 import ModalBase from '../components/ModalBase.vue'
 import DiarioForm from '../components/DiarioForm.vue'
 import CriseForm from '../components/CriseForm.vue'
@@ -232,22 +224,7 @@ function formatarDataHora(dataHora) {
       <!-- Filtro de mês (desktop only) -->
       <div class="desktop-mes-controls">
         <MesNavegacao v-model="mesAtual" class="desktop-mes-nav-inline" />
-        <div class="cal-picker-wrap">
-          <button class="cal-icon-btn" @click="abrirCalendario" title="Escolher mês">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <input
-            ref="datePickerRef"
-            type="date"
-            class="date-picker-hidden"
-            :value="mesAtual + '-01'"
-            @change="onDateChange"
-          />
-        </div>
+        <MonthPicker v-model="mesAtual" />
       </div>
     </div>
 
@@ -1056,39 +1033,6 @@ function formatarDataHora(dataHora) {
     height: 15px;
   }
 
-  /* Ícone calendário */
-  .cal-picker-wrap {
-    position: relative;
-  }
-
-  .cal-icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid rgba(127, 168, 50, 0.4);
-    background: rgba(127, 168, 50, 0.08);
-    color: var(--verde-salvia);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .cal-icon-btn:hover {
-    background: rgba(127, 168, 50, 0.15);
-    border-color: var(--verde-salvia);
-  }
-
-  .date-picker-hidden {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-    width: 1px;
-    height: 1px;
-    top: 100%;
-    left: 0;
-  }
 
   .page-content {
     flex: 1;
